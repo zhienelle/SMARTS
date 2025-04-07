@@ -1,11 +1,15 @@
 package controller;
 
 import entity.Project;
+import entity.ProjectStage;
+import entity.ProjectTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import repository.ProjectRepository;
+import repository.ProjectStageRepository;
+import repository.ProjectTaskRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,20 +20,23 @@ public class ProjectsAdminController {
     @Autowired
     private ProjectRepository projectRepository;
 
+    @Autowired
+    private ProjectStageRepository stageRepo;
+
+    @Autowired
+    private ProjectTaskRepository taskRepo;
+
     @GetMapping("/projectsAdmin/getProjects")
     @ResponseBody
     public List<Project> getAllProjects() {
         return projectRepository.findByProjectstatusIgnoreCaseNot("archived");
     }
 
-
-
     @PostMapping("/projectsAdmin/addProject")
     @ResponseBody
     public Project addProject(@RequestBody Project project) {
         return projectRepository.save(project);
     }
-
 
     @PutMapping("/projectsAdmin/updateProject/{project_id}")
     @ResponseBody
@@ -53,5 +60,34 @@ public class ProjectsAdminController {
     public String projectAdminPage(Model model) {
         model.addAttribute("projects", projectRepository.findAll());
         return "projectsAdmin";
+    }
+
+    @GetMapping("/projectsAdmin/getStages/{projectId}")
+    @ResponseBody
+    public List<ProjectStage> getStages(@PathVariable int projectId) {
+        Project project = projectRepository.findById(projectId).orElse(null);
+        return stageRepo.findByProject(project);
+    }
+
+    @PostMapping("/projectsAdmin/saveStages/{projectId}")
+    @ResponseBody
+    public String saveStages(@PathVariable int projectId, @RequestBody List<ProjectStage> stages) {
+        Project project = projectRepository.findById(projectId).orElse(null);
+        if (project == null) return "Project not found";
+
+        for (ProjectStage stage : stages) {
+            stage.setProject(project);
+            if (stage.getTasks() != null) {
+                for (ProjectTask task : stage.getTasks()) {
+                    task.setStage(stage);
+                    if (task.getTaskName() == null || task.getTaskName().trim().isEmpty()) {
+                        task.setTaskName("Untitled Task");  // Or handle how you'd like
+                    }
+                }
+            }
+        }
+
+        stageRepo.saveAll(stages);
+        return "Progress saved successfully";
     }
 }
