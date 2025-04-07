@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Settings Admin</title>
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Numans", sans-serif;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 78px;
+            width: calc(100% - 78px);
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #EDEDED;
+            color: #124D54;
+            font-size: 14px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: all 0.5s ease;
+            padding: 10px 20px;
+        }
+
+        header div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        header div i {
+            font-size: 30px;
+            color: #124D54;
+        }
+
+        header div p {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+            color: #124D54;
+            font-weight: bold;
+        }
+
+        header div p span {
+            font-weight: bold;
+            color: #F9744B;
+        }
+
+        header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: #F9744B;
+        }
+
+        .sidebar.open~header {
+            left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 78px;
+            width: calc(100% - 78px);
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #EDEDED;
+            color: #124D54;
+            font-size: 14px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: all 0.5s ease;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        .sidebar.open~footer {
+            left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 14px;
+            font-family: 'Numans', sans-serif;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        footer p span {
+            display: inline-block;
+        }
+
+
+        .smarts-logo img {
+            height: 25px;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 78px;
+            background: #102937;
+            padding: 6px 14px;
+            z-index: 99;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.open {
+            width: 250px;
+        }
+
+        .sidebar .logo-details {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .sidebar .logo-details .icon {
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar .logo-details .logo_name {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.open .logo-details .icon,
+        .sidebar.open .logo-details .logo_name {
+            opacity: 1;
+        }
+
+        .sidebar .logo-details #btn {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            font-size: 22px;
+            transition: all 0.4s ease;
+            font-size: 23px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.open .logo-details #btn {
+            text-align: right;
+        }
+
+        .sidebar i {
+            color: #fff;
+            height: 60px;
+            min-width: 50px;
+            font-size: 28px;
+            text-align: center;
+            line-height: 60px;
+        }
+
+        .sidebar img {
+            height: 30px;
+            min-width: 0px;
+            line-height: 20px;
+        }
+
+        .sidebar .nav-list {
+            margin-top: 20px;
+            height: 100%;
+        }
+
+        .sidebar li {
+            position: relative;
+            margin: 8px 0;
+            list-style: none;
+        }
+
+        .sidebar li .tooltip {
+            position: absolute;
+            top: -20px;
+            left: calc(100% + 15px);
+            z-index: 3;
+            background: #fff;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 400;
+            opacity: 0;
+            white-space: nowrap;
+            pointer-events: none;
+            transition: 0s;
+        }
+
+        .sidebar li:hover .tooltip {
+            opacity: 1;
+            pointer-events: auto;
+            transition: all 0.4s ease;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .sidebar.open li .tooltip {
+            display: none;
+        }
+
+        .sidebar input {
+            font-size: 15px;
+            color: #fff;
+            font-weight: 400;
+            outline: none;
+            height: 50px;
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+            transition: all 0.5s ease;
+            background: #1d1b31;
+        }
+
+        .sidebar.open input {
+            padding: 0 20px 0 50px;
+            width: 100%;
+        }
+
+        .sidebar li a {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            border-radius: 12px;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.4s ease;
+            background: #102937;
+        }
+
+        .sidebar li a:hover {
+            background: #F9744B;
+        }
+
+        .sidebar li a .links_name {
+            color: #fff;
+            font-size: 15px;
+            font-weight: 400;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.4s;
+        }
+
+        .sidebar.open li a .links_name {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sidebar li a:hover .links_name,
+        .sidebar li a:hover i {
+            transition: all 0.5s ease;
+            color: #EDEDED;
+        }
+
+        .sidebar li i {
+            height: 50px;
+            line-height: 50px;
+            font-size: 18px;
+            border-radius: 12px;
+        }
+
+        .home-section {
+            position: relative;
+            background: #EDEDED;
+            min-height: 100vh;
+            top: 0;
+            left: 78px;
+            width: calc(100% - 78px);
+            transition: all 0.5s ease;
+            z-index: 2;
+        }
+
+        .sidebar.open~.home-section {
+            left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        @media (max-width: 1024px) {
+            header {
+                left: 0;
+                width: 100%;
+            }
+
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar.open {
+                width: 220px;
+            }
+
+            .home-section {
+                left: 70px;
+                width: calc(100% - 70px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                font-size: 12px;
+            }
+
+            .sidebar {
+                width: 60px;
+            }
+
+            .sidebar.open {
+                width: 200px;
+            }
+
+            .home-section {
+                left: 60px;
+                width: calc(100% - 60px);
+            }
+
+            .sidebar i {
+                font-size: 22px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .sidebar {
+                width: 55px;
+            }
+
+            .sidebar.open {
+                width: 180px;
+            }
+
+            .home-section {
+                left: 55px;
+                width: calc(100% - 55px);
+            }
+
+            .sidebar i {
+                font-size: 20px;
+            }
+
+            .sidebar li a .links_name {
+                font-size: 12px;
+            }
+        }
+
+        .home-content {
+            padding: 30px;
+            display: grid;
+            place-items: center;
+            height: 100vh;
+            padding-bottom: 100px;
+        }
+
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 80px;
+            text-transform: uppercase;
+            color: #124D54;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 1000px;
+            height: 100%;
+            background-color: #F8FBFF;
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 7px solid #124D54;
+            margin: 0 auto;
+            display: flex;
+        }
+
+        .sidebar_settings {
+            width: 30%;
+            background-color: #124D54;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        .sidebar_settings h3 {
+            margin-bottom: 50px;
+            padding: 20px 20px;
+            font-size: 20px;
+            color: white;
+            text-align: center;
+            background-color: #F9744B;
+            border-radius: 10px;
+            border: 5px solid #EDEDED;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .sidebar_settings h3:hover {
+            background-color: #102937;
+            color: #EDEDED;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(246, 245, 245, 0.3);
+            cursor: pointer;
+        }
+
+
+        .sidebar_settings .tab {
+            margin-bottom: 30px;
+            cursor: pointer;
+            padding: 15px 25px;
+            background-color: #124D54;
+            color: white;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .sidebar_settings .tab.active {
+            background-color: #F8FBFF;
+            color: #124D54;
+            border: 2px solid #124D54;
+        }
+
+        .content-container {
+            width: 70%;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        .content {
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        h2 {
+            color: #124D54;
+        }
+
+        .profile-content {
+            padding: 30px;
+            background-color: #124D54;
+            border-radius: 8px;
+            color: white;
+            text-align: left;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-icon {
+            font-size: 60px;
+            color: #ffffff;
+            margin-right: 20px;
+        }
+
+        .profile-info h2 {
+            margin: 0;
+            font-size: 24px;
+            color: white;
+        }
+
+        .profile-info .email {
+            margin: 5px 0 0 0;
+            color: #D1E8E2;
+        }
+
+        .profile-details {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .profile-detail-item {
+            background-color: #ffffff33;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .profile-detail-item:hover {
+            background-color: #F9744B;
+        }
+
+        .profile-detail-item label {
+            font-weight: bold;
+            color: #D1E8E2;
+        }
+
+        .detail-value {
+            color: white;
+            text-align: right;
+        }
+
+        #help {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            display: block;
+            height: auto;
+        }
+
+        .content p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .content p span {
+            display: block;
+            font-weight: bold;
+            color: #124D54;
+            font-size: 18px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        #help h2 {
+            padding: 15px 25px;
+            border: unset;
+            border-radius: 15px;
+            color: #212121;
+            z-index: 1;
+            background: #F9744B;
+            position: relative;
+            font-weight: bold;
+            font-size: 17px;
+            -webkit-box-shadow: 4px 8px 19px -3px rgba(0, 0, 0, 0.27);
+            box-shadow: 4px 8px 19px -3px rgba(0, 0, 0, 0.27);
+            transition: all 250ms;
+            overflow: hidden;
+            text-align: center;
+            margin-bottom: 15px;
+            font-family: 'Fredoka', sans-serif;
+
+        }
+
+        #help h2::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0;
+            border-radius: 15px;
+            background-color: #124D54;
+            z-index: -1;
+            -webkit-box-shadow: 4px 8px 19px -3px rgba(0, 0, 0, 0.27);
+            box-shadow: 4px 8px 19px -3px rgba(0, 0, 0, 0.27);
+            transition: all 250ms;
+        }
+
+        #help h2:hover {
+            color: #e8e8e8;
+        }
+
+        #help h2:hover::before {
+            width: 100%;
+        }
+
+        ul .issue-list {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        ul li .sol {
+            list-style-type: disc;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="smarts-logo">
+            <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.pngg" alt="SMARTS Logo">
+        </div>
+        <div>
+            <p>ROLE: <span>ADMIN</span></p>
+            <i class='bx bxs-user-circle'></i>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo-details">
+            <div class="logo_name">ACCE Construction</div>
+            <i class='bx bx-menu' id="btn"></i>
+        </div>
+        <ul class="nav-list">
+            <li>
+                <a href="homepageAdmin">
+                    <i class='bx bx-home'></i>
+                    <span class="links_name">Homepage</span>
+                </a>
+                <span class="tooltip">Homepage</span>
+            </li>
+            <li>
+                <a href="projectsAdmin">
+                    <i class='bx bx-task'></i>
+                    <span class="links_name">Projects</span>
+                </a>
+                <span class="tooltip">Projects</span>
+            </li>
+            <li>
+                <a href="inventoryAdmin">
+                    <i class='bx bx-store-alt'></i>
+                    <span class="links_name">Inventory</span>
+                </a>
+                <span class="tooltip">Inventory</span>
+            </li>
+            <li>
+                <a href="invoiceAdmin">
+                    <i class='bx bx-receipt'></i>
+                    <span class="links_name">Invoice</span>
+                </a>
+                <span class="tooltip">Invoice</span>
+            </li>
+            <li>
+                <a href="reportsAdmin">
+                    <i class='bx bx-bar-chart'></i>
+                    <span class="links_name">Reports & Analytics</span>
+                </a>
+                <span class="tooltip">Reports & Analytics</span>
+            </li>
+            <li>
+                <a href="userAdmin">
+                    <i class='bx bx-user'></i>
+                    <span class="links_name">User</span>
+                </a>
+                <span class="tooltip">User</span>
+            </li>
+            <li>
+                <a href="requestsAdmin">
+                    <i class='bx bx-comment-dots'></i>
+                    <span class="links_name">Requests</span>
+                </a>
+                <span class="tooltip">Requests</span>
+            </li>
+            <li>
+                <a href="settingsAdmin">
+                    <i class='bx bx-cog'></i>
+                    <span class="links_name">Settings</span>
+                </a>
+                <span class="tooltip">Settings</span>
+            </li>
+            <li>
+                <a href="confirmLogout">
+                    <i class='bx bx-log-out'></i>
+                    <span class="links_name">Logout</span>
+                </a>
+                <span class="tooltip">Logout</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Section -->
+    <section class="home-section">
+        <div class="home-content">
+            <h1>Settings</h1>
+            <div class="card">
+                <div class="sidebar_settings">
+                    <h3 id="greeting-header">Hello [User]!</h3>
+                    <div class="tab active" onclick="toggleTab('profile')">Profile</div>
+                    <div class="tab" onclick="toggleTab('help')">Help and Support</div>
+                </div>
+                <div class="content-container">
+                    <div id="profile" class="content active profile-content">
+                        <div class="profile-header">
+                            <div class="profile-icon">
+                                <i class="bx bx-user-circle"></i>
+                            </div>
+                            <!-- Username and Email in Profile Header -->
+                            <div class="profile-info">
+                                <h2 id="profile-username">[Placeholder Username]</h2>
+                                <p class="email" id="profile-email">[Placeholder Email]</p>
+
+                            </div>
+                        </div>
+                        <!-- Profile Fields -->
+                        <div class="profile-details">
+                            <div class="profile-detail-item">
+                                <label>First Name</label>
+                                <div class="detail-value" data-field="firstName">[Placeholder]</div>
+                            </div>
+                            <div class="profile-detail-item">
+                                <label>Last Name</label>
+                                <div class="detail-value" data-field="lastName">[Placeholder]</div>
+                            </div>
+                            <div class="profile-detail-item">
+                                <label>Phone Number</label>
+                                <div class="detail-value" data-field="phone">[Placeholder]</div>
+                            </div>
+                            <div class="profile-detail-item">
+                                <label>Email</label>
+                                <div class="detail-value" data-field="email">[Placeholder]</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="help" class="content">
+                        <h2>FAQ</h2>
+                        <p>
+                            <span>Question 1: How do I add a new project?</span>
+                            Answer: Navigate to the Projects page, click "Add Project," and fill in the required details.
+                        </p>
+                        <p>
+                            <span>Question 2: What should I do if my account is locked?</span>
+                            Answer: Contact the system administrator to unlock your account.
+                        </p>
+                        <p>
+                            <span>Question 3: How do I reset my password?</span>
+                            Answer: Go to the Login Page and click "Forgot Password" or contact the administrator if you're unable to access your account.
+                        </p>
+
+                        <h2>TROUBLESHOOTING TIPS</h2>
+                        <p>
+                            <span>Issue: Cannot log in to the system.</span>
+                        <ul class="issue-list">
+                            <li class="sol">Ensure you are entering the correct username and password.</li>
+                            <li class="sol">Complete the Captcha verification.</li>
+                            <li class="sol">Contact the admin if the issue persists.</li>
+                        </ul>
+                        </p>
+                        <p>
+                            <span>Issue: The system is not responding.</span>
+                        <ul class="issue-list">
+                            <li class="sol">Refresh your browser or clear your cache.</li>
+                            <li class="sol">Ensure your internet connection is stable.</li>
+                            <li class="sol">Report the issue to the IT team if it continues.</li>
+                        </ul>
+                        </p>
+
+                        <h2>CONTACT SUPPORT</h2>
+                        <p>
+                            Email: <span id="support-email">[Loading...]</span><br>
+                            Phone: <span id="support-phone">[Loading...]</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
+    </footer>
+
+    <script>
+        let sidebar = document.querySelector(".sidebar");
+        let closeBtn = document.querySelector("#btn");
+        let searchBtn = document.querySelector(".bx-search");
+
+        function toggleTab(tabId) {
+            document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelector(`.tab[onclick="toggleTab('${tabId}')"]`).classList.add('active');
+
+            if (tabId === 'profile') {
+                document.getElementById('help').style.display = 'none';
+            } else if (tabId === 'help') {
+                document.getElementById('help').style.display = 'block';
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            toggleTab('profile');
+
+            fetch('/getCurrentUser')
+                .then(response => response.json())
+                .then(user => {
+                    if (user) {
+                        document.querySelector('.profile-info h2').innerText = user.username || '[No Username]';
+                        document.querySelector('.profile-info .email').innerText = user.email || '[No Email]';
+                        document.querySelector('.detail-value[data-field="firstName"]').innerText = user.firstName || '[Not Set]';
+                        document.querySelector('.detail-value[data-field="lastName"]').innerText = user.lastName || '[Not Set]';
+                        document.querySelector('.detail-value[data-field="phone"]').innerText = user.phone || '[Not Set]';
+                        document.querySelector('.detail-value[data-field="email"]').innerText = user.email || '[Not Set]';
+
+
+                        const greeting = `Hello ${user.role} ${user.firstName}!`;
+                        document.getElementById('greeting-header').innerText = greeting;
+
+                        // Contact Support
+                        document.getElementById('support-email').innerText = user.email || '[No Email]';
+                        document.getElementById('support-phone').innerText = user.phone || '[No Phone]';
+                    }
+                })
+                .catch(err => console.error('Failed to load user info:', err));
+        });
+    </script>
+</body>
+
+</html>

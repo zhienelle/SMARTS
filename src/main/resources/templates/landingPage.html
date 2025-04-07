@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMARTS Landing Page</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Numans', sans-serif;
+            background-color: #EDEDED;
+        }
+
+        header,
+        footer {
+            position: sticky;
+            top: 0;
+            width: 98.7%;
+            left: 0;
+            z-index: 1000;
+            padding: 10px;
+            background-color: #EDEDED;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: #F9744B;
+        }
+
+        footer {
+            bottom: 0;
+            text-align: center;
+            color: #124D54;
+            padding-top: 0px;
+            padding-bottom: 0px;
+            margin: 0;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 6px 0px;
+        }
+
+        footer p {
+            margin: 0;
+            display: flex;
+            justify-content: space-between;
+            width: 98.7%;
+            font-size: 14px;
+            font-family: 'Numans';
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        footer p span {
+            display: inline-block;
+        }
+
+
+        .smarts-logo img {
+            height: 25px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0 20px;
+        }
+
+        nav ul li {
+            margin: 0 10px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #F9744B;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 500;
+        }
+
+        main {
+            padding-bottom: 50px;
+        }
+
+        .welcome-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: #EDEDED;
+            text-align: center;
+            background-image: url('https://i.postimg.cc/4dnqLS27/bg.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .acce-logo {
+            height: 100px;
+            margin-top: -40px;
+        }
+
+        .welcome-text {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .welcome-text h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 140px;
+            margin: 0px 50px 0px 50px;
+            padding-left: 50px;
+            padding-right: 50px;
+        }
+
+        @media (max-width: 1200px) {
+            .welcome-text h1 {
+                font-size: 100px;
+                margin: 0px 40px;
+                padding-left: 40px;
+                padding-right: 40px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .welcome-text h1 {
+                font-size: 80px;
+                margin: 0px 30px;
+                padding-left: 30px;
+                padding-right: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .welcome-text h1 {
+                font-size: 60px;
+                margin: 0px 20px;
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .welcome-text h1 {
+                font-size: 40px;
+                margin: 0px 10px;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+        }
+
+
+        .welcome-text p {
+            font-size: 22px;
+            margin: 0;
+            font-family: 'Baloo Chettan 2';
+        }
+
+        .welcome-text button {
+            font-family: 'Fredoka', sans-serif;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: #f9744b;
+            border-radius: 30px;
+            font-size: 20px;
+            color: #EDEDED;
+            margin-top: 30px;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+        }
+
+        .welcome-text button:hover {
+            background-color: black;
+        }
+
+        .login-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - 180px);
+            padding: 0 30px;
+            margin-top: 50px;
+        }
+
+        .login-section-wrapper {
+            display: flex;
+            width: 100%;
+            max-width: 1000px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .lottie-container {
+            flex: 1;
+            height: 500px;
+            margin-right: 30px;
+        }
+
+        .login-container {
+            box-sizing: border-box;
+            width: 480px;
+            height: 480px;
+            padding: 50px;
+            display: block;
+            box-shadow: 0px 30px 30px -20px rgba(133, 189, 215, 0.88);
+            background: linear-gradient(0deg, #EDEDED 0%, rgba(244, 247, 251, 1) 100%);
+            overflow: hidden;
+            border-radius: 40px;
+            border: 5px solid #f9744b;
+            margin-left: 20px;
+        }
+
+        .login-container h2 {
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 30px;
+            color: #124D54;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .login-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #124D54;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .login-container a {
+            text-decoration: none;
+            color: #F9744B;
+            display: block;
+            margin-bottom: 10px;
+            text-align: right;
+            cursor: pointer;
+        }
+
+        .login-container button {
+            width: 60%;
+            padding: 12px;
+            color: white;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            margin-top: 20px;
+            margin-left: 80px;
+            background: linear-gradient(180deg, #0D4F5C 0%, #16A5B8 100%);
+            font-family: 'Fredoka', sans-serif;
+            cursor: pointer;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-size: 16px;
+        }
+
+        .login-container button:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Forgot Password*/
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            padding-top: 100px;
+            box-sizing: border-box;
+            overflow: hidden;
+            align-content: center;
+            border-radius: 0px 0px 0px 0px;
+        }
+
+        .modal-content {
+            background: radial-gradient(50% 50% at 50% 50%, #ee9b7b 0%, #FFFFFF 100%);
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.25);
+            margin: 20px auto;
+            padding: 20px 30px;
+            border: 4px solid #102937;
+            width: 80%;
+            max-width: 400px;
+            border-radius: 30px;
+            text-align: center;
+            color: #F9744B;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .modal-content h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .modal-content button {
+            font-family: 'Fredoka', sans-serif;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .modal-content button[type="button"],
+        .modal-content button[type="submit"] {
+            background: linear-gradient(180deg, #0D4F5C 0%, #16A5B8 100%);
+            color: #FFFFFF;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 14px;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .modal-content button[type="button"]:hover,
+        .modal-content button[type="submit"]:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.10.2/lottie.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <div class="smarts-logo">
+            <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#login">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="welcome-section" id="home">
+            <div class="welcome-text">
+                <img src="https://i.postimg.cc/VNK2F8gP/acce-logo.png" alt="ACCE logo" class="acce-logo">
+                <h1>WELCOME TO SMARTS</h1>
+                <p>Subcontracting Management and Resource Tracking</p>
+                <p>System for ACCE</p>
+                <button onclick="window.location.href='#login'">START</button>
+            </div>
+        </section>
+        <section class="login-section" id="login">
+            <div class="login-section-wrapper">
+                <div class="lottie-container" id="lottie-animation"></div>
+
+                <div class="login-container">
+                    <form action="login" method="post">
+                        <h2>Login</h2>
+                        <label for="username">USERNAME</label>
+                        <input type="text" id="username" name="username" required>
+                        <label for="password">PASSWORD</label>
+                        <input type="password" id="password" name="password" required>
+                        <a onclick="openModal()">Forget Password?</a>
+                        <button type="submit">LOGIN</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
+    </footer>
+
+    <!-- Modal for Forget Password -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <h3>FORGET PASSWORD</h3>
+            <form id="forgotPasswordForm">
+                <input type="email" id="email" name="email" required
+                       placeholder="Please enter your email to reset the password">
+                <p id="forgotMessage" style="color: green;"></p>
+                <button type="button" onclick="closeModal()">CANCEL</button>
+                <button type="submit">SUBMIT</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById("myModal").style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById("myModal").style.display = "none";
+        }
+
+        document.getElementById("forgotPasswordForm").addEventListener("submit", function (e) {
+            e.preventDefault(); // stop form from reloading the page
+
+            const email = document.getElementById("email").value;
+
+            fetch("/api/sendForgotEmail", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: `email=${encodeURIComponent(email)}`
+            })
+                .then(response => response.text().then(text => {
+                    if (response.ok) {
+                        document.getElementById("forgotMessage").textContent = "Successfully sent!";
+                        document.getElementById("forgotMessage").style.color = "green";
+                    } else {
+                        // ✅ Show actual backend message (e.g. "User not found" or "Failed to send email")
+                        document.getElementById("forgotMessage").textContent = text || "Failed to send email.";
+                        document.getElementById("forgotMessage").style.color = "red";
+                    }
+                }))
+                .catch(() => {
+                    document.getElementById("forgotMessage").textContent = "An error occurred.";
+                    document.getElementById("forgotMessage").style.color = "red";
+                });
+        });
+    </script>
+
+</body>
+</html>

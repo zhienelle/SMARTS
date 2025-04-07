@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gencon Homepage</title>
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Numans", sans-serif;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #EDEDED;
+            color: #124D54;
+            font-size: 14px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: all 0.5s ease;
+            padding: 10px 20px;
+        }
+
+        header div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        header div i {
+            font-size: 30px;
+            color: #124D54;
+        }
+
+        header div p {
+            margin: 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: #124D54;
+        }
+
+        header div p span {
+            font-weight: bold;
+            color: #F9744B;
+        }
+
+        header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: #F9744B;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #EDEDED;
+            color: #124D54;
+            font-size: 14px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: all 0.5s ease;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 14px;
+            font-family: 'Numans', sans-serif;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        footer p span {
+            display: inline-block;
+        }
+
+        .smarts-logo img {
+            height: 25px;
+        }
+
+        .home-section {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #EDEDED;
+            text-align: center;
+            background-image: url('https://i.postimg.cc/SRM5qzhm/bg-homepage.jpg');
+            background-size: cover;
+            background-position: center;
+            transition: left 0.3s ease;
+            opacity: 0.9;
+            padding-top: 60px;
+        }
+
+        .home-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        body {
+            font-family: 'Fredoka', sans-serif;
+            margin: 0;
+            background: #1A1A2E;
+            color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            padding: 10px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            width: 90%;
+            max-width: 1200px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .left-container,
+        .right-container {
+            width: 48%;
+            padding: 20px;
+            background: #FFF;
+            border-radius: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            border: 5px solid #F9744B;
+        }
+
+        .project-details {
+            display: flex;
+            justify-content: space-between;
+            gap: 50px;
+            margin-bottom: 20px;
+            align-items: flex-start;
+            text-align: justify;
+            text-transform: uppercase;
+        }
+
+        .project-details div {
+            width: 48%;
+        }
+
+        .project-details h2 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 16px;
+            color: #124D54;
+            margin: 0;
+        }
+
+        .project-details p {
+            font-family: 'Nunito', sans-serif;
+            font-size: 14px;
+            margin: 5px 0;
+            color: black;
+        }
+
+        .b {
+            text-align: right;
+        }
+
+        .table-container {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            text-align: center;
+            padding: 12px;
+            border: 1px solid #DDD;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #FF6F61;
+            color: #FFF;
+        }
+
+        td {
+            background-color: #FFE0DC;
+            color: #333;
+        }
+
+        .logout {
+            margin-top: 20px;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #FF6F61;
+            color: #FFF;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .logout:hover {
+            background-color: #E05B50;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            padding-bottom: 70px;
+        }
+
+        .buttons button {
+            box-sizing: border-box;
+            width: 199px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 8px 16px;
+            background: linear-gradient(180deg, #124d54 0%, rgb(16, 41, 55) 100%);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            text-transform: uppercase;
+            overflow: hidden;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .buttons button:hover {
+            background: linear-gradient(180deg, #16a085 0%, rgb(22, 60, 77) 100%);
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .progress-card {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            background: #124D54;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .progress-report {
+            color: #FF6F61;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 30px;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+            font-size: 12px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+        }
+
+        .task-1-color {
+            background-color: #ee6842;
+        }
+
+        .task-2-color {
+            background-color: #000000;
+        }
+
+        .task-3-color {
+            background-color: #132c39;
+        }
+
+        .task-4-color {
+            background-color: #a6a6a6;
+        }
+
+        .task-5-color {
+            background-color: #f5a88d;
+        }
+
+        .progress-bar-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .stage {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 25px;
+            height: 25px;
+            border: 2px solid #FF6F61;
+            border-radius: 4px;
+            background-color: #FFF;
+            flex-shrink: 0;
+        }
+
+        .checkbox.checked {
+            background-color: #FF6F61;
+            color: #FFF;
+            font-size: 16px;
+        }
+
+        .stage-label {
+            flex-shrink: 0;
+            min-width: 60px;
+            text-align: left;
+            color: #FFB199;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            flex-grow: 1;
+            height: 25px;
+            background: #E0E0E0;
+            border-radius: 5px;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .progress-segment {
+            height: 100%;
+        }
+
+        .task-1 {
+            background-color: #ee6842;
+            width: 20%;
+        }
+
+        .task-2 {
+            background-color: #000000;
+            width: 20%;
+        }
+
+        .task-3 {
+            background-color: #132c39;
+            width: 20%;
+        }
+
+        .task-4 {
+            background-color: #a6a6a6;
+            width: 20%;
+        }
+
+        .task-5 {
+            background-color: #f5a88d;
+            width: 20%;
+        }
+
+        .progress-axis {
+            margin-top: 10px;
+            display: flex;
+            color: #EDEDED;
+            font-size: 16px;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .progress-card {
+                padding: 15px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            .legend {
+                font-size: 10px;
+                gap: 5px;
+            }
+
+            .checkbox {
+                width: 20px;
+                height: 20px;
+            }
+
+            .stage-label {
+                font-size: 12px;
+            }
+
+            .progress-bar {
+                height: 20px;
+            }
+
+            .progress-axis {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h2 {
+                font-size: 18px;
+            }
+
+            .progress-card {
+                padding: 10px;
+            }
+
+            .legend {
+                font-size: 9px;
+            }
+
+            .checkbox {
+                width: 18px;
+                height: 18px;
+            }
+
+            .stage-label {
+                font-size: 10px;
+                min-width: 50px;
+            }
+
+            .progress-bar {
+                height: 15px;
+            }
+
+            .progress-axis {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="smarts-logo">
+            <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
+        </div>
+        <div>
+            <p>ROLE: <span>GENERAL CONTRACTOR</span></p>
+            <i class='bx bxs-user-circle'></i>
+        </div>
+    </header>
+
+    <!-- Home Section -->
+    <div class="home-section">
+        <div class="container">
+            <div class="left-container">
+                <div class="project-details">
+                    <div>
+                        <h2><strong>Project:</strong> Steel Structure Project</h2>
+                        <p><strong>Location:</strong> Makati, Manila</p>
+                    </div>
+                    <div class="b">
+                        <h2><strong>Company:</strong> XYZ Metals Ltd.</h2>
+                        <p><strong>Contact:</strong> 0923 456 7890</p>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>MATERIAL</th>
+                                <th>UNITS USED</th>
+                                <th>COST PER UNIT (PHP)</th>
+                                <th>TOTAL COST (PHP)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Steel Beams</td>
+                                <td>150</td>
+                                <td>3,500.00</td>
+                                <td>525,000.00</td>
+                            </tr>
+                            <tr>
+                                <td>Steel Plates</td>
+                                <td>200</td>
+                                <td>1,200.00</td>
+                                <td>240,000.00</td>
+                            </tr>
+                            <tr>
+                                <td>Metal Rods</td>
+                                <td>100</td>
+                                <td>800.00</td>
+                                <td>80,000.00</td>
+                            </tr>
+                            <tr>
+                                <td>Aluminum Sheets</td>
+                                <td>50</td>
+                                <td>2,000.00</td>
+                                <td>100,000.00</td>
+                            </tr>
+                            <tr>
+                                <td>Steel Cables</td>
+                                <td>300 METERS</td>
+                                <td>150.00</td>
+                                <td>45,000.00</td>
+                            </tr>
+                            <tr>
+                                <td>Iron Pipes</td>
+                                <td>200 METERS</td>
+                                <td>180.00</td>
+                                <td>36,000.00</td>
+                            </tr>
+                            <tr>
+                                <td>Brass Fittings</td>
+                                <td>80</td>
+                                <td>500.00</td>
+                                <td>40,000.00</td>
+                            </tr>
+                            <tr>
+                                <td>Steel Angles</td>
+                                <td>120</td>
+                                <td>1,000.00</td>
+                                <td>120,000.00</td>
+                            </tr>
+                            <tr>
+                                <td>Welding Rods</td>
+                                <td>500</td>
+                                <td>50.00</td>
+                                <td>25,000.00</td>
+                            </tr>
+                            <tr>
+                                <td>Galvanized Sheets</td>
+                                <td>100</td>
+                                <td>1,500.00</td>
+                                <td>150,000.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="right-container">
+                <h2 class="progress-report">PROGRESS REPORT</h2>
+                <div class="progress-card">
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color task-1-color"></div>
+                            <span>Task 1</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color task-2-color"></div>
+                            <span>Task 2</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color task-3-color"></div>
+                            <span>Task 3</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color task-4-color"></div>
+                            <span>Task 4</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color task-5-color"></div>
+                            <span>Task 5</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="stage">
+                            <div class="checkbox checked">✔</div>
+                            <div class="stage-label">STAGE 1</div>
+                            <div class="progress-bar">
+                                <div class="progress-segment task-1"></div>
+                                <div class="progress-segment task-2"></div>
+                                <div class="progress-segment task-3"></div>
+                                <div class="progress-segment task-4"></div>
+                                <div class="progress-segment task-5"></div>
+                            </div>
+                        </div>
+                        <div class="stage">
+                            <div class="checkbox checked">✔</div>
+                            <div class="stage-label">STAGE 2</div>
+                            <div class="progress-bar">
+                                <div class="progress-segment task-1"></div>
+                                <div class="progress-segment task-2"></div>
+                                <div class="progress-segment task-3"></div>
+                                <div class="progress-segment task-4"></div>
+                                <div class="progress-segment task-5"></div>
+                            </div>
+                        </div>
+                        <div class="stage">
+                            <div class="checkbox"></div>
+                            <div class="stage-label">STAGE 3</div>
+                            <div class="progress-bar">
+                                <div class="progress-segment task-1"></div>
+                                <div class="progress-segment task-2"></div>
+                            </div>
+                        </div>
+                        <div class="stage">
+                            <div class="checkbox"></div>
+                            <div class="stage-label">STAGE 4</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="stage">
+                            <div class="checkbox"></div>
+                            <div class="stage-label">STAGE 5</div>
+                            <div class="progress-bar"></div>
+                        </div>
+                    </div>
+                    <div class="progress-axis">
+                        <span>Progress (%)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <a href="confirmLogout">
+                <button>LOGOUT</button>
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
+    </footer>
+</body>
+
+</html>

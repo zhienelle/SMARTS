@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ExeStaff Requests</title>
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Numans", sans-serif;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 78px;
+            width: calc(100% - 78px);
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #EDEDED;
+            color: #124D54;
+            font-size: 14px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: all 0.5s ease;
+            padding: 10px 20px;
+        }
+
+        header div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        header div i {
+            font-size: 30px;
+            color: #124D54;
+        }
+
+        header div p {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+            color: #124D54;
+            font-weight: bold;
+        }
+
+        header div p span {
+            font-weight: bold;
+            color: #F9744B;
+        }
+
+        header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: #F9744B;
+        }
+
+        .sidebar.open~header {
+            left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 78px;
+            width: calc(100% - 78px);
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #EDEDED;
+            color: #124D54;
+            font-size: 14px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: all 0.5s ease;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        .sidebar.open~footer {
+            left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 14px;
+            font-family: 'Numans', sans-serif;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        footer p span {
+            display: inline-block;
+        }
+
+
+        .smarts-logo img {
+            height: 25px;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 78px;
+            background: #102937;
+            padding: 6px 14px;
+            z-index: 99;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.open {
+            width: 250px;
+        }
+
+        .sidebar .logo-details {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .sidebar .logo-details .icon {
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar .logo-details .logo_name {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.open .logo-details .icon,
+        .sidebar.open .logo-details .logo_name {
+            opacity: 1;
+        }
+
+        .sidebar .logo-details #btn {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            font-size: 22px;
+            transition: all 0.4s ease;
+            font-size: 23px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.open .logo-details #btn {
+            text-align: right;
+        }
+
+        .sidebar i {
+            color: #fff;
+            height: 60px;
+            min-width: 50px;
+            font-size: 28px;
+            text-align: center;
+            line-height: 60px;
+        }
+
+        .sidebar img {
+            height: 30px;
+            min-width: 0px;
+            line-height: 20px;
+        }
+
+        .sidebar .nav-list {
+            margin-top: 20px;
+            height: 100%;
+        }
+
+        .sidebar li {
+            position: relative;
+            margin: 8px 0;
+            list-style: none;
+        }
+
+        .sidebar li .tooltip {
+            position: absolute;
+            top: -20px;
+            left: calc(100% + 15px);
+            z-index: 3;
+            background: #fff;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 400;
+            opacity: 0;
+            white-space: nowrap;
+            pointer-events: none;
+            transition: 0s;
+        }
+
+        .sidebar li:hover .tooltip {
+            opacity: 1;
+            pointer-events: auto;
+            transition: all 0.4s ease;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .sidebar.open li .tooltip {
+            display: none;
+        }
+
+        .sidebar input {
+            font-size: 15px;
+            color: #fff;
+            font-weight: 400;
+            outline: none;
+            height: 50px;
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+            transition: all 0.5s ease;
+            background: #1d1b31;
+        }
+
+        .sidebar.open input {
+            padding: 0 20px 0 50px;
+            width: 100%;
+        }
+
+        .sidebar li a {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            border-radius: 12px;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.4s ease;
+            background: #102937;
+        }
+
+        .sidebar li a:hover {
+            background: #F9744B;
+        }
+
+        .sidebar li a .links_name {
+            color: #fff;
+            font-size: 15px;
+            font-weight: 400;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.4s;
+        }
+
+        .sidebar.open li a .links_name {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sidebar li a:hover .links_name,
+        .sidebar li a:hover i {
+            transition: all 0.5s ease;
+            color: #EDEDED;
+        }
+
+        .sidebar li i {
+            height: 50px;
+            line-height: 50px;
+            font-size: 18px;
+            border-radius: 12px;
+        }
+
+        .home-section {
+            position: relative;
+            background: #EDEDED;
+            min-height: 100vh;
+            top: 0;
+            left: 78px;
+            width: calc(100% - 78px);
+            transition: all 0.5s ease;
+            z-index: 2;
+            margin-top: 30px;
+        }
+
+        .sidebar.open~.home-section {
+            left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .home-section .text {
+            display: inline-block;
+            color: #11101d;
+            font-size: 25px;
+            font-weight: 500;
+            margin: 18px;
+        }
+
+        @media (max-width: 1024px) {
+            header {
+                left: 0;
+                width: 100%;
+            }
+
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar.open {
+                width: 220px;
+            }
+
+            .home-section {
+                left: 70px;
+                width: calc(100% - 70px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                font-size: 12px;
+            }
+
+            .sidebar {
+                width: 60px;
+            }
+
+            .sidebar.open {
+                width: 200px;
+            }
+
+            .home-section {
+                left: 60px;
+                width: calc(100% - 60px);
+            }
+
+            .sidebar i {
+                font-size: 22px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .sidebar {
+                width: 55px;
+            }
+
+            .sidebar.open {
+                width: 180px;
+            }
+
+            .home-section {
+                left: 55px;
+                width: calc(100% - 55px);
+            }
+
+            .sidebar i {
+                font-size: 20px;
+            }
+
+            .sidebar li a .links_name {
+                font-size: 12px;
+            }
+        }
+
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 80px;
+            text-transform: uppercase;
+            color: #124D54;
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 30px;
+        }
+
+        table {
+            width: 90%;
+            border-collapse: collapse;
+            margin: 30px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 30px;
+            text-align: center;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        th {
+            background-color: #FF6F61;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        td {
+            background-color: #FFE0DC;
+            color: #333;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #FFB5A8;
+        }
+
+        tr:hover td {
+            background-color: #F9744B;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="smarts-logo">
+            <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
+        </div>
+        <div>
+            <p>ROLE: <span>EXECUTIVE STAFF</span></p>
+            <i class='bx bxs-user-circle'></i>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo-details">
+            <div class="logo_name">ACCE Construction</div>
+            <i class='bx bx-menu' id="btn"></i>
+        </div>
+        <ul class="nav-list">
+            <li>
+                <a href="homepageExestaff">
+                    <i class='bx bx-home'></i>
+                    <span class="links_name">Homepage</span>
+                </a>
+                <span class="tooltip">Homepage</span>
+            </li>
+            <li>
+                <a href="myProjectExestaff">
+                    <i class='bx bx-task'></i>
+                    <span class="links_name">My Project</span>
+                </a>
+                <span class="tooltip">My Project</span>
+            </li>
+            <li>
+                <a href="inventoryExestaff">
+                    <i class='bx bx-store-alt'></i>
+                    <span class="links_name">Inventory</span>
+                </a>
+                <span class="tooltip">Inventory</span>
+            </li>
+            <li>
+                <a href="invoiceExestaff">
+                    <i class='bx bx-receipt'></i>
+                    <span class="links_name">Invoice</span>
+                </a>
+                <span class="tooltip">Invoice</span>
+            </li>
+            <li>
+                <a href="reportsExestaff">
+                    <i class='bx bx-bar-chart'></i>
+                    <span class="links_name">Reports & Analytics</span>
+                </a>
+                <span class="tooltip">Reports & Analytics</span>
+            </li>
+            <li>
+                <a href="requestsStatusExestaff">
+                    <i class='bx bx-comment-dots'></i>
+                    <span class="links_name">Requests Status</span>
+                </a>
+                <span class="tooltip">Requests Status</span>
+            </li>
+            <li>
+                <a href="settingsExestaff">
+                    <i class='bx bx-cog'></i>
+                    <span class="links_name">Settings</span>
+                </a>
+                <span class="tooltip">Settings</span>
+            </li>
+            <li>
+                <a href="confirmLogout">
+                    <i class='bx bx-log-out'></i>
+                    <span class="links_name">Logout</span>
+                </a>
+                <span class="tooltip">Logout</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Section -->
+    <section class="home-section">
+        <h1>Requests Status</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Material</th>
+                    <th>Quantity </th>
+                    <th>Date Requested</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Steel</td>
+                    <td>Steel Rods</td>
+                    <td>20</td>
+                    <td>11/23/24</td>
+                    <td>Approved</td>
+                </tr>
+                <tr>
+                    <td>Steel</td>
+                    <td>Galvanized Steel</td>
+                    <td>50</td>
+                    <td>01/23/25</td>
+                    <td>Pending</td>
+                </tr>
+                <tr>
+                    <td>Steel</td>
+                    <td>Alloy Steel</td>
+                    <td>15</td>
+                    <td>01/05/25</td>
+                    <td>Pending</td>
+                </tr>
+                <tr>
+                    <td>Steel</td>
+                    <td>Weathering Steel (Corten Steel)</td>
+                    <td>20</td>
+                    <td>01/12/25</td>
+                    <td>Declined</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
+    </footer>
+
+    <script>
+        let sidebar = document.querySelector(".sidebar");
+        let closeBtn = document.querySelector("#btn");
+        let searchBtn = document.querySelector(".bx-search");
+
+        closeBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("open");
+        });
+
+        searchBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("open");
+        });
+    </script>
+</body>
+
+</html>

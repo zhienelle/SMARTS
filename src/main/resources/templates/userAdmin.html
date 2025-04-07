@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin User Management</title>
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
+    <link
+            href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
+            rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Numans", sans-serif;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 78px;
+            width: calc(100% - 78px);
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #EDEDED;
+            color: #124D54;
+            font-size: 14px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: all 0.5s ease;
+            padding: 10px 20px;
+        }
+
+        header div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        header div i {
+            font-size: 30px;
+            color: #124D54;
+        }
+
+        header div p {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+            color: #124D54;
+            font-weight: bold;
+        }
+
+        header div p span {
+            font-weight: bold;
+            color: #F9744B;
+        }
+
+        header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: #F9744B;
+        }
+
+        .sidebar.open ~ header {
+            left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 78px;
+            width: calc(100% - 78px);
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #EDEDED;
+            color: #124D54;
+            font-size: 14px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: all 0.5s ease;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        .sidebar.open ~ footer {
+            left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 14px;
+            font-family: 'Numans', sans-serif;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        footer p span {
+            display: inline-block;
+        }
+
+
+        .smarts-logo img {
+            height: 25px;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 78px;
+            background: #102937;
+            padding: 6px 14px;
+            z-index: 99;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.open {
+            width: 250px;
+        }
+
+        .sidebar .logo-details {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .sidebar .logo-details .icon {
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar .logo-details .logo_name {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.open .logo-details .icon,
+        .sidebar.open .logo-details .logo_name {
+            opacity: 1;
+        }
+
+        .sidebar .logo-details #btn {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            font-size: 22px;
+            transition: all 0.4s ease;
+            font-size: 23px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.open .logo-details #btn {
+            text-align: right;
+        }
+
+        .sidebar i {
+            color: #fff;
+            height: 60px;
+            min-width: 50px;
+            font-size: 28px;
+            text-align: center;
+            line-height: 60px;
+        }
+
+        .sidebar img {
+            height: 30px;
+            min-width: 0px;
+            line-height: 20px;
+        }
+
+        .sidebar .nav-list {
+            margin-top: 20px;
+            height: 100%;
+        }
+
+        .sidebar li {
+            position: relative;
+            margin: 8px 0;
+            list-style: none;
+        }
+
+        .sidebar li .tooltip {
+            position: absolute;
+            top: -20px;
+            left: calc(100% + 15px);
+            z-index: 3;
+            background: #fff;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 400;
+            opacity: 0;
+            white-space: nowrap;
+            pointer-events: none;
+            transition: 0s;
+        }
+
+        .sidebar li:hover .tooltip {
+            opacity: 1;
+            pointer-events: auto;
+            transition: all 0.4s ease;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .sidebar.open li .tooltip {
+            display: none;
+        }
+
+        .sidebar input {
+            font-size: 15px;
+            color: #fff;
+            font-weight: 400;
+            outline: none;
+            height: 50px;
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+            transition: all 0.5s ease;
+            background: #1d1b31;
+        }
+
+        .sidebar.open input {
+            padding: 0 20px 0 50px;
+            width: 100%;
+        }
+
+        .sidebar li a {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            border-radius: 12px;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.4s ease;
+            background: #102937;
+        }
+
+        .sidebar li a:hover {
+            background: #F9744B;
+        }
+
+        .sidebar li a .links_name {
+            color: #fff;
+            font-size: 15px;
+            font-weight: 400;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.4s;
+        }
+
+        .sidebar.open li a .links_name {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sidebar li a:hover .links_name,
+        .sidebar li a:hover i {
+            transition: all 0.5s ease;
+            color: #EDEDED;
+        }
+
+        .sidebar li i {
+            height: 50px;
+            line-height: 50px;
+            font-size: 18px;
+            border-radius: 12px;
+        }
+
+        .home-section {
+            position: relative;
+            background: #EDEDED;
+            min-height: 100vh;
+            top: 0;
+            left: 78px;
+            width: calc(100% - 78px);
+            transition: all 0.5s ease;
+            z-index: 2;
+            margin-top: 30px;
+            padding-bottom: 80px;
+        }
+
+        .sidebar.open ~ .home-section {
+            left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .home-section .text {
+            display: inline-block;
+            color: #11101d;
+            font-size: 25px;
+            font-weight: 500;
+            margin: 18px;
+        }
+
+        @media (max-width: 1024px) {
+            header {
+                left: 0;
+                width: 100%;
+            }
+
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar.open {
+                width: 220px;
+            }
+
+            .home-section {
+                left: 70px;
+                width: calc(100% - 70px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                font-size: 12px;
+            }
+
+            .sidebar {
+                width: 60px;
+            }
+
+            .sidebar.open {
+                width: 200px;
+            }
+
+            .home-section {
+                left: 60px;
+                width: calc(100% - 60px);
+            }
+
+            .sidebar i {
+                font-size: 22px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .sidebar {
+                width: 55px;
+            }
+
+            .sidebar.open {
+                width: 180px;
+            }
+
+            .home-section {
+                left: 55px;
+                width: calc(100% - 55px);
+            }
+
+            .sidebar i {
+                font-size: 20px;
+            }
+
+            .sidebar li a .links_name {
+                font-size: 12px;
+            }
+        }
+
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 80px;
+            text-transform: uppercase;
+            color: #124D54;
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 30px;
+        }
+
+
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #FF6F61;
+            color: white;
+            text-transform: uppercase;
+            font-size: 16px;
+            font-family: 'Fredoka', sans-serif;
+            text-align: center;
+        }
+
+        tr:hover td {
+            background-color: #F9744B;
+            color: white;
+        }
+
+        td {
+            color: #333;
+        }
+
+        tr.selected {
+            background-color: #f2f2f2;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .buttons button {
+            box-sizing: border-box;
+            width: 199px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 8px 16px;
+            background: linear-gradient(180deg, #124d54 0%, rgb(16, 41, 55) 100%);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            text-transform: uppercase;
+            overflow: hidden;
+            font-weight: bold;
+            margin-top: 50px;
+        }
+
+        .buttons button:hover {
+            background: linear-gradient(180deg, #16a085 0%, rgb(22, 60, 77) 100%);
+        }
+
+        /* Modal and Overlay */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.5);
+            z-index: 999;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            background: radial-gradient(50% 50% at 50% 50%, #ee9b7b 0%, #FFFFFF 100%);
+            color: #F9744B;
+            font-family: 'Fredoka', sans-serif;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            border-radius: 30px;
+            border: solid 5px #11101d;
+        }
+
+        .modal h3 {
+            font-size: 30px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .modal input,
+        .modal select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Fredoka', sans-serif;
+            box-sizing: border-box;
+        }
+
+        .modal input {
+            width: calc(100% - 22px);
+        }
+
+        .modal button {
+            font-family: 'Fredoka', sans-serif;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background: linear-gradient(180deg, #0D4F5C 0%, #16A5B8 100%);
+            color: #FFFFFF;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .modal button:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .popup-btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            width: 100%;
+            padding: 10px;
+            background-color: #fff;
+
+        }
+    </style>
+</head>
+
+<body>
+<!-- Header -->
+<header>
+    <div class="smarts-logo">
+        <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
+    </div>
+    <div>
+        <p>ROLE: <span>ADMIN</span></p>
+        <i class='bx bxs-user-circle'></i>
+    </div>
+</header>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="logo-details">
+        <div class="logo_name">ACCE Construction</div>
+        <i class='bx bx-menu' id="btn"></i>
+    </div>
+    <ul class="nav-list">
+        <li>
+            <a href="homepageAdmin">
+                <i class='bx bx-home'></i>
+                <span class="links_name">Homepage</span>
+            </a>
+            <span class="tooltip">Homepage</span>
+        </li>
+        <li>
+            <a href="projectsAdmin">
+                <i class='bx bx-task'></i>
+                <span class="links_name">Projects</span>
+            </a>
+            <span class="tooltip">Projects</span>
+        </li>
+        <li>
+            <a href="inventoryAdmin">
+                <i class='bx bx-store-alt'></i>
+                <span class="links_name">Inventory</span>
+            </a>
+            <span class="tooltip">Inventory</span>
+        </li>
+        <li>
+            <a href="invoiceAdmin">
+                <i class='bx bx-receipt'></i>
+                <span class="links_name">Invoice</span>
+            </a>
+            <span class="tooltip">Invoice</span>
+        </li>
+        <li>
+            <a href="reportsAdmin">
+                <i class='bx bx-bar-chart'></i>
+                <span class="links_name">Reports & Analytics</span>
+            </a>
+            <span class="tooltip">Reports & Analytics</span>
+        </li>
+        <li>
+            <a href="userAdmin">
+                <i class='bx bx-user'></i>
+                <span class="links_name">User</span>
+            </a>
+            <span class="tooltip">User</span>
+        </li>
+        <li>
+            <a href="requestsAdmin">
+                <i class='bx bx-comment-dots'></i>
+                <span class="links_name">Requests</span>
+            </a>
+            <span class="tooltip">Requests</span>
+        </li>
+        <li>
+            <a href="settingsAdmin">
+                <i class='bx bx-cog'></i>
+                <span class="links_name">Settings</span>
+            </a>
+            <span class="tooltip">Settings</span>
+        </li>
+        <li>
+            <a href="confirmLogout">
+                <i class='bx bx-log-out'></i>
+                <span class="links_name">Logout</span>
+            </a>
+            <span class="tooltip">Logout</span>
+        </li>
+    </ul>
+</div>
+
+<!-- Main Section -->
+<section class="home-section">
+    <h1>User Management</h1>
+
+    <table id="userTable">
+        <thead>
+        <tr>
+            <th>Username</th>
+            <th>Password</th>
+            <th>Role</th>
+            <th>Role Permissions</th>
+            <th>Project</th>
+            <th>Account Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Dynamic rows will be added here -->
+        </tbody>
+    </table>
+
+    <div class="buttons">
+        <button onclick="showAddUserModal()">ADD NEW USER</button>
+        <button onclick="showEditUserModal()">EDIT USER DETAILS</button>
+        <button id="toggleArchiveBtn" onclick="toggleUserView()">ARCHIVED USERS</button>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="closeModal()"></div>
+
+    <div class="modal" id="userModal">
+        <h3 id="modalTitle"></h3>
+        <input type="text" id="username" placeholder="Username" style="width: 100%; padding: 12px;">
+        <input type="password" id="password" placeholder="Password" style="width: 100%; padding: 12px;">
+        <input type="text" id="firstName" placeholder="First Name" style="width: 100%; padding: 12px;">
+        <input type="text" id="lastName" placeholder="Last Name" style="width: 100%; padding: 12px;">
+        <input type="text" id="phone" placeholder="Phone Number" style="width: 100%; padding: 12px;">
+        <input type="email" id="email" placeholder="Email" style="width: 100%; padding: 12px;">
+
+
+
+        <!-- Role dropdown -->
+        <select id="role" style="width: 100%; padding: 10px;">
+            <option value="" disabled selected>Role</option>
+            <option value="ADMIN">ADMIN</option>
+            <option value="STAFF">STAFF</option>
+            <option value="MAIN CONTRACTOR">MAIN CONTRACTOR</option>
+        </select>
+
+        <!-- Role Permissions dropdown -->
+        <select id="permissions" style="width: 100%; padding: 10px;">
+            <option value="" disabled selected>Permissions</option>
+            <option value="MANAGE EVERYTHING">MANAGE EVERYTHING</option>
+            <option value="MANAGE CERTAIN PROJECT">MANAGE CERTAIN PROJECT</option>
+            <option value="VIEWING MODE OF THEIR PROJECT">VIEWING MODE OF THEIR PROJECT</option>
+        </select>
+
+        <!-- Project dropdown -->
+        <select id="project" style="width: 100%; padding: 10px;">
+            <option value="">Project</option>
+        </select>
+
+        <!-- Account Status dropdown -->
+        <select id="status" style="width: 100%; padding: 10px;">
+            <option value="" disabled selected>Status</option>
+            <option value="ACTIVE">ACTIVE</option>
+            <option value="INACTIVE">INACTIVE</option>
+        </select>
+
+        <div class="popup-btn-container">
+            <button class="cancel-btn" onclick="closeModal()">CANCEL</button>
+            <button class="archive-btn" id="archiveBtn" onclick="archiveUser()"
+                    style="display: none;">ARCHIVE
+            </button>
+            <button onclick="saveUserDetails()">SAVE</button>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span>
+        </p>
+    </footer>
+    <script>
+        let selectedRow = null;
+
+        function updateRowInTable(updatedUser) {
+            if (selectedRow) {
+                selectedRow.cells[0].innerText = updatedUser.username;
+                selectedRow.cells[1].innerText = updatedUser.password;
+                selectedRow.cells[2].innerText = updatedUser.role;
+                selectedRow.cells[3].innerText = updatedUser.permissions;
+                selectedRow.cells[4].innerText = updatedUser.project;
+                selectedRow.cells[5].innerText = updatedUser.status;
+            }
+        }
+
+        //Fetch and display users when the page loads
+        document.addEventListener("DOMContentLoaded", function () {
+            fetchUsersFromDatabase();
+        });
+
+        //fetch all users from the database
+        function fetchUsersFromDatabase() {
+            fetch('/userAdmin/getUsers')
+                .then(response => response.json())
+                .then(users => {
+                    users
+                        .filter(user => user.status !== "INACTIVE") // Only display active users
+                        .forEach(user => addRowToTable(user));
+                })
+                .catch(error => console.error('Error fetching users:', error));
+        }
+
+        function loadProjectsIntoDropdown() {
+            fetch('/projectsAdmin/getProjects')
+                .then(response => response.json())
+                .then(projects => {
+                    const projectDropdown = document.getElementById('project');
+                    projectDropdown.innerHTML = '<option value="" disabled selected>Project</option>';
+                    projects.forEach(project => {
+                        const option = document.createElement('option');
+                        option.value = project.projectname;
+                        option.textContent = project.projectname;
+                        projectDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error loading projects:', error));
+        }
+
+
+        // Handle table row click
+        function addRowToTable(userData) {
+            const table = document.getElementById('userTable').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            newRow.setAttribute('data-user-id', userData.userId);//Store user ID in row
+
+            if (userData.status === "INACTIVE") {
+                newRow.style.backgroundColor = "#f8d7da"; // light red for archived users
+            }
+            newRow.innerHTML = `
+        <td>${userData.username}</td>
+        <td>********</td>
+        <!-- <td>${'*'.repeat(userData.password.length)}</td> -->
+        <td>${userData.role}</td>
+        <td>${userData.permissions}</td>
+        <td>${userData.project}</td>
+        <td>${userData.status}</td>
+    `;
+
+            newRow.addEventListener('click', () => {
+                document.querySelectorAll('#userTable tbody tr').forEach(r => r.classList.remove('selected'));
+                newRow.classList.add('selected');
+                selectedRow = newRow;
+                document.getElementById('archiveBtn').style.display = 'inline-block';
+            });
+        }
+
+
+        function showAddUserModal() {
+            selectedRow = null;
+            document.getElementById('modalTitle').innerText = 'ADD NEW USER';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('role').value = '';
+            document.getElementById('permissions').value = '';
+            document.getElementById('project').value = '';
+            document.getElementById('status').value = '';
+            loadProjectsIntoDropdown(); // Load available projects
+            document.getElementById('archiveBtn').style.display = 'none';
+            showModal();
+        }
+
+        function showEditUserModal() {
+            if (selectedRow) {
+                document.getElementById('modalTitle').innerText = 'EDIT USER DETAILS';
+                document.getElementById('username').value = selectedRow.cells[0].innerText;
+                document.getElementById('password').value = selectedRow.cells[1].innerText;
+                document.getElementById('role').value = selectedRow.cells[2].innerText;
+                document.getElementById('permissions').value = selectedRow.cells[3].innerText;
+                document.getElementById('status').value = selectedRow.cells[5].innerText;
+                loadProjectsIntoDropdown(); // Load available projects
+                setTimeout(() => {
+                    document.getElementById('project').value = selectedRow.cells[4].innerText;
+                }, 200);
+                document.getElementById('archiveBtn').style.display = 'inline-block';
+                showModal();
+            }
+        }
+
+        function showModal() {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('userModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('userModal').style.display = 'none';
+        }
+
+        function archiveUser() {
+            if (selectedRow) {
+                const userId = selectedRow.getAttribute('data-user-id');
+                fetch(`/userAdmin/archiveUser/${userId}`, {
+                    method: 'PUT'
+                })
+                    .then(response => response.json())
+                    .then(archivedUser => {
+                        if (archivedUser && archivedUser.status === "INACTIVE") {
+                            selectedRow.remove(); // Remove from UI
+                            selectedRow = null;
+                            closeModal();
+                        }
+                    })
+                    .catch(error => console.error('Error archiving user:', error));
+            }
+        }
+
+        let showingArchived = false;
+
+        function toggleUserView() {
+            const tableBody = document.getElementById('userTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            fetch('/userAdmin/getUsers')
+                .then(response => response.json())
+                .then(users => {
+                    if (showingArchived) {
+                        // Show ACTIVE users
+                        users
+                            .filter(user => user.status !== "INACTIVE")
+                            .forEach(user => addRowToTable(user));
+                        document.getElementById('toggleArchiveBtn').innerText = "ARCHIVED USERS";
+                    } else {
+                        // Show INACTIVE users
+                        users
+                            .filter(user => user.status === "INACTIVE")
+                            .forEach(user => addRowToTable(user));
+                        document.getElementById('toggleArchiveBtn').innerText = "ACTIVE USERS";
+                    }
+                    showingArchived = !showingArchived;
+                })
+                .catch(error => console.error('Error toggling users:', error));
+        }
+
+        function saveUserDetails() {
+            const userId = selectedRow ? selectedRow.getAttribute('data-user-id') : null;
+
+            const userData = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                role: document.getElementById('role').value,
+                permissions: document.getElementById('permissions').value,
+                project: document.getElementById('project').value,
+                status: document.getElementById('status').value,
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value
+            };
+
+            if (userId) {
+                //Update existing user in the database
+                fetch(`/userAdmin/updateUser/${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                })
+                    .then(response => response.json())
+                    .then(updatedUser => {
+                        console.log('User updated:', updatedUser);
+                        updateRowInTable(updatedUser); // ✅ Update UI table row
+                        closeModal();
+                    })
+                    .catch(error => console.error('Error updating user:', error));
+            } else {
+                // Add new user to the database
+                fetch('/userAdmin/addUser', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                })
+                    .then(response => response.json())
+                    .then(savedUser => {
+                        console.log('User added:', savedUser);
+                        addRowToTable(savedUser); // Add new row dynamically
+                        closeModal();
+                    })
+                    .catch(error => console.error('Error adding user:', error));
+            }
+        }
+
+
+        const userData = {
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value,
+            role: document.getElementById('role').value,
+            permissions: document.getElementById('permissions').value,
+            project: document.getElementById('project').value,
+            status: document.getElementById('status').value
+        };
+
+        if (userId) {
+            // Update existing user in the database
+            fetch(`/userAdmin/updateUser/${userId}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(userData)
+            })
+                .then(response => response.json())
+                .then(updatedUser => {
+                    console.log('User updated:', updatedUser);
+                    updateRowInTable(updatedUser); //  UI table row
+                    closeModal();
+                })
+                .catch(error => console.error('Error updating user:', error));
+        } else {
+            //Add new user to the database
+            fetch('/userAdmin/addUser', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(userData)
+            })
+                .then(response => response.json())
+                .then(savedUser => {
+                    console.log('User added:', savedUser);
+                    addRowToTable(savedUser); //Add new row dynamically
+                    closeModal();
+                })
+                .catch(error => console.error('Error adding user:', error));
+        }
+
+
+        if (selectedRow) {
+            //  Update the selected row with new data
+            selectedRow.cells[0].innerText = userData.username;
+            selectedRow.cells[1].innerText = userData.password;
+            selectedRow.cells[2].innerText = userData.role;
+            selectedRow.cells[3].innerText = userData.permissions;
+            selectedRow.cells[4].innerText = userData.project;
+            selectedRow.cells[5].innerText = userData.status;
+        } else {
+            //do nothing
+        }
+
+        closeModal();
+
+
+        let sidebar = document.querySelector(".sidebar");
+        let closeBtn = document.querySelector("#btn");
+        let searchBtn = document.querySelector(".bx-search");
+
+        closeBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("open");
+        });
+
+        // searchBtn.addEventListener("click", () => {
+        //     sidebar.classList.toggle("open");
+        // }
+        // );
+    </script>
+</section>
+</body>
+</html>

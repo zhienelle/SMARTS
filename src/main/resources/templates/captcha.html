@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captcha Page</title>
+    <link
+            href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
+            rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Numans', sans-serif;
+            background-color: #EDEDED;
+        }
+
+        header,
+        footer {
+            position: sticky;
+            top: 0;
+            width: 98.7%;
+            left: 0;
+            z-index: 1000;
+            padding: 10px;
+            background-color: #EDEDED;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: #F9744B;
+        }
+
+        footer {
+            bottom: 0;
+            text-align: center;
+            color: #124D54;
+            padding-top: 0px;
+            padding-bottom: 0px;
+            margin: 0;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 6px 0px;
+        }
+
+        footer p {
+            margin: 0;
+            display: flex;
+            justify-content: space-between;
+            width: 98.7%;
+            font-size: 14px;
+            font-family: 'Numans';
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        footer p span {
+            display: inline-block;
+        }
+
+
+        .smarts-logo img {
+            height: 25px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0 20px;
+        }
+
+        nav ul li {
+            margin: 0 10px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #F9744B;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 500;
+        }
+
+        main {
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        .captcha-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #EDEDED;
+            text-align: center;
+            background-image: url('https://i.postimg.cc/QN2wmSQC/captcha-bg.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            width: 100%;
+            height: 89vh;
+        }
+
+        .captcha-container {
+            width: 100%;
+            max-width: 1000px;
+            height: 80%;
+            display: block;
+            background-color: #F8FBFF;
+            overflow: hidden;
+            position: relative;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-sizing: border-box;
+            border: 7px solid #124D54;
+            margin: 0 auto;
+        }
+
+        .captcha-container h2 {
+            position: absolute;
+            top: -27px;
+            right: -5px;
+            background-color: #124D54;
+            border-radius: 99em 0 0 99em;
+            display: flex;
+            align-items: center;
+            padding: 0.75em 1.5em;
+            font-size: 30px;
+            font-weight: 600;
+            color: #EDEDED;
+        }
+
+        .captcha-animation {
+            width: 100%;
+            height: 150px;
+        }
+
+        .captcha-code {
+            color: #FF7F49;
+            font-size: 45px;
+            margin-bottom: 30px;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .captcha-input {
+            box-sizing: border-box;
+            width: 100%;
+            max-width: 350px;
+            height: 50px;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            background-color: #EDEDED;
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        .captcha-button {
+            width: 30%;
+            max-width: 170px;
+            height: 48px;
+            display: block;
+            margin: 0 auto;
+            overflow: hidden;
+            position: relative;
+            border-radius: 10px;
+            background-color: #124D54;
+            color: #EDEDED;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Numans';
+        }
+
+        .captcha-button:hover {
+            background-color: #080808;
+            transform: scale(1);
+            box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 600px) {
+            .captcha-container h2 {
+                font-size: 20px;
+            }
+
+            .captcha-code {
+                font-size: 25px;
+            }
+
+            .captcha-input {
+                width: 80%;
+            }
+
+            .captcha-button {
+                width: 80%;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .captcha-container h2 {
+                font-size: 18px;
+            }
+
+            .captcha-code {
+                font-size: 25px;
+            }
+
+            .captcha-animation {
+                height: 100px;
+            }
+
+            .captcha-input {
+                width: 75%;
+            }
+
+            .captcha-button {
+                width: 75%;
+            }
+        }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <div class="smarts-logo">
+        <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
+    </div>
+    <nav>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#login">Login</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <section class="captcha-section" id="home">
+        <div class="captcha-container">
+            <h2>CAPTCHA</h2>
+            <div class="captcha-animation">
+                <lottie-player src="https://lottie.host/65a899ea-91de-4aa0-ae40-1729a7e9eb7c/M5vUC7O8W9.json" background="transparent" speed="1" loop autoplay></lottie-player>
+            </div>
+            <h3 class="captcha-code" id="captchaText"></h3>
+            <input type="hidden" id="userRole" th:value="${userRole}">
+            <input type="text" id="captchaInput" class="captcha-input" placeholder="Type Here">
+            <button class="captcha-button" onclick="verifyCaptcha()">VERIFY</button>
+            <p id="captchaMessage" style="color: red;"></p>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
+</footer>
+
+<script src="https://unpkg.com/@lottiefiles/lottie-player@1.0.4/dist/lottie-player.js"></script>
+<script>
+    let captchaCode = generateCaptcha();
+    function generateCaptcha() {
+        const chars = "A"; //ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
+        let code = "";
+        for (let i = 0; i < 1; i++) {
+            code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        document.getElementById("captchaText").textContent = code;
+        return code;
+    }
+
+    function verifyCaptcha() {
+        const input = document.getElementById("captchaInput").value;
+        const message = document.getElementById("captchaMessage");
+        const userRoleElement = document.getElementById("userRole");
+
+        if (!userRoleElement) {
+            console.error("Error: userRole element not found!");
+            return;
+        }
+        const userRole = userRoleElement.value.trim().toLowerCase();
+        if (input === captchaCode) {
+            switch (userRole) {
+                case "admin":
+                    window.location.href = "/homepageAdmin";
+                    break;
+                case "staff":
+                    window.location.href = "/homepageExestaff";
+                    break;
+                case "main contractor":
+                    window.location.href = "/homepageGencon";
+                    break;
+                default:
+                    console.error("Invalid role detected:", userRole);
+                    //window.location.href = "/";
+            }
+        } else {
+            message.textContent = "Incorrect CAPTCHA. Please try again!";
+            captchaCode = generateCaptcha();
+            document.getElementById("captchaInput").value = "";
+        }
+    }
+</script>
+</body>
+</html>

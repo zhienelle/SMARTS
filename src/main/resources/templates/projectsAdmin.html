@@ -1,0 +1,1696 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Projects</title>
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link
+            href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
+            rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Numans", sans-serif;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 78px;
+            width: calc(100% - 78px);
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #EDEDED;
+            color: #124D54;
+            font-size: 14px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: all 0.5s ease;
+            padding: 10px 20px;
+        }
+
+        header div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        header div i {
+            font-size: 30px;
+            color: #124D54;
+        }
+
+        header div p {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+            color: #124D54;
+            font-weight: bold;
+        }
+
+        header div p span {
+            font-weight: bold;
+            color: #F9744B;
+        }
+
+        header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: #F9744B;
+        }
+
+        .sidebar.open~header {
+            left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 78px;
+            width: calc(100% - 78px);
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #EDEDED;
+            color: #124D54;
+            font-size: 14px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: all 0.5s ease;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        .sidebar.open~footer {
+            left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 14px;
+            font-family: 'Numans', sans-serif;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        footer p span {
+            display: inline-block;
+        }
+
+
+        .smarts-logo img {
+            height: 25px;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 78px;
+            background: #102937;
+            padding: 6px 14px;
+            z-index: 99;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.open {
+            width: 250px;
+        }
+
+        .sidebar .logo-details {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .sidebar .logo-details .icon {
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar .logo-details .logo_name {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.open .logo-details .icon,
+        .sidebar.open .logo-details .logo_name {
+            opacity: 1;
+        }
+
+        .sidebar .logo-details #btn {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            font-size: 22px;
+            transition: all 0.4s ease;
+            font-size: 23px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.open .logo-details #btn {
+            text-align: right;
+        }
+
+        .sidebar i {
+            color: #fff;
+            height: 60px;
+            min-width: 50px;
+            font-size: 28px;
+            text-align: center;
+            line-height: 60px;
+        }
+
+        .sidebar img {
+            height: 30px;
+            min-width: 0px;
+            line-height: 20px;
+        }
+
+        #projectsTable tbody tr:hover {
+            background-color: #F9744B;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 0 10px #f9744b, 0 0 20px #f9744b;
+            transition: all 0.3s ease;
+            transform: scale(1.01);
+        }
+
+
+        #projectsTable tbody tr {
+            transition: transform 0.2s ease;
+        }
+
+        #projectsTable tbody tr:hover {
+            transform: scale(1.01);
+        }
+
+
+
+        .sidebar .nav-list {
+            margin-top: 20px;
+            height: 100%;
+        }
+
+        .sidebar li {
+            position: relative;
+            margin: 8px 0;
+            list-style: none;
+        }
+
+        .sidebar li .tooltip {
+            position: absolute;
+            top: -20px;
+            left: calc(100% + 15px);
+            z-index: 3;
+            background: #fff;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 400;
+            opacity: 0;
+            white-space: nowrap;
+            pointer-events: none;
+            transition: 0s;
+        }
+
+        .sidebar li:hover .tooltip {
+            opacity: 1;
+            pointer-events: auto;
+            transition: all 0.4s ease;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .sidebar.open li .tooltip {
+            display: none;
+        }
+
+        .sidebar input {
+            font-size: 15px;
+            color: #fff;
+            font-weight: 400;
+            outline: none;
+            height: 50px;
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+            transition: all 0.5s ease;
+            background: #1d1b31;
+        }
+
+        .sidebar.open input {
+            padding: 0 20px 0 50px;
+            width: 100%;
+        }
+
+        .sidebar li a {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            border-radius: 12px;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.4s ease;
+            background: #102937;
+        }
+
+        .sidebar li a:hover {
+            background: #F9744B;
+        }
+
+        .sidebar li a .links_name {
+            color: #fff;
+            font-size: 15px;
+            font-weight: 400;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.4s;
+        }
+
+        .sidebar.open li a .links_name {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sidebar li a:hover .links_name,
+        .sidebar li a:hover i {
+            transition: all 0.5s ease;
+            color: #EDEDED;
+        }
+
+        .sidebar li i {
+            height: 50px;
+            line-height: 50px;
+            font-size: 18px;
+            border-radius: 12px;
+        }
+
+        .home-section {
+            position: relative;
+            background: #EDEDED;
+            min-height: 100vh;
+            top: 0;
+            left: 78px;
+            width: calc(100% - 78px);
+            transition: all 0.5s ease;
+            z-index: 2;
+            margin-top: 30px;
+        }
+
+        .sidebar.open~.home-section {
+            left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .home-section .text {
+            display: inline-block;
+            color: #11101d;
+            font-size: 25px;
+            font-weight: 500;
+            margin: 18px;
+        }
+
+        @media (max-width: 1024px) {
+            header {
+                left: 0;
+                width: 100%;
+            }
+
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar.open {
+                width: 220px;
+            }
+
+            .home-section {
+                left: 70px;
+                width: calc(100% - 70px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                font-size: 12px;
+            }
+
+            .sidebar {
+                width: 60px;
+            }
+
+            .sidebar.open {
+                width: 200px;
+            }
+
+            .home-section {
+                left: 60px;
+                width: calc(100% - 60px);
+            }
+
+            .sidebar i {
+                font-size: 22px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .sidebar {
+                width: 55px;
+            }
+
+            .sidebar.open {
+                width: 180px;
+            }
+
+            .home-section {
+                left: 55px;
+                width: calc(100% - 55px);
+            }
+
+            .sidebar i {
+                font-size: 20px;
+            }
+
+            .sidebar li a .links_name {
+                font-size: 12px;
+            }
+        }
+
+        .upper {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 50px;
+            padding-top: 20px;
+        }
+
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 70px;
+            color: #124D54;
+            margin: 0;
+        }
+
+        .functionality {
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .material-icons {
+            font-size: 24px;
+            color: #124D54;
+        }
+
+        #sortCriteria,
+        button,
+        #searchBar {
+            font-family: 'Numans', sans-serif;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background-color: #124D54;
+            color: white;
+            cursor: pointer;
+        }
+
+        #sortCriteria {
+            background-color: #f9f9f9;
+            color: #124D54;
+        }
+
+        #searchBar {
+            background-color: #f9f9f9;
+            color: #124D54;
+            width: 500px;
+            font-size: 16px;
+        }
+
+        .projects-container {
+            width: 90%;
+            max-width: 1500px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+            text-transform: uppercase;
+        }
+
+        th {
+            background-color: #FF6F61;
+            color: white;
+        }
+
+        td {
+            background-color: #FFE0DC;
+            color: #333;
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+            padding-bottom: 70px;
+        }
+
+        .buttons button {
+            box-sizing: border-box;
+            width: 250px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 8px 16px;
+            background: linear-gradient(180deg, #124d54 0%, rgb(16, 41, 55) 100%);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            text-transform: uppercase;
+            overflow: hidden;
+        }
+
+        .buttons button:hover {
+            background: linear-gradient(180deg, #16a085 0%, rgb(22, 60, 77) 100%);
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            align-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: radial-gradient(50% 50% at 50% 50%, #ee9b7b 0%, #FFFFFF 100%);
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.25);
+            margin: 20px auto;
+            padding: 20px 30px;
+            border: 4px solid #102937;
+            border-radius: 30px;
+            text-align: center;
+            color: #F9744B;
+            font-family: 'Fredoka', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .modal-content select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Fredoka', sans-serif;
+            text-transform: uppercase;
+            background-color: #f9f9f9;
+            color: #124D54;
+        }
+
+        .modal-content h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 10px;
+            color: black;
+            font-weight: normal;
+            text-align: left;
+            display: block;
+        }
+
+        .modal-content input,
+        #status,
+        #projectName,
+        #projectSelect {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Fredoka', sans-serif;
+            text-transform: uppercase;
+        }
+
+        #projectSelect {
+            width: 60%;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .form-row>div {
+            width: 50%;
+        }
+
+        input[type="date"] {
+            width: 100%;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .button-container button {
+            flex: 1;
+            width: 60%;
+            background: linear-gradient(180deg, #12B1D1, #124D54);
+        }
+
+        .button-container button:hover {
+            background: #124D54;
+        }
+
+        .modal-content button {
+            font-family: 'Fredoka', sans-serif;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            margin: 0 10px;
+            text-transform: uppercase;
+        }
+
+        .sort-by {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        #sortButton {
+            padding: 8px 15px;
+            font-size: 14px;
+            border-radius: 5px;
+            background-color: lightgrey;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+
+        #sortButton:hover {
+            color: black;
+            background-color: grey;
+        }
+
+        #sortArrow {
+            margin-left: 5px;
+        }
+
+        #dropdown select {
+            padding: 8px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            cursor: pointer;
+            width: 200px;
+        }
+
+        .stage {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(180deg, #ee9b7b, #F9744B);
+
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stage h4 {
+            margin-bottom: 10px;
+            font-family: 'Fredoka';
+            font-size: 20px;
+            color: #fff;
+        }
+
+        .stage-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            margin: 0;
+            width: 100%;
+        }
+
+        .task-item input[type="checkbox"] {
+            flex: 0 0 10%;
+            transform: scale(1.5);
+            accent-color: #124d54;
+            margin-right: 5px;
+        }
+
+        .task-name {
+            flex: 1;
+            padding: 5px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #FFE0DC;
+        }
+
+        .progress-bar {
+            margin-top: 20px;
+        }
+
+        .progress-bar p {
+            color: white;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        progress {
+            width: 80%;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+        }
+
+        progress::-webkit-progress-bar {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+        }
+
+        progress::-webkit-progress-value {
+            background-color: #12B1D1;
+            border-radius: 10px;
+        }
+
+        progress::-moz-progress-bar {
+            background-color: #12B1D1;
+            border-radius: 10px;
+        }
+
+        .add-task-btn {
+            padding: 0;
+            font-size: 12px;
+            background-color: #124d54;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            width: auto;
+        }
+
+        .task-name[readonly] {
+            background-color: #fff;
+            cursor: not-allowed;
+            border: none;
+        }
+
+        .task-item button {
+            flex: 0 0 10%;
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin: 0;
+            padding: 0;
+        }
+
+        .task-item button i {
+            font-size: 18px;
+            color: #fff;
+        }
+
+        .task-item button i:hover {
+            color: #124d54;
+        }
+
+        #editDetailsModal .modal-content,
+        #addProjectModal .modal-content {
+            width: 80%;
+            max-width: 500px;
+        }
+
+        #editProgressModal .modal-content {
+            max-height: 80%;
+            overflow-y: auto;
+            max-width: 60%;
+        }
+
+        #editProgressModal .button-container {
+            width: 60%;
+            justify-self: center;
+        }
+        <!-- Select Project to Edit -->
+        <label for="editProjectNameSelect" style="
+        font-size: 10px;
+        color: black;
+        font-weight: normal;
+        text-align: left;
+        display: block;
+        margin-bottom: 5px;
+        ">
+        SELECT PROJECT TO EDIT
+        </label>
+        <select
+         id="editProjectNameSelect"
+        name="projectSelect"
+        required
+        style="
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0 20px 0;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
+        font-family: 'Fredoka', sans-serif;
+        text-transform: uppercase;
+        background-color: #f9f9f9;
+        color: #124D54;
+        "
+        >
+    </style>
+</head>
+
+<body>
+<!-- Header -->
+<header>
+    <div class="smarts-logo">
+        <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
+    </div>
+    <div>
+        <p>ROLE: <span>ADMIN</span></p>
+        <i class='bx bxs-user-circle'></i>
+    </div>
+</header>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="logo-details">
+        <div class="logo_name">ACCE Construction</div>
+        <i class='bx bx-menu' id="btn"></i>
+    </div>
+    <ul class="nav-list">
+        <li>
+            <a href="homepageAdmin">
+                <i class='bx bx-home'></i>
+                <span class="links_name">Homepage</span>
+            </a>
+            <span class="tooltip">Homepage</span>
+        </li>
+        <li>
+            <a href="projectsAdmin">
+                <i class='bx bx-task'></i>
+                <span class="links_name">Projects</span>
+            </a>
+            <span class="tooltip">Projects</span>
+        </li>
+        <li>
+            <a href="inventoryAdmin">
+                <i class='bx bx-store-alt'></i>
+                <span class="links_name">Inventory</span>
+            </a>
+            <span class="tooltip">Inventory</span>
+        </li>
+        <li>
+            <a href="invoiceAdmin">
+                <i class='bx bx-receipt'></i>
+                <span class="links_name">Invoice</span>
+            </a>
+            <span class="tooltip">Invoice</span>
+        </li>
+        <li>
+            <a href="reportsAdmin">
+                <i class='bx bx-bar-chart'></i>
+                <span class="links_name">Reports & Analytics</span>
+            </a>
+            <span class="tooltip">Reports & Analytics</span>
+        </li>
+        <li>
+            <a href="userAdmin">
+                <i class='bx bx-user'></i>
+                <span class="links_name">User</span>
+            </a>
+            <span class="tooltip">User</span>
+        </li>
+        <li>
+            <a href="requestsAdmin">
+                <i class='bx bx-comment-dots'></i>
+                <span class="links_name">Requests</span>
+            </a>
+            <span class="tooltip">Requests</span>
+        </li>
+        <li>
+            <a href="settingsAdmin">
+                <i class='bx bx-cog'></i>
+                <span class="links_name">Settings</span>
+            </a>
+            <span class="tooltip">Settings</span>
+        </li>
+        <li>
+            <a href="confirmLogout">
+                <i class='bx bx-log-out'></i>
+                <span class="links_name">Logout</span>
+            </a>
+            <span class="tooltip">Logout</span>
+        </li>
+    </ul>
+</div>
+
+<!-- Main Section -->
+<section class="home-section">
+    <div class="upper">
+        <h1>PROJECTS</h1>
+        <div class="functionality">
+            <span class="material-icons">search</span>
+            <input type="text" id="searchBar" placeholder="Search Projects..." onkeyup="filterProjects()">
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="selected-period" id="selectedPeriod"></div>
+
+    <div class="projects-container">
+        <div class="sort-by">
+            <button id="sortButton">
+                Sort By
+                <span id="sortArrow">&#9660;</span>
+            </button>
+            <div id="dropdown" class="dropdown">
+                <select id="sortCriteria">
+                    <option value="name">Project Name</option>
+                    <option value="status">Status</option>
+                    <option value="duration">Duration</option>
+                    <option value="client">Client</option>
+                </select>
+            </div>
+        </div>
+
+        <table id="projectsTable">
+            <thead>
+            <tr>
+                <th>Project Name</th>
+                <th>Status</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Client</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Dynamic content loaded by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="buttons">
+        <button id="addProjectBtn">Add New Project</button>
+        <button id="editDetailsBtn">Edit Project Details</button>
+        <button id="editProgressBtn">Edit Project Progress</button>
+        <button id="archiveButton">Show Archived Projects</button>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Modal for Add New Project -->
+    <div id="addProjectModal" class="modal">
+        <div class="modal-content">
+            <h3>Add New Project</h3>
+            <form id="addProjectForm">
+                <label for="projectName">Project Name</label>
+                <input type="text" id="projectName" name="projectName" placeholder="Enter project name" required>
+
+                <label for="companyName">Company Name</label>
+                <input type="text" id="companyName" name="companyName" placeholder="Enter company name" required>
+
+                <label for="companyLocation">Company Location</label>
+                <input type="text" id="companyLocation" name="companyLocation" placeholder="Enter location" required>
+
+                <label for="companyContact">Company Contact No.</label>
+                <input type="text" id="companyContact" name="companyContact" placeholder="Enter contact number" required>
+
+                <label for="status">Status</label>
+                <select id="status" name="status" required>
+                    <option value="">Select Status</option>
+                    <option value="NOT STARTED">Not Started</option>
+                    <option value="IN PROGRESS">In Progress</option>
+                    <option value="COMPLETED">Completed</option>
+                </select>
+
+                <div class="form-row">
+                    <div>
+                        <label for="startDate">Start Date</label>
+                        <input type="date" id="startDate" name="startDate" required>
+                    </div>
+                    <div>
+                        <label for="endDate">End Date</label>
+                        <input type="date" id="endDate" name="endDate" required>
+                    </div>
+                </div>
+
+                <label for="clientName">Client Name</label>
+                <input type="text" id="clientName" name="clientName" placeholder="Enter client name" required>
+
+                <label for="contractAmount">Contract Amount</label>
+                <input type="number" id="contractAmount" name="contractAmount" placeholder="Enter contract amount" required min="0" step="0.01">
+
+                <label for="downpayment">Downpayment</label>
+                <input type="number" id="downpayment" name="downpayment" placeholder="Enter downpayment" required min="0" step="0.01">
+
+                <div class="button-container">
+                    <button class="closeModalBtn" onclick="closeModal('addProjectModal')">Cancel</button>
+                    <button type="submit">Save Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Edit Project Details -->
+    <div id="editDetailsModal" class="modal">
+        <div class="modal-content">
+            <h3>Edit Project Details</h3>
+            <form id="editProjectDetailsForm">
+                <label for="editProjectNameSelect">Select Project to Edit</label>
+                <select id="editProjectNameSelect" name="projectSelect" required>
+                    <!-- Options will be populated dynamically -->
+                </select>
+
+                <label for="editProjectName">Project Name</label>
+                <input type="text" id="editProjectName" name="projectName" placeholder="Enter project name" required>
+
+                <label for="editStatus">Status</label>
+                <select id="editStatus" name="status" required>
+                    <option value="">Select Status</option>
+                    <option value="NOT STARTED">Not Started</option>
+                    <option value="IN PROGRESS">In Progress</option>
+                    <option value="COMPLETED">Completed</option>
+                </select>
+
+                <div class="form-row">
+                    <div>
+                        <label for="editStartDate">Start Date</label>
+                        <input type="date" id="editStartDate" name="startDate" required>
+                    </div>
+                    <div>
+                        <label for="editEndDate">End Date</label>
+                        <input type="date" id="editEndDate" name="endDate" required>
+                    </div>
+                </div>
+
+                <label for="editClientName">Client Name</label>
+                <input type="text" id="editClientName" name="clientName" placeholder="Enter client name" required>
+
+                <div class="button-container">
+                    <button class="closeModalBtn" onclick="closeModal('editDetailsModal')">Cancel</button>
+                    <button type="button" onclick="archiveProject()">Archive</button>
+                    <button type="submit">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Modal for Edit Project Progress -->
+    <div id="editProgressModal" class="modal">
+        <div class="modal-content">
+            <h3>Edit Project Progress</h3>
+            <select id="projectSelect" name="projectSelect">
+                <!-- Options populated dynamically -->
+            </select>
+            <div class="stage-container">
+                <!-- Stage 1 -->
+                <div id="stage1" class="stage">
+                    <h4>Stage 1</h4>
+                    <div class="task-list">
+                        <!-- Task List for Stage 1 -->
+                    </div>
+                    <button type="button" class="add-task-btn" onclick="addTask('stage1')">Add Task</button>
+                    <button type="button" class="edit-task-btn" id="editTaskBtn" onclick="toggleEditIcons('stage1')" style="display:none;">Edit Tasks</button>
+                    <div class="progress-bar">
+                        <p>Progress: <span id="stage1Progress"></span></p>
+                        <progress id="progress1" value="0" max="100"></progress>
+                    </div>
+                </div>
+                <!-- Stage 2 -->
+                <div id="stage2" class="stage">
+                    <h4>Stage 2</h4>
+                    <div class="task-list">
+                        <!-- Task List for Stage 2 -->
+                    </div>
+                    <button type="button" class="add-task-btn" onclick="addTask('stage2')">Add Task</button>
+                    <button type="button" class="edit-task-btn" id="editTaskBtn" onclick="toggleEditIcons('stage2')" style="display:none;">Edit Tasks</button>
+                    <div class="progress-bar">
+                        <p>Progress: <span id="stage2Progress"></span></p>
+                        <progress id="progress2" value="0" max="100"></progress>
+                    </div>
+                </div>
+                <!-- Stage 3 -->
+                <div id="stage3" class="stage">
+                    <h4>Stage 3</h4>
+                    <div class="task-list">
+                        <!-- Task List for Stage 3 -->
+                    </div>
+                    <button type="button" class="add-task-btn" onclick="addTask('stage3')">Add Task</button>
+                    <button type="button" class="edit-task-btn" id="editTaskBtn" onclick="toggleEditIcons('stage3')" style="display:none;">Edit Tasks</button>
+                    <div class="progress-bar">
+                        <p>Progress: <span id="stage3Progress"></span></p>
+                        <progress id="progress3" value="0" max="100"></progress>
+                    </div>
+                </div>
+            </div>
+            <div class="button-container">
+                <button type="button" class="cancel-btn" onclick="closeModal('editProgressModal')">Cancel</button>
+                <button type="button" class="add-stage-btn" onclick="addStage()">Add Stage</button>
+                <button type="submit" class="submit-btn">Submit</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
+</footer>
+
+<script>
+    // Global variable to store projects fetched from the backend
+    let projectsData = [];
+
+    let showArchived = false; // Flag to track whether archived projects are being shown
+
+    // Function to load projects from the backend and update UI dynamically
+    function loadProjects() {
+        console.log("loadProjects called");
+        fetch('/projectsAdmin/getProjects')
+            .then(response => {
+                console.log("Response received:", response);
+                return response.json();
+            })
+            .then(data => {
+                console.log("Data from server:", data);
+                if (!Array.isArray(data)) {
+                    console.error("Expected an array but got:", data);
+                    return;
+                }
+                projectsData = data; // store globally for use in edit modal
+
+                // Filter the projects based on the "archived" flag
+                const filteredProjects = showArchived
+                    ? data.filter(project => project.projectstatus.toLowerCase() === "archived")
+                    : data.filter(project => project.projectstatus.toLowerCase() !== "archived");
+
+                // Populate the projects table
+                const tableBody = document.getElementById('projectsTable').querySelector('tbody');
+                tableBody.innerHTML = ''; // Clear the table body before repopulating
+
+                if (filteredProjects.length === 0) {
+                    const row = document.createElement('tr');
+                    const cell = document.createElement('td');
+                    cell.colSpan = 5;
+                    cell.textContent = showArchived ? "No Archived Projects Found" : "No Active Projects Found";
+                    row.appendChild(cell);
+                    tableBody.appendChild(row);
+                } else {
+                    filteredProjects.forEach(project => {
+                        const row = document.createElement('tr');
+                        row.setAttribute("data-project-id", project.projectId);
+
+                        const nameCell = document.createElement('td');
+                        nameCell.textContent = project.projectname;
+
+                        const statusCell = document.createElement('td');
+                        statusCell.textContent = project.projectstatus;
+
+                        const startCell = document.createElement('td');
+                        startCell.textContent = new Date(project.projectstart).toLocaleDateString();
+
+                        const endCell = document.createElement('td');
+                        endCell.textContent = new Date(project.projectend).toLocaleDateString();
+
+                        const clientCell = document.createElement('td');
+                        clientCell.textContent = project.clientname;
+
+                        row.appendChild(nameCell);
+                        row.appendChild(statusCell);
+                        row.appendChild(startCell);
+                        row.appendChild(endCell);
+                        row.appendChild(clientCell);
+
+                        row.addEventListener('click', () => {
+                            window.location.href = 'projectManagementAdmin';
+                        });
+
+                        tableBody.appendChild(row);
+                    });
+                }
+
+                // Populate dropdowns in the edit modals
+                populateProjectDropdown('editProjectNameSelect', filteredProjects);
+                populateProjectDropdown('projectSelect', filteredProjects);
+            })
+            .catch(error => {
+                console.error('Error loading projects:', error);
+            });
+    }
+
+
+    function archiveProject() {
+        const projectId = document.getElementById('editProjectNameSelect').value;
+        if (!projectId) {
+            alert("Please select a project to archive.");
+            return;
+        }
+        const originalProject = projectsData.find(p => p.projectId == projectId);
+        if (!originalProject) {
+            alert("Project not found.");
+            return;
+        }
+        // Build updated object with status set to "archived"
+        const archivedProject = {
+            projectname: originalProject.projectname,
+            projectstatus: "archived",
+            projectstart: originalProject.projectstart,
+            projectend: originalProject.projectend,
+            clientname: originalProject.clientname,
+            contractamount: originalProject.contractamount,
+            downpayment: originalProject.downpayment
+        };
+
+        fetch(`/projectsAdmin/updateProject/${projectId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(archivedProject)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Project archived:", data);
+                loadProjects(); // Reload projects; archived ones will be filtered out.
+                closeModal('editDetailsModal');
+            })
+            .catch(error => {
+                console.error("Error archiving project:", error);
+                alert("Error archiving project. Please try again.");
+            });
+    }
+
+    window.addEventListener('DOMContentLoaded', loadProjects);
+
+    function populateProjectDropdown(dropdownId, projects) {
+        const dropdown = document.getElementById(dropdownId);
+        if (dropdown) {
+            dropdown.innerHTML = '<option value="">Select Project</option>';
+            projects.forEach(project => {
+                const option = document.createElement('option');
+                option.value = project.projectId;
+                option.textContent = project.projectname;
+                dropdown.appendChild(option);
+            });
+        }
+    }
+
+    // Event listener for change on the edit project dropdown
+    document.getElementById('editProjectNameSelect').addEventListener('change', function() {
+        const projectId = this.value;
+        const project = projectsData.find(p => p.projectId == projectId);
+        if (project) {
+            // Populate the editable fields with the selected project's details
+            document.getElementById('editProjectName').value = project.projectname;
+            document.getElementById('editStatus').value = project.projectstatus;
+            const formatDate = (dateStr) => {
+                const date = new Date(dateStr);
+                const month = ('0' + (date.getMonth() + 1)).slice(-2);
+                const day = ('0' + date.getDate()).slice(-2);
+                return date.getFullYear() + '-' + month + '-' + day;
+            };
+            document.getElementById('editStartDate').value = formatDate(project.projectstart);
+            document.getElementById('editEndDate').value = formatDate(project.projectend);
+            document.getElementById('editClientName').value = project.clientname;
+        } else {
+            document.getElementById('editProjectName').value = '';
+            document.getElementById('editStatus').value = '';
+            document.getElementById('editStartDate').value = '';
+            document.getElementById('editEndDate').value = '';
+            document.getElementById('editClientName').value = '';
+        }
+    });
+
+    // Handle form submission for Edit Project Details modal
+    document.getElementById('editProjectDetailsForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const projectId = document.getElementById('editProjectNameSelect').value;
+        if (!projectId) {
+            alert("Please select a project to edit.");
+            return;
+        }
+        // Get updated details from the form fields
+        const updatedProjectName = document.getElementById('editProjectName').value;
+        const updatedStatus = document.getElementById('editStatus').value;
+        const updatedStartDate = document.getElementById('editStartDate').value;
+        const updatedEndDate = document.getElementById('editEndDate').value;
+        const updatedClientName = document.getElementById('editClientName').value;
+
+        if (!updatedProjectName || !updatedStatus || !updatedStartDate || !updatedEndDate || !updatedClientName) {
+            alert("Please fill out all fields.");
+            return;
+        }
+        if (new Date(updatedStartDate) > new Date(updatedEndDate)) {
+            alert("Start date cannot be later than end date.");
+            return;
+        }
+
+        // Retrieve original contract amount and downpayment so as not to lose these values
+        const originalProject = projectsData.find(p => p.projectId == projectId);
+        if (!originalProject) {
+            alert("Project not found.");
+            return;
+        }
+
+        const updatedProject = {
+            projectname: updatedProjectName,
+            projectstatus: updatedStatus,
+            projectstart: updatedStartDate,
+            projectend: updatedEndDate,
+            clientname: updatedClientName,
+            contractamount: originalProject.contractamount,
+            downpayment: originalProject.downpayment
+        };
+
+        fetch(`/projectsAdmin/updateProject/${projectId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedProject)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Project updated:", data);
+                // Reload projects to update table and dropdowns
+                loadProjects();
+                document.getElementById('editProjectDetailsForm').reset();
+                closeModal('editDetailsModal');
+            })
+            .catch(error => {
+                console.error("Error updating project:", error);
+                alert("Error updating project. Please try again.");
+            });
+    });
+
+    // Handle form submission for Add Project modal
+    document.getElementById('addProjectForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const projectName = document.getElementById('projectName').value;
+        const status = document.getElementById('status').value;
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        const clientName = document.getElementById('clientName').value;
+        const contractAmount = parseFloat(document.getElementById('contractAmount').value);
+        const downpayment = parseFloat(document.getElementById('downpayment').value);
+
+        // dd the 3 new lines right here:
+        const companyName = document.getElementById('companyName').value;
+        const companyLocation = document.getElementById('companyLocation').value;
+        const companyContact = document.getElementById('companyContact').value;
+
+        if (!projectName || !status || !startDate || !endDate || !clientName ||
+            isNaN(contractAmount) || isNaN(downpayment)) {
+            alert("Please fill out all fields correctly.");
+            return;
+        }
+        if (new Date(startDate) > new Date(endDate)) {
+            alert("Start date cannot be later than end date.");
+            return;
+        }
+        if (contractAmount <= 0) {
+            alert("Please enter a valid contract amount.");
+            return;
+        }
+        if (downpayment < 0) {
+            alert("Please enter a valid downpayment.");
+            return;
+        }
+        if (downpayment > contractAmount) {
+            alert("Downpayment must be less than the contract amount.");
+            return;
+        }
+
+        const newProject = {
+            projectname: projectName,
+            companyname: companyName,
+            companyLocation: companyLocation,
+            companycontact: companyContact,
+            projectstatus: status,
+            projectstart: startDate,
+            projectend: endDate,
+            clientname: clientName,
+            contractamount: contractAmount,
+            downpayment: downpayment
+        };
+
+        fetch('/projectsAdmin/addProject', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newProject)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Project added:', data);
+                addProjectToTable(data);
+                loadProjects();
+                document.getElementById('addProjectForm').reset();
+                closeModal('addProjectModal');
+            })
+            .catch(error => {
+                console.error('There was a problem with the add project request:', error);
+                alert('Error adding project. Please try again.');
+            });
+    });
+
+    function addProjectToTable(project) {
+        const tableBody = document.getElementById('projectsTable').querySelector('tbody');
+        const row = document.createElement('tr');
+
+        const nameCell = document.createElement('td');
+        nameCell.textContent = project.projectname;
+        const statusCell = document.createElement('td');
+        statusCell.textContent = project.projectstatus;
+        const startCell = document.createElement('td');
+        startCell.textContent = new Date(project.projectstart).toLocaleDateString();
+        const endCell = document.createElement('td');
+        endCell.textContent = new Date(project.projectend).toLocaleDateString();
+        const clientCell = document.createElement('td');
+        clientCell.textContent = project.clientname;
+
+        row.appendChild(nameCell);
+        row.appendChild(statusCell);
+        row.appendChild(startCell);
+        row.appendChild(endCell);
+        row.appendChild(clientCell);
+
+        tableBody.appendChild(row);
+    }
+
+    // Filter projects function
+    function filterProjects() {
+        const query = document.getElementById('searchBar').value.toLowerCase();
+        const rows = document.querySelectorAll('#projectsTable tbody tr');
+        rows.forEach(row => {
+            const projectName = row.cells[0].textContent.toLowerCase();
+            const client = row.cells[4].textContent.toLowerCase();
+            if (projectName.includes(query) || client.includes(query)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    let currentSortOrder = 'asc';
+    document.getElementById('sortButton').addEventListener('click', function () {
+        const dropdown = document.getElementById('dropdown');
+        dropdown.classList.toggle('active');
+        toggleSortOrder();
+    });
+    document.getElementById('sortCriteria').addEventListener('change', function () {
+        const criteria = this.value;
+        currentSortOrder = 'asc';
+        sortTable(criteria);
+        document.getElementById('dropdown').classList.remove('active');
+    });
+    function toggleSortOrder() {
+        const sortArrow = document.getElementById('sortArrow');
+        if (currentSortOrder === 'asc') {
+            currentSortOrder = 'desc';
+            sortArrow.innerHTML = '&#9650;';
+        } else {
+            currentSortOrder = 'asc';
+            sortArrow.innerHTML = '&#9660;';
+        }
+        const selectedCriteria = document.getElementById('sortCriteria').value;
+        sortTable(selectedCriteria);
+    }
+    function sortTable(criteria) {
+        const table = document.getElementById('projectsTable');
+        const rows = Array.from(table.rows).slice(1);
+        let sortedRows;
+        if (criteria === 'name') {
+            sortedRows = rows.sort((a, b) => a.cells[0].innerText.localeCompare(b.cells[0].innerText));
+        } else if (criteria === 'status') {
+            sortedRows = rows.sort((a, b) => a.cells[1].innerText.localeCompare(b.cells[1].innerText));
+        } else if (criteria === 'duration') {
+            sortedRows = rows.sort((a, b) => {
+                const startDateA = new Date(a.cells[2].innerText);
+                const startDateB = new Date(b.cells[2].innerText);
+                return startDateA - startDateB;
+            });
+        } else if (criteria === 'client') {
+            sortedRows = rows.sort((a, b) => a.cells[4].innerText.localeCompare(b.cells[4].innerText));
+        }
+        if (currentSortOrder === 'desc') {
+            sortedRows.reverse();
+        }
+        for (let row of sortedRows) {
+            table.appendChild(row);
+        }
+    }
+
+    // Modal functions
+    function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        const overlay = document.getElementById('overlay');
+        modal.style.display = "block";
+        overlay.style.display = "block";
+    }
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        const overlay = document.getElementById('overlay');
+        modal.style.display = "none";
+        overlay.style.display = "none";
+    }
+    window.addEventListener('click', function (event) {
+        const modals = document.querySelectorAll('.modal');
+        const overlay = document.getElementById('overlay');
+        modals.forEach(modal => {
+            if (event.target === modal || event.target === overlay) {
+                modal.style.display = "none";
+                overlay.style.display = "none";
+            }
+        });
+    });
+    document.getElementById('addProjectBtn').addEventListener('click', function () {
+        openModal('addProjectModal');
+    });
+    document.getElementById('editDetailsBtn').addEventListener('click', function () {
+        openModal('editDetailsModal');
+    });
+    document.getElementById('editProgressBtn').addEventListener('click', function () {
+        openModal('editProgressModal');
+    });
+
+    document.getElementById('archiveButton').addEventListener('click', function () {
+        showArchived = !showArchived; // Toggle the visibility state
+        if (showArchived) {
+            this.textContent = "Show Active Projects"; // Change button text to "Show Active Projects"
+        } else {
+            this.textContent = "Show Archived Projects"; // Change button text to "Show Archived Projects"
+        }
+        loadProjects(); // Reload the projects with the updated filter
+    });
+
+    // Dummy functions for task management in modals
+    function addTask(stage) {
+        const stageElement = document.getElementById(stage);
+        const taskList = stageElement.querySelector('.task-list');
+        const taskItem = document.createElement('div');
+        taskItem.classList.add('task-item');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.addEventListener('change', () => updateProgress(stage));
+        const taskInput = document.createElement('input');
+        taskInput.type = 'text';
+        taskInput.classList.add('task-name');
+        taskInput.placeholder = 'New Task';
+        taskInput.setAttribute('readonly', true);
+        const deleteButton = document.createElement('button');
+        deleteButton.innerHTML = '<i class="bx bx-trash"></i>';
+        deleteButton.addEventListener('click', () => deleteTask(taskItem, stage));
+        const editButton = document.createElement('button');
+        editButton.innerHTML = '<i class="bx bx-edit"></i>';
+        editButton.addEventListener('click', () => toggleEditTask(taskInput, editButton));
+        taskItem.appendChild(checkbox);
+        taskItem.appendChild(taskInput);
+        taskItem.appendChild(editButton);
+        taskItem.appendChild(deleteButton);
+        taskList.appendChild(taskItem);
+        updateProgress(stage);
+    }
+    function deleteTask(taskItem, stage) {
+        const taskList = taskItem.parentNode;
+        taskList.removeChild(taskItem);
+        updateProgress(stage);
+    }
+    function toggleEditTask(taskInput, editButton) {
+        if (taskInput.hasAttribute('readonly')) {
+            taskInput.removeAttribute('readonly');
+            taskInput.focus();
+            editButton.innerHTML = '<i class="bx bx-save"></i>';
+        } else {
+            taskInput.setAttribute('readonly', true);
+            editButton.innerHTML = '<i class="bx bx-edit"></i>';
+        }
+    }
+    let stageCount = 3;
+    function addStage() {
+        stageCount++;
+        const stageContainer = document.querySelector('.stage-container');
+        const stage = document.createElement('div');
+        stage.id = `stage${stageCount}`;
+        stage.classList.add('stage');
+        stage.innerHTML = `
+          <h4>Stage ${stageCount}</h4>
+          <div class="task-list"></div>
+          <button type="button" class="add-task-btn" onclick="addTask('stage${stageCount}')">Add Task</button>
+          <div class="progress-bar">
+              <p>Progress: <span id="stage${stageCount}Progress"></span></p>
+              <progress id="progress${stageCount}" value="0" max="100"></progress>
+          </div>
+      `;
+        stageContainer.appendChild(stage);
+    }
+    function updateProgress(stage) {
+        const stageElement = document.getElementById(stage);
+        const taskList = stageElement.querySelectorAll('.task-item');
+        const totalTasks = taskList.length;
+        let checkedTasks = 0;
+        taskList.forEach(task => {
+            const checkbox = task.querySelector('input[type="checkbox"]');
+            if (checkbox.checked) {
+                checkedTasks++;
+            }
+        });
+        const progressPercent = totalTasks > 0 ? Math.round((checkedTasks / totalTasks) * 100) : 0;
+        const progressText = stageElement.querySelector('.progress-bar p');
+        progressText.innerHTML = `Progress: ${checkedTasks}/${totalTasks} - ${progressPercent}/100%`;
+        const progressBar = stageElement.querySelector('progress');
+        progressBar.value = progressPercent;
+        progressBar.max = 100;
+    }
+
+    document.querySelector('.submit-btn').addEventListener('click', function () {
+        closeModal('editProgressModal');
+    });
+    let sidebar = document.querySelector(".sidebar");
+    let closeBtn = document.querySelector("#btn");
+    let searchBtn = document.querySelector(".bx-search");
+    closeBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("open");
+    });
+    searchBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("open");
+    });
+
+
+</script>
+</body>
+</html>

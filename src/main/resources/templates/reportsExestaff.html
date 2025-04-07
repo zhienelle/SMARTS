@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Staff Reports & Analytics</title>
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Numans", sans-serif;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 78px;
+            width: calc(100% - 78px);
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #EDEDED;
+            color: #124D54;
+            font-size: 14px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: all 0.5s ease;
+            padding: 10px 20px;
+        }
+
+        header div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        header div i {
+            font-size: 30px;
+            color: #124D54;
+        }
+
+        header div p {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+            color: #124D54;
+            font-weight: bold;
+        }
+
+        header div p span {
+            font-weight: bold;
+            color: #F9744B;
+        }
+
+        header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: #F9744B;
+        }
+
+        .sidebar.open~header {
+            left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 78px;
+            width: calc(100% - 78px);
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #EDEDED;
+            color: #124D54;
+            font-size: 14px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: all 0.5s ease;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        .sidebar.open~footer {
+            left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 14px;
+            font-family: 'Numans', sans-serif;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        footer p span {
+            display: inline-block;
+        }
+
+
+        .smarts-logo img {
+            height: 25px;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 78px;
+            background: #102937;
+            padding: 6px 14px;
+            z-index: 99;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.open {
+            width: 250px;
+        }
+
+        .sidebar .logo-details {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .sidebar .logo-details .icon {
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar .logo-details .logo_name {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.open .logo-details .icon,
+        .sidebar.open .logo-details .logo_name {
+            opacity: 1;
+        }
+
+        .sidebar .logo-details #btn {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            font-size: 22px;
+            transition: all 0.4s ease;
+            font-size: 23px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.open .logo-details #btn {
+            text-align: right;
+        }
+
+        .sidebar i {
+            color: #fff;
+            height: 60px;
+            min-width: 50px;
+            font-size: 28px;
+            text-align: center;
+            line-height: 60px;
+        }
+
+        .sidebar img {
+            height: 30px;
+            min-width: 0px;
+            line-height: 20px;
+        }
+
+        .sidebar .nav-list {
+            margin-top: 20px;
+            height: 100%;
+        }
+
+        .sidebar li {
+            position: relative;
+            margin: 8px 0;
+            list-style: none;
+        }
+
+        .sidebar li .tooltip {
+            position: absolute;
+            top: -20px;
+            left: calc(100% + 15px);
+            z-index: 3;
+            background: #fff;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 400;
+            opacity: 0;
+            white-space: nowrap;
+            pointer-events: none;
+            transition: 0s;
+        }
+
+        .sidebar li:hover .tooltip {
+            opacity: 1;
+            pointer-events: auto;
+            transition: all 0.4s ease;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .sidebar.open li .tooltip {
+            display: none;
+        }
+
+        .sidebar input {
+            font-size: 15px;
+            color: #fff;
+            font-weight: 400;
+            outline: none;
+            height: 50px;
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+            transition: all 0.5s ease;
+            background: #1d1b31;
+        }
+
+        .sidebar.open input {
+            padding: 0 20px 0 50px;
+            width: 100%;
+        }
+
+        .sidebar li a {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            border-radius: 12px;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.4s ease;
+            background: #102937;
+        }
+
+        .sidebar li a:hover {
+            background: #F9744B;
+        }
+
+        .sidebar li a .links_name {
+            color: #fff;
+            font-size: 15px;
+            font-weight: 400;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.4s;
+        }
+
+        .sidebar.open li a .links_name {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sidebar li a:hover .links_name,
+        .sidebar li a:hover i {
+            transition: all 0.5s ease;
+            color: #EDEDED;
+        }
+
+        .sidebar li i {
+            height: 50px;
+            line-height: 50px;
+            font-size: 18px;
+            border-radius: 12px;
+        }
+
+        .home-section {
+            position: relative;
+            background: #EDEDED;
+            min-height: 100vh;
+            top: 0;
+            left: 78px;
+            width: calc(100% - 78px);
+            transition: all 0.5s ease;
+            z-index: 2;
+            margin-top: 30px;
+            padding-bottom: 50px;
+        }
+
+        .sidebar.open~.home-section {
+            left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .home-section .text {
+            display: inline-block;
+            color: #11101d;
+            font-size: 25px;
+            font-weight: 500;
+            margin: 18px;
+        }
+
+        @media (max-width: 1024px) {
+            header {
+                left: 0;
+                width: 100%;
+            }
+
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar.open {
+                width: 220px;
+            }
+
+            .home-section {
+                left: 70px;
+                width: calc(100% - 70px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                font-size: 12px;
+            }
+
+            .sidebar {
+                width: 60px;
+            }
+
+            .sidebar.open {
+                width: 200px;
+            }
+
+            .home-section {
+                left: 60px;
+                width: calc(100% - 60px);
+            }
+
+            .sidebar i {
+                font-size: 22px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .sidebar {
+                width: 55px;
+            }
+
+            .sidebar.open {
+                width: 180px;
+            }
+
+            .home-section {
+                left: 55px;
+                width: calc(100% - 55px);
+            }
+
+            .sidebar i {
+                font-size: 20px;
+            }
+
+            .sidebar li a .links_name {
+                font-size: 12px;
+            }
+        }
+
+        .upper {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 50px;
+            padding-top: 20px;
+        }
+
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 70px;
+            color: #124D54;
+            margin: 0;
+        }
+
+        .functionality {
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+            margin: 0 auto;
+            padding: 10px 0;
+        }
+
+        select,
+        button {
+            font-family: 'Numans', sans-serif;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background-color: #124D54;
+            color: white;
+            cursor: pointer;
+        }
+
+        select {
+            background-color: #f9f9f9;
+            color: #124D54;
+        }
+
+        #selectPeriod {
+            margin-left: auto;
+            background-color: grey;
+            margin-bottom: 5px;
+        }
+
+        .selected-period,
+        #selectedPeriod {
+            display: none;
+            background-color: #F9744B;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+            max-width: 350px;
+            margin-right: auto;
+            text-align: right;
+            width: fit-content;
+            margin-bottom: 5px;
+        }
+
+        .reports-projects-container,
+        .reports-keymetrics-container {
+            width: 90%;
+            max-width: 1500px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            margin-bottom: 20px;
+        }
+
+        .reports-projects-container {
+            overflow-y: auto;
+            max-height: 360px;
+        }
+
+        .reports-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #fff;
+            text-transform: uppercase;
+        }
+
+        th {
+            background-color: #FF6F61;
+            color: white;
+        }
+
+        td {
+            background-color: #FFE0DC;
+            color: #333;
+        }
+
+        tfoot td {
+            background-color: #FFF;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            padding-bottom: 70px;
+        }
+
+        .buttons button {
+            box-sizing: border-box;
+            width: 199px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 8px 16px;
+            background: linear-gradient(180deg, #124d54 0%, rgb(16, 41, 55) 100%);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            text-transform: uppercase;
+            overflow: hidden;
+        }
+
+        .buttons button:hover {
+            background: linear-gradient(180deg, #16a085 0%, rgb(22, 60, 77) 100%);
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            align-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: radial-gradient(50% 50% at 50% 50%, #ee9b7b 0%, #FFFFFF 100%);
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.25);
+            margin: 20px auto;
+            padding: 20px 30px;
+            border: 4px solid #102937;
+            width: 80%;
+            max-width: 400px;
+            border-radius: 30px;
+            text-align: center;
+            color: #F9744B;
+            font-family: 'Fredoka', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .modal-content h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Fredoka', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .modal-content button {
+            font-family: 'Fredoka', sans-serif;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            margin: 0 10px;
+            text-transform: uppercase;
+        }
+
+        .reports-keymetrics-container h3 {
+            color: #F9744B;
+            font-size: 30px;
+            font-family: 'Fredoka', sans-serif;
+            padding-top: 10px;
+        }
+
+        .keymetrics-container {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+        }
+
+        #keymetrics1 {
+            background-color: #FFE0DC;
+            margin: 20px 0;
+            border-radius: 20px;
+            padding: 0 20px;
+            width: 50%;
+        }
+
+        #keymetrics2 {
+            background-color: #FFE0DC;
+            margin: 20px 0;
+            border-radius: 20px;
+            padding: 20px;
+            width: 50%;
+        }
+
+        #keymetrics1 table {
+            width: 100%;
+            border-spacing: 10px;
+            border: none;
+        }
+
+        #keymetrics1-table tr {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        #keymetrics1 th,
+        #keymetrics1 td {
+            padding: 12px 15px;
+            text-align: center;
+            background-color: #124D54;
+            color: #fff;
+            border-radius: 30px;
+            border: none;
+        }
+
+        #project-select {
+            margin-bottom: 20px;
+            padding: 8px;
+            width: 100%;
+            height: 40px;
+            font-size: 18px;
+        }
+
+        .materials-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3px;
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .material-item {
+            padding: 10px;
+            text-align: center;
+            background: #124D54;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .material-item span {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="smarts-logo">
+            <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
+        </div>
+        <div>
+            <p>ROLE: <span>EXECUTIVE STAFF</span></p>
+            <i class='bx bxs-user-circle'></i>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo-details">
+            <div class="logo_name">ACCE Construction</div>
+            <i class='bx bx-menu' id="btn"></i>
+        </div>
+        <ul class="nav-list">
+            <li>
+                <a href="homepageExestaff">
+                    <i class='bx bx-home'></i>
+                    <span class="links_name">Homepage</span>
+                </a>
+                <span class="tooltip">Homepage</span>
+            </li>
+            <li>
+                <a href="myProjectExestaff">
+                    <i class='bx bx-task'></i>
+                    <span class="links_name">My Project</span>
+                </a>
+                <span class="tooltip">My Project</span>
+            </li>
+            <li>
+                <a href="inventoryExestaff">
+                    <i class='bx bx-store-alt'></i>
+                    <span class="links_name">Inventory</span>
+                </a>
+                <span class="tooltip">Inventory</span>
+            </li>
+            <li>
+                <a href="invoiceExestaff">
+                    <i class='bx bx-receipt'></i>
+                    <span class="links_name">Invoice</span>
+                </a>
+                <span class="tooltip">Invoice</span>
+            </li>
+            <li>
+                <a href="reportsExestaff">
+                    <i class='bx bx-bar-chart'></i>
+                    <span class="links_name">Reports & Analytics</span>
+                </a>
+                <span class="tooltip">Reports & Analytics</span>
+            </li>
+            <li>
+                <a href="requestsStatusExestaff">
+                    <i class='bx bx-comment-dots'></i>
+                    <span class="links_name">Requests Status</span>
+                </a>
+                <span class="tooltip">Requests Status</span>
+            </li>
+            <li>
+                <a href="settingsExestaff">
+                    <i class='bx bx-cog'></i>
+                    <span class="links_name">Settings</span>
+                </a>
+                <span class="tooltip">Settings</span>
+            </li>
+            <li>
+                <a href="confirmLogout">
+                    <i class='bx bx-log-out'></i>
+                    <span class="links_name">Logout</span>
+                </a>
+                <span class="tooltip">Logout</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Section -->
+    <section class="home-section">
+        <div class="upper">
+            <h1>REPORTS AND ANALYTICS</h1>
+        </div>
+        <div class="functionality">
+            <div class="selected-period" id="selectedPeriod"></div>
+            <button id="selectPeriod">Select Period</button>
+        </div>
+
+        <div class="overlay" id="overlay"></div>
+
+        <div class="reports-projects-container">
+            <table id="projectsTable">
+                <thead>
+                    <tr>
+                        <th>Project Name</th>
+                        <th>Status</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Client</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Residential Building Construction</td>
+                        <td>In Progress</td>
+                        <td>January 15, 2024</td>
+                        <td>December 20, 2025</td>
+                        <td>ABC Builders Inc.</td>
+                    </tr>
+                    <tr>
+                        <td>Shopping Mall and Retail Center</td>
+                        <td>In Progress</td>
+                        <td>July 10, 2024</td>
+                        <td>July 10, 2026</td>
+                        <td>RetailCorp Ltd.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="reports-keymetrics-container">
+            <h3>KEY METRICS</h3>
+            <div class="keymetrics-container">
+                <!-- Key Metrics 1 Table -->
+                <div id="keymetrics1">
+                    <table id="keymetrics1-table">
+                        <tr>
+                            <th>Total Projects</th>
+                            <td>2</td>
+                        </tr>
+                        <tr>
+                            <th>Ongoing Projects</th>
+                            <td>2</td>
+                        </tr>
+                        <tr>
+                            <th>Projects Completed</th>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <th>Total Revenue</th>
+                            <td>PHP 1,500,000</td>
+                        </tr>
+                        <tr>
+                            <th>Total Expense</th>
+                            <td>PHP 1,200,000</td>
+                        </tr>
+                        <tr>
+                            <th>Net Profit</th>
+                            <td>PHP 300,000</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Key Metrics 2 Dropdown & Materials -->
+                <div id="keymetrics2">
+                    <select id="project-select">
+                        <option value="project1">Residential Building Construction</option>
+                        <option value="project2">Shopping Mall and Retail Center</option>
+                    </select>
+
+                    <div class="materials-container">
+                        <div class="material-item">
+                            <span>Steel Beams</span>
+                            <span>50 pcs</span>
+                        </div>
+                        <div class="material-item">
+                            <span>Concrete Mix</span>
+                            <span>200 bags</span>
+                        </div>
+                        <div class="material-item">
+                            <span>Wood Planks</span>
+                            <span>150 pcs</span>
+                        </div>
+                        <div class="material-item">
+                            <span>Plumbing Pipes</span>
+                            <span>100 meters</span>
+                        </div>
+                        <div class="material-item">
+                            <span>Electrical Cables</span>
+                            <span>300 meters</span>
+                        </div>
+                        <div class="material-item">
+                            <span>Roofing Sheets</span>
+                            <span>120 sheets</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <h3>Select Period</h3>
+                <input type="date" id="startDate">
+                <input type="date" id="endDate">
+                <div>
+                    <button id="cancelModal">Cancel</button>
+                    <button id="submitPeriod">Submit</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
+    </footer>
+
+    <script>
+        const overlay = document.getElementById("overlay");
+        const modal = document.getElementById("modal");
+        const selectPeriodButton = document.getElementById("selectPeriod");
+        const cancelModalButton = document.getElementById("cancelModal");
+        const datePeriodDiv = document.getElementById("selectedPeriod");
+
+        selectPeriodButton.addEventListener("click", () => {
+            modal.style.display = "block";
+            overlay.style.display = "block";
+        });
+
+        cancelModalButton.addEventListener("click", () => {
+            modal.style.display = "none";
+            overlay.style.display = "none";
+        });
+
+        document.getElementById("submitPeriod").addEventListener("click", () => {
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+            const currentDate = new Date().toISOString().split('T')[0];
+
+            if (startDate && endDate) {
+                if (new Date(startDate) > new Date(endDate)) {
+                    alert("Start date cannot be later than end date.");
+                } else if (startDate > currentDate || endDate > currentDate) {
+                    alert("Dates cannot be in the future.");
+                } else {
+                    datePeriodDiv.innerHTML = `Selected Period: ${startDate} to ${endDate}`;
+                    datePeriodDiv.style.display = "block";
+                    modal.style.display = "none";
+                    overlay.style.display = "none";
+                }
+            } else {
+                alert("Please select valid dates.");
+            }
+        });
+
+        window.onclick = (event) => {
+            if (event.target === overlay) {
+                modal.style.display = "none";
+                overlay.style.display = "none";
+            }
+        };
+
+        let sidebar = document.querySelector(".sidebar");
+        let closeBtn = document.querySelector("#btn");
+        let searchBtn = document.querySelector(".bx-search");
+
+        closeBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("open");
+        });
+
+        searchBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("open");
+        });
+    </script>
+</body>
+
+</html>
