@@ -424,8 +424,13 @@
     </div>
 
     <script>
-        function openModal() {
-            document.getElementById("myModal").style.display = "block";
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('inactive') === 'true') {
+            alert("Your account is inactive. Please contact the admin.");
+
+            // Clean the URL without reloading the page
+            window.history.replaceState({}, document.title, window.location.pathname);
         }
 
         function closeModal() {
