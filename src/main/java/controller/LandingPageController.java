@@ -63,21 +63,23 @@ public class LandingPageController {
         Optional<User> userOpt = userRepository.findByUsername(username);
 
         if (userOpt.isEmpty()) {
-            return "redirect:/invalidUsername"; // Redirect if username is incorrect
+            return "redirect:/invalidUsername";
         }
 
         User user = userOpt.get();
 
         if (!user.getPassword().equals(password)) {
-            return "redirect:/invalidPassword"; // Redirect if password is incorrect
+            return "redirect:/invalidPassword";
         }
 
-        // Store everything needed
-        session.setAttribute("authenticatedUser", user);  // for CAPTCHA (if still used)
-        session.setAttribute("username", user.getUsername()); // Needed by getCurrentUser
-        session.setAttribute("role", user.getRole()); // For conditional redirect or display
+        if ("inactive".equalsIgnoreCase(user.getStatus())) {
+            return "redirect:/?inactive=true";
+        }
 
-        // Redirect to CAPTCHA verification page
+        session.setAttribute("authenticatedUser", user);
+        session.setAttribute("username", user.getUsername());
+        session.setAttribute("role", user.getRole());
+
         return "redirect:/captcha";
     }
 
