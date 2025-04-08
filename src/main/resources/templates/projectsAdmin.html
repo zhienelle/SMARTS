@@ -987,6 +987,7 @@
         <button id="addProjectBtn">Add New Project</button>
         <button id="editDetailsBtn">Edit Project Details</button>
         <button id="editProgressBtn">Edit Project Progress</button>
+        <button id="archiveButton">Show Archived Projects</button>
     </div>
 
     <div class="overlay" id="overlay"></div>
@@ -1155,6 +1156,7 @@
     // Global variable to store projects fetched from the backend
     let projectsData = [];
 
+    let showArchived = false; // Flag to track whether archived projects are being shown
     // Function to load projects from the backend and update UI dynamically
     function loadProjects() {
         console.log("loadProjects called");
@@ -1171,11 +1173,24 @@
                 }
                 projectsData = data; // store globally for use in edit modal
 
-                // Populate the projects table, filtering out archived projects
+                // Filter the projects based on the "archived" flag
+                const filteredProjects = showArchived
+                    ? data.filter(project => project.projectstatus.toLowerCase() === "archived")
+                    : data.filter(project => project.projectstatus.toLowerCase() !== "archived");
+
+                // Populate the projects table
                 const tableBody = document.getElementById('projectsTable').querySelector('tbody');
-                tableBody.innerHTML = '';
-                data.filter(project => project.projectstatus !== "archived")
-                    .forEach(project => {
+                tableBody.innerHTML = ''; // Clear the table body before repopulating
+
+                if (filteredProjects.length === 0) {
+                    const row = document.createElement('tr');
+                    const cell = document.createElement('td');
+                    cell.colSpan = 5;
+                    cell.textContent = showArchived ? "No Archived Projects Found" : "No Active Projects Found";
+                    row.appendChild(cell);
+                    tableBody.appendChild(row);
+                } else {
+                    filteredProjects.forEach(project => {
                         const row = document.createElement('tr');
                         row.setAttribute("data-project-id", project.projectId);
 
@@ -1206,10 +1221,11 @@
 
                         tableBody.appendChild(row);
                     });
+                }
 
-                // Populate dropdowns in the edit modals with non-archived projects
-                populateProjectDropdown('editProjectNameSelect', data.filter(p => p.projectstatus !== "archived"));
-                populateProjectDropdown('projectSelect', data.filter(p => p.projectstatus !== "archived"));
+                // Populate dropdowns in the edit modals
+                populateProjectDropdown('editProjectNameSelect', filteredProjects);
+                populateProjectDropdown('projectSelect', filteredProjects);
             })
             .catch(error => {
                 console.error('Error loading projects:', error);
@@ -1570,6 +1586,15 @@
         document.getElementById('projectSelect').dispatchEvent(new Event('change')); // load progress
     });
 
+    document.getElementById('archiveButton').addEventListener('click', function () {
+        showArchived = !showArchived; // Toggle the visibility state
+        if (showArchived) {
+            this.textContent = "Show Active Projects"; // Change button text to "Show Active Projects"
+        } else {
+            this.textContent = "Show Archived Projects"; // Change button text to "Show Archived Projects"
+        }
+        loadProjects(); // Reload the projects with the updated filter
+    });
 
     document.getElementById('projectSelect').addEventListener('change', function () {
         const projectId = this.value;
