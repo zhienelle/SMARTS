@@ -982,8 +982,9 @@
             newRow.setAttribute('data-last-name', userData.lastName || '');
             newRow.setAttribute('data-phone', userData.phone || '');
             newRow.setAttribute('data-email', userData.email || '');
-
-
+            if (userData.status === "INACTIVE") {
+                newRow.style.backgroundColor = "#f8d7da"; // light red for archived users
+            }
 
             newRow.innerHTML = `
         <td>${userData.username}</td>
