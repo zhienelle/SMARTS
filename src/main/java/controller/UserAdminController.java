@@ -25,11 +25,10 @@ public class  UserAdminController {
     private ProjectRepository projectRepository;
 
     @GetMapping("/userAdmin/getUsers")
-    @ResponseBody // Returns JSON data
+    @ResponseBody
     public List<User> getAllUsers() {
-        return userRepository.findAll(); //Fetch all users from PostgreSQL
+        return userRepository.findByStatus("active"); // Only return active users
     }
-
 
     @PostMapping("/userAdmin/addUser")
     @ResponseBody
