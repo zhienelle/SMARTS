@@ -661,6 +661,7 @@
     <div class="buttons">
         <button onclick="showAddUserModal()">ADD NEW USER</button>
         <button onclick="showEditUserModal()">EDIT USER DETAILS</button>
+        <button id="toggleArchiveBtn" onclick="toggleUserView()">ARCHIVED USERS</button>
     </div>
 
     <div class="overlay" id="overlay" onclick="closeModal()"></div>
@@ -1013,10 +1014,47 @@
             }
         }
 
+        let showingArchived = false;
+        function toggleUserView() {
+            const tableBody = document.getElementById('userTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            fetch('/userAdmin/getUsers')
+                .then(response => response.json())
+                .then(users => {
+                    if (showingArchived) {
+                        // Show ACTIVE users
+                        users
+                            .filter(user => user.status !== "INACTIVE")
+                            .forEach(user => addRowToTable(user));
+                        document.getElementById('toggleArchiveBtn').innerText = "ARCHIVED USERS";
+                    } else {
+                        // Show INACTIVE users
+                        users
+                            .filter(user => user.status === "INACTIVE")
+                            .forEach(user => addRowToTable(user));
+                        document.getElementById('toggleArchiveBtn').innerText = "ACTIVE USERS";
+                    }
+                    showingArchived = !showingArchived;
+                })
+                .catch(error => console.error('Error toggling users:', error));
+        }
+        
         function archiveUser() {
             if (selectedRow) {
-                selectedRow.style.display = 'none';
-                closeModal();
+                const userId = selectedRow.getAttribute('data-user-id');
+                fetch(`/userAdmin/archiveUser/${userId}`, {
+                    method: 'PUT'
+                })
+                    .then(response => response.json())
+                    .then(archivedUser => {
+                        if (archivedUser && archivedUser.status === "INACTIVE") {
+                            selectedRow.remove(); // Remove from UI
+                            selectedRow = null;
+                            closeModal();
+                        }
+                    })
+                    .catch(error => console.error('Error archiving user:', error));
             }
         }
 
