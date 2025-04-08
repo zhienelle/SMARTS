@@ -1,18 +1,24 @@
 package controller;
 
 import entity.Inventory;
+import entity.MaterialRequest;
+import entity.Project;
 import entity.User;
+import repository.InventoryRepository;
+import repository.MaterialRequestRepository;
+import repository.ProjectRepository;
+import repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import repository.InventoryRepository;
-import repository.UserRepository;
-// import repository.MaterialRequestRepository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import jakarta.servlet.http.HttpSession; // ✅ Changed: Added for session handling
 
 @Controller
 public class InventoryExestaffController {
@@ -23,31 +29,49 @@ public class InventoryExestaffController {
     @Autowired
     private UserRepository userRepository;
 
-    // @Autowired
-    // private MaterialRequestRepository materialRequestRepository;
+    @Autowired
+    private ProjectRepository projectRepository;
 
-    // Load executive staff inventory page only if role is EXESTAFF
+    @Autowired
+    private MaterialRequestRepository materialRequestRepository;
+
+    // ✅ CHANGED: Replaced Principal with HttpSession to match your session-based login system
     @GetMapping("/exestaff/inventory")
-    public String loadExeStaffInventory(@RequestParam("username") String username, Model model) {
-        Optional<User> optionalUser = userRepository.findByUsername(username);
+    public String loadExeStaffInventory(HttpSession session, Model model) {
+        User currentUser = (User) session.getAttribute("authenticatedUser"); // ✅ CHANGED: get user from session
 
-        if (optionalUser.isPresent()) {
-            User currentUser = optionalUser.get();
-
-            if ("EXESTAFF".equalsIgnoreCase(currentUser.getRole())) {
-                List<Inventory> unarchivedInventory = inventoryRepository.findAll().stream()
-                        .filter(item -> item.getMaterialArchived() == null || !item.getMaterialArchived())
-                        .collect(Collectors.toList());
-
-                model.addAttribute("inventory", unarchivedInventory);
-                return "inventoryExestaff";
-            }
+        if (currentUser == null) {
+            return "redirect:/"; // or "error"
         }
 
-        return "error"; // fallback
+        String username = currentUser.getUsername(); // ✅ CHANGED: retrieve username from User object
+        System.out.println("this is the username:" + username);
+
+        if ("EXESTAFF".equalsIgnoreCase(currentUser.getRole())) {
+            List<Inventory> unarchivedInventory = inventoryRepository.findAll().stream()
+                    .filter(item -> item.getMaterialArchived() == null || !item.getMaterialArchived())
+                    .collect(Collectors.toList());
+
+            List<Project> assignedProjects = List.of();
+            System.out.println("this is the exestaff project:" + currentUser.getProject());
+            if (currentUser.getProject() != null && !currentUser.getProject().isEmpty()) {
+                assignedProjects = List.of(currentUser.getProject().split(",")).stream()
+                        .map(String::trim)
+                        .map(projectRepository::findByProjectname)
+                        .filter(p -> p != null)
+                        .collect(Collectors.toList());
+            }
+
+            model.addAttribute("inventory", unarchivedInventory);
+            model.addAttribute("projects", assignedProjects);
+            model.addAttribute("username", username);
+            return "inventoryExestaff";
+        }
+
+        return "error";
     }
 
-    // Fetch inventory items as JSON (REST)
+    // ✅ UNCHANGED
     @GetMapping("/exestaff/inventory/getInventory")
     @ResponseBody
     public List<Inventory> getInventory() {
@@ -56,17 +80,64 @@ public class InventoryExestaffController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("inventoryExestaff")
-    public String InventoryExestaff(){
-        return "inventoryExestaff";
-    }
-    /*
-    // Submit request for materials (for future use)
+    // ✅ UNCHANGED
+    // ✅ Submit material request
     @PostMapping("/exestaff/inventory/requestMaterial")
     @ResponseBody
-    public String submitMaterialRequest(@RequestBody MaterialRequest request) {
+    public String submitMaterialRequest(@RequestParam("projectName") String projectName,
+                                        @RequestParam("category") String category,
+                                        @RequestParam("material") String material,
+                                        @RequestParam("quantity") Integer quantity,
+                                        HttpSession session) {
+
+        User user = (User) session.getAttribute("authenticatedUser");
+        if (user == null) {
+            return "❌ Not authenticated.";
+        }
+
+        Inventory inventory = inventoryRepository.findByMaterialCategoryAndMaterialName(category, material);
+        Project project = projectRepository.findByProjectname(projectName);
+
+        if (inventory == null || project == null) {
+            return "❌ Invalid material or project.";
+        }
+
+        MaterialRequest request = new MaterialRequest();
+        request.setProject(project);
+        request.setInventory(inventory);
+        request.setMaterialName(material);
+        request.setMaterialCategory(category);
+        request.setMaterialStock(quantity);
+        request.setMaterialRequestStatus("PENDING");
+
+        // ✅ Add user to request
+        request.setUser(user);
+
         materialRequestRepository.save(request);
-        return "Request submitted successfully";
+        return "✅ Request submitted successfully!";
     }
-    */
+
+
+
+    // ✅ UNCHANGED
+    @GetMapping("inventoryExestaff")
+    public String InventoryExestaff() {
+        return "inventoryExestaff";
+    }
+
+    // ✅ CHANGED: get username from session instead of Principal
+    @GetMapping("/exestaff/inventory/getProjects")
+    @ResponseBody
+    public List<String> getAssignedProjects(HttpSession session) {
+        User user = (User) session.getAttribute("authenticatedUser"); // ✅ CHANGED
+
+        if (user != null && user.getProject() != null && !user.getProject().isEmpty()) {
+            return List.of(user.getProject().split(","))
+                    .stream()
+                    .map(String::trim)
+                    .collect(Collectors.toList());
+        }
+
+        return List.of(); // Return empty if not found or no projects
+    }
 }

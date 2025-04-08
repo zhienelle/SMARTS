@@ -1,8 +1,11 @@
 package entity;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "projects")
@@ -13,7 +16,7 @@ import java.util.Date;
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "project_id")  // primary key
+    @Column(name = "project_id")
     private int projectId;
 
     @Column(name = "project_name", length = 100)
@@ -45,4 +48,9 @@ public class Project {
 
     @Column(name = "company_contact", length = 100)
     private String companycontact;
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<ProjectInventory> projectInventoryList;
+
 }

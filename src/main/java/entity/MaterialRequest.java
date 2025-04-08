@@ -9,74 +9,98 @@ public class MaterialRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long requestId;
+    @Column(name = "material_request_id")
+    private Long materialRequestId;
 
-    @Column(nullable = false)
-    private String projectName;
+    // 🔗 FK to projects
+    @ManyToOne
+    @JoinColumn(name = "project_id", referencedColumnName = "project_id", nullable = false)
+    private Project project;
 
-    @Column(nullable = false)
-    private String category;
+    // 🔗 FK to inventory
+    @ManyToOne
+    @JoinColumn(name = "material_id", referencedColumnName = "material_id", nullable = false)
+    private Inventory inventory;
 
-    @Column(nullable = false)
-    private String material;
+    // 🔗 FK to user who requested
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
+    private User user;
 
-    @Column(nullable = false)
-    private Integer quantity;
+    // 📦 Requested quantity
+    @Column(name = "material_stock", nullable = false)
+    private Integer materialStock;
 
-    private LocalDateTime requestDate;
+    // 🕒 Auto-set on creation
+    @Column(name = "request_date", nullable = false)
+    private LocalDateTime requestDate = LocalDateTime.now();
 
-    // Constructors
+    // 🔄 Status: PENDING / ACCEPTED / DENIED
+    @Column(name = "material_request_status", nullable = false)
+    private String materialRequestStatus = "PENDING";
+
+    // 🆕 Material name snapshot (for reporting/auditing)
+    @Column(name = "material_name")
+    private String materialName;
+
+    // 🆕 Material category snapshot
+    @Column(name = "material_category")
+    private String materialCategory;
+
+    // --- Constructors ---
     public MaterialRequest() {
         this.requestDate = LocalDateTime.now();
+        this.materialRequestStatus = "PENDING";
     }
 
-    public MaterialRequest(String projectName, String category, String material, Integer quantity) {
-        this.projectName = projectName;
-        this.category = category;
-        this.material = material;
-        this.quantity = quantity;
+    public MaterialRequest(Project project, Inventory inventory, Integer materialStock) {
+        this.project = project;
+        this.inventory = inventory;
+        this.materialStock = materialStock;
         this.requestDate = LocalDateTime.now();
+        this.materialRequestStatus = "PENDING";
     }
 
-    // Getters and Setters
-    public Long getRequestId() {
-        return requestId;
+    // --- Getters and Setters ---
+
+    public Long getMaterialRequestId() {
+        return materialRequestId;
     }
 
-    public void setRequestId(Long requestId) {
-        this.requestId = requestId;
+    public void setMaterialRequestId(Long materialRequestId) {
+        this.materialRequestId = materialRequestId;
     }
 
-    public String getProjectName() {
-        return projectName;
+    public Project getProject() {
+        return project;
     }
 
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+    public void setProject(Project project) {
+        this.project = project;
     }
 
-    public String getCategory() {
-        return category;
+    public Inventory getInventory() {
+        return inventory;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
     }
 
-    public String getMaterial() {
-        return material;
+    public User getUser() {
+        return user;
     }
 
-    public void setMaterial(String material) {
-        this.material = material;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public Integer getQuantity() {
-        return quantity;
+    public Integer getMaterialStock() {
+        return materialStock;
     }
 
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
+    public void setMaterialStock(Integer materialStock) {
+        this.materialStock = materialStock;
     }
 
     public LocalDateTime getRequestDate() {
@@ -85,5 +109,29 @@ public class MaterialRequest {
 
     public void setRequestDate(LocalDateTime requestDate) {
         this.requestDate = requestDate;
+    }
+
+    public String getMaterialRequestStatus() {
+        return materialRequestStatus;
+    }
+
+    public void setMaterialRequestStatus(String materialRequestStatus) {
+        this.materialRequestStatus = materialRequestStatus;
+    }
+
+    public String getMaterialName() {
+        return materialName;
+    }
+
+    public void setMaterialName(String materialName) {
+        this.materialName = materialName;
+    }
+
+    public String getMaterialCategory() {
+        return materialCategory;
+    }
+
+    public void setMaterialCategory(String materialCategory) {
+        this.materialCategory = materialCategory;
     }
 }

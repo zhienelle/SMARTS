@@ -2,7 +2,8 @@ package repository;
 
 import entity.MaterialRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List; // ✅ Add this
 
 public interface MaterialRequestRepository extends JpaRepository<MaterialRequest, Long> {
-    // Additional query methods can be added later if needed
+    List<MaterialRequest> findByMaterialRequestStatus(String status);
 }

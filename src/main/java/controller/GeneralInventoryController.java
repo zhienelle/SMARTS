@@ -69,10 +69,21 @@ public class GeneralInventoryController {
             // Ensure Hibernate treats it as new
             inventory.setMaterialId(null);
 
-            // Save and return the saved item
+            // Update stock status BEFORE saving
+            int stock = inventory.getMaterialStock();
+            if (stock <= 30) {
+                inventory.setMaterialStockStatus("LOW");
+            } else if (stock <= 100) {
+                inventory.setMaterialStockStatus("MODERATE");
+            } else {
+                inventory.setMaterialStockStatus("HIGH");
+            }
+
+// Save and return the saved item
             Inventory savedInventory = inventoryRepository.save(inventory);
             System.out.println("✅ Saved item ID: " + savedInventory.getMaterialId());
             return savedInventory;
+
 
         } catch (Exception e) {
             System.err.println("❌ Error saving new inventory item: " + e.getMessage());
@@ -100,6 +111,16 @@ public class GeneralInventoryController {
                 inventory.setMaterialStock(updatedInventory.getMaterialStock());
                 inventory.setMaterialPrice(updatedInventory.getMaterialPrice());
                 inventory.setMaterialArchived(updatedInventory.getMaterialArchived()); // ✅ Apply archive status
+
+                // Update stock status based on updated stock
+                int stock = updatedInventory.getMaterialStock();
+                if (stock <= 30) {
+                    inventory.setMaterialStockStatus("LOW");
+                } else if (stock <= 100) {
+                    inventory.setMaterialStockStatus("MODERATE");
+                } else {
+                    inventory.setMaterialStockStatus("HIGH");
+                }
 
                 System.out.println("Updating inventory ID: " + id);
                 return inventoryRepository.save(inventory);

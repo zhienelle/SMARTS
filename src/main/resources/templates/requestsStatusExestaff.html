@@ -528,36 +528,10 @@
                     <th>Status</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>Steel</td>
-                    <td>Steel Rods</td>
-                    <td>20</td>
-                    <td>11/23/24</td>
-                    <td>Approved</td>
-                </tr>
-                <tr>
-                    <td>Steel</td>
-                    <td>Galvanized Steel</td>
-                    <td>50</td>
-                    <td>01/23/25</td>
-                    <td>Pending</td>
-                </tr>
-                <tr>
-                    <td>Steel</td>
-                    <td>Alloy Steel</td>
-                    <td>15</td>
-                    <td>01/05/25</td>
-                    <td>Pending</td>
-                </tr>
-                <tr>
-                    <td>Steel</td>
-                    <td>Weathering Steel (Corten Steel)</td>
-                    <td>20</td>
-                    <td>01/12/25</td>
-                    <td>Declined</td>
-                </tr>
+            <tbody id="requestTableBody">
+            <!-- Dynamic content will be injected here -->
             </tbody>
+
         </table>
     </section>
 
@@ -567,18 +541,37 @@
     </footer>
 
     <script>
-        let sidebar = document.querySelector(".sidebar");
-        let closeBtn = document.querySelector("#btn");
-        let searchBtn = document.querySelector(".bx-search");
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch("/exestaff/requests/getMaterialRequests")
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById("requestTableBody");
+                    tbody.innerHTML = "";
 
-        closeBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
+                    if (data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="5">No material requests found.</td></tr>`;
+                        return;
+                    }
+
+                    data.forEach(req => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                    <td>${req.inventory?.materialCategory || req.materialCategory || '-'}</td>
+                    <td>${req.inventory?.materialName || req.materialName || '-'}</td>
+                    <td>${req.materialStock}</td>
+                    <td>${new Date(req.requestDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</td>
+                    <td>${req.materialRequestStatus}</td>
+                `;
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(err => {
+                    console.error("❌ Failed to load material requests:", err);
+                });
         });
 
-        searchBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
-        });
     </script>
+
 </body>
 
 </html>

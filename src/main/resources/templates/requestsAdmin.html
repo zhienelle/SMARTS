@@ -551,6 +551,13 @@
     <!-- Main Section -->
     <section class="home-section">
         <h1>Requests</h1>
+        <div style="text-align: right; margin-right: 5%; margin-bottom: 10px;">
+            <label for="projectFilter">Filter by Project:</label>
+            <select id="projectFilter" style="padding: 8px; border-radius: 8px;">
+                <option value="">All Projects</option>
+            </select>
+        </div>
+
 
         <table>
             <thead>
@@ -563,8 +570,8 @@
                     <th>Approval</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
+            <tbody id="requestsTableBody">
+            <tr>
                     <td>Staff1</td>
                     <td>Staff</td>
                     <td>Steel Rods</td>
@@ -631,34 +638,183 @@
                 </tr>
             </tbody>
         </table>
+        <div class="approval-buttons" style="justify-content: center; margin-top: 20px;">
+            <button id="approveSelectedBtn">Approve Selected</button>
+            <button id="denySelectedBtn">Deny Selected</button>
+        </div>
+
+
     </section>
 
     <!-- Footer -->
     <footer>
         <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
     </footer>
+    <div id="bulkConfirmModal" class="modal" style="display: none;">
+        <div class="modal-content" style="background-color: white; padding: 30px; border-radius: 20px; width: 300px; margin: auto; top: 30%; position: fixed; left: 0; right: 0; box-shadow: 0px 0px 20px rgba(0,0,0,0.3); z-index: 999;">
+            <h3 style="color: #124D54;">Are you sure?</h3>
+            <div style="display: flex; justify-content: space-around; margin-top: 20px;">
+                <button id="confirmBulkYes">YES</button>
+                <button id="confirmBulkNo">NO</button>
+            </div>
+        </div>
+    </div>
 
     <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const tbody = document.querySelector("#requestsTableBody");
+            const projectFilter = document.getElementById("projectFilter");
 
-        function hideRow(button) {
-            // Get the row containing the clicked button
-            const row = button.closest('tr');
-            // Hide the row
-            row.style.display = 'none';
+            // Load all material requests
+            function loadRequests(project = "") {
+                fetch("/admin/requests/getAll")
+                    .then(res => res.json())
+                    .then(data => {
+                        tbody.innerHTML = "";
+                        const projectSet = new Set();
+
+                        data.forEach(req => {
+                            const projName = req.project?.projectname || "-";
+                            projectSet.add(projName);
+
+                            if (project && projName !== project) return;
+
+                            const row = document.createElement("tr");
+                            row.setAttribute("data-id", req.materialRequestId);
+
+                            row.innerHTML = `
+                            <td><input type="checkbox" class="row-checkbox" data-id="${req.materialRequestId}"> ${req.user?.username || 'N/A'}</td>
+                            <td>${req.user?.role || 'N/A'}</td>
+                            <td>${req.materialName || '-'}</td>
+                            <td>${req.materialStock}</td>
+                            <td>${projName}</td>
+                            <td>
+                                <div class="approval-buttons">
+                                    <button onclick="handleApproval(${req.materialRequestId}, true)">YES</button>
+                                    <button onclick="handleApproval(${req.materialRequestId}, false)">NO</button>
+                                </div>
+                            </td>
+                        `;
+
+                            tbody.appendChild(row);
+                        });
+
+                        // Populate the filter dropdown
+                        const currentSelection = projectFilter.value; // 👈 preserve selection
+                        projectFilter.innerHTML = '<option value="">All Projects</option>';
+                        Array.from(projectSet).sort().forEach(p => {
+                            const opt = document.createElement("option");
+                            opt.value = p;
+                            opt.textContent = p;
+                            if (p === project) opt.selected = true; // 👈 reselect current
+                            projectFilter.appendChild(opt);
+                        });
+
+                        if (project === "") {
+                            projectFilter.value = ""; // 👈 reselect "All Projects" explicitly
+                        }
+                    })
+                    .catch(err => {
+                        console.error("❌ Failed to fetch material requests:", err);
+                    });
+
+                // if (req.materialRequestStatus !== "PENDING") return; // show only pending
+
+            }
+
+
+            // Handle approve/deny click
+            window.handleApproval = (requestId, approved) => {
+                const url = approved ? "/admin/requests/approve/" : "/admin/requests/deny/";
+                fetch(url + requestId, { method: "POST" })
+                    .then(res => {
+                        if (res.ok) {
+                            const row = document.querySelector(`tr[data-id="${requestId}"]`);
+                            if (row) row.style.display = "none";
+                        } else {
+                            alert("❌ Failed to update request.");
+                        }
+                    });
+            };
+
+
+            // Filter by project dropdown
+            projectFilter.addEventListener("change", () => {
+                loadRequests(projectFilter.value);
+            });
+
+            // Initial load
+            loadRequests();
+        });
+
+        let selectedAction = null;
+
+        function getSelectedRequestIds() {
+            return [...document.querySelectorAll(".row-checkbox:checked")].map(cb => parseInt(cb.dataset.id));
         }
 
-        let sidebar = document.querySelector(".sidebar");
-        let closeBtn = document.querySelector("#btn");
-        let searchBtn = document.querySelector(".bx-search");
+        function toggleModal(show) {
+            const modal = document.getElementById("bulkConfirmModal");
+            modal.style.display = show ? "block" : "none";
+        }
 
-        closeBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
+        document.getElementById("approveSelectedBtn").addEventListener("click", () => {
+            const selected = getSelectedRequestIds();
+            if (selected.length === 0) {
+                alert("⚠️ No requests selected.");
+                return;
+            }
+            selectedAction = "APPROVED";
+            toggleModal(true);
         });
 
-        searchBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
+        document.getElementById("denySelectedBtn").addEventListener("click", () => {
+            const selected = getSelectedRequestIds();
+            if (selected.length === 0) {
+                alert("⚠️ No requests selected.");
+                return;
+            }
+            selectedAction = "DENIED";
+            toggleModal(true);
+        });
+
+
+
+        document.getElementById("confirmBulkNo").addEventListener("click", () => {
+            toggleModal(false);
+            selectedAction = null;
+        });
+
+        document.getElementById("confirmBulkYes").addEventListener("click", () => {
+            const requestIds = getSelectedRequestIds();
+            if (requestIds.length === 0) {
+                alert("Please select at least one request.");
+                toggleModal(false);
+                return;
+            }
+
+            fetch("/admin/requests/updateMultipleStatus", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ requestIds, action: selectedAction })
+            })
+                .then(res => res.text())
+                .then(msg => {
+                    requestIds.forEach(id => {
+                        const row = document.querySelector(`tr[data-id="${id}"]`);
+                        if (row) row.style.display = "none";
+                    });
+                    toggleModal(false);
+                    alert(msg);
+                })
+                .catch(err => {
+                    console.error("❌ Bulk update failed", err);
+                    alert("❌ Something went wrong.");
+                    toggleModal(false);
+                });
         });
     </script>
+
 </body>
 
 </html>

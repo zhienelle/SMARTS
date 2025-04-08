@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface InventoryRepository extends JpaRepository<Inventory, Integer> {
-    // You can add custom query methods here if needed
+    Inventory findByMaterialCategoryAndMaterialName(String materialCategory, String materialName);
 }

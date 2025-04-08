@@ -37,4 +37,18 @@ public class Inventory {
     @Column(name = "material_archived")
     @JsonProperty("material_archived")
     private Boolean materialArchived;  // <--New field for archive status
+
+    @Column(name = "material_stock_status")
+    private String materialStockStatus;
+
+    public void updateStockStatus() {
+        if (this.materialStock <= 30) {
+            this.materialStockStatus = "LOW";
+        } else if (this.materialStock <= 100) {
+            this.materialStockStatus = "MODERATE";
+        } else {
+            this.materialStockStatus = "HIGH";
+        }
+    }
+
 }

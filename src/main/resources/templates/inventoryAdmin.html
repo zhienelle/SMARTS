@@ -774,6 +774,25 @@
                 border-left: none;
                 height: auto;
             }
+
+            #notificationList li {
+                cursor: pointer;
+                padding: 5px 0;
+                transition: background-color 0.3s ease;
+            }
+
+            #notificationList li:hover {
+                background-color: #f5f5f5;
+                font-weight: bold;
+            }
+
+            .low-stock-row {
+                td {
+                    color: #ff0000 !important;
+                    font-weight: bold;
+                }
+            }
+
         </style>
     </head>
 
@@ -783,11 +802,41 @@
             <div class="smarts-logo">
                 <img src="https://i.ibb.co/pKSRPK3/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
             </div>
-            <div>
-                <p>ROLE: <span>ADMIN</span></p>
+
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <!-- 🔔 Notification Bell Icon -->
+                <div id="notificationWrapper" style="position: relative;">
+                    <i class='bx bx-bell' id="notificationBell" style="font-size: 24px; cursor: pointer;"></i>
+                    <span id="notificationDot"
+                          style="position: absolute; top: -5px; right: -5px; width: 10px; height: 10px; background-color: red; border-radius: 50%; display: none;">
+    </span>
+                    <div id="notificationDropdown"
+                         style="display: none; position: absolute; right: 0; top: 30px; background: white; border: 1px solid #ccc; width: 250px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 999; border-radius: 8px; padding: 10px;">
+                        <p style="font-weight: bold;">Notifications</p>
+                        <ul id="notificationList" style="list-style: none; padding: 0; margin: 0;"></ul>
+                    </div>
+                </div>
+
+            </div>
+
+                <!-- 👤 User Role Display -->
+                <div>
+                    <p>ROLE: <span>ADMIN</span></p>
+                </div>
                 <i class='bx bxs-user-circle'></i>
             </div>
         </header>
+        <div class="modal" id="lowStockModal" style="display: none;">
+            <div class="modal-content">
+                <img src="https://cdn.staticcrate.com/stock-hd/effects/footagecrate-red-error-icon@3X.png" class="close" alt="Error">
+                <h3>NEEDS RESTOCK!</h3>
+                <p id="lowStockMessage">Low quantity of [Material Name]</p>
+                <button onclick="document.getElementById('lowStockModal').style.display='none'">OK</button>
+            </div>
+        </div>
+
+
+
 
         <!-- Sidebar -->
         <div class="sidebar">
@@ -929,6 +978,7 @@
         <!-- Updated Script to Load, Add, Edit Inventory -->
         <script>
             document.addEventListener("DOMContentLoaded", () => {
+                console.log("DOM content loaded");
                 const inventoryData = document.getElementById("inventoryData");
                 const editBtn = document.getElementById("editBtn");
                 const addRowBtn = document.getElementById("addRowBtn");
@@ -1051,11 +1101,13 @@
                 }
 
                 function loadInventory() {
+                    console.log("load inventory function is called");
                     return fetch('/generalInventory/getInventory')
                         .then(res => res.json())
                         .then(data => {
                             inventoryData.innerHTML = "";
                             const categoriesSet = new Set();
+                            const lowStockMaterials = [];
 
                             data.forEach(item => {
                                 const row = document.createElement("tr");
@@ -1068,18 +1120,28 @@
                                     row.classList.add("archived");
                                 }
 
+                                // ✅ Collect low stock entries (only material names)
+                                console.log(item);
+                                if (item.materialStockStatus === "LOW") {
+                                    lowStockMaterials.push(item.material_name);
+                                    row.classList.add("low-stock-row");
+
+
+                                }
+
+
                                 row.innerHTML = `
-                            <td ${isEditMode ? 'contenteditable="true"' : ''}>${item.material_category}</td>
-                            <td ${isEditMode ? 'contenteditable="true"' : ''}>${item.material_name}</td>
-                            <td ${isEditMode ? 'contenteditable="true"' : ''}>${item.material_stock}</td>
-                            <td ${isEditMode ? 'contenteditable="true"' : ''}>${item.material_price}</td>
-                            <td>
-                                ${isEditMode
+                    <td ${isEditMode ? 'contenteditable="true"' : ''}>${item.material_category}</td>
+                    <td ${isEditMode ? 'contenteditable="true"' : ''}>${item.material_name}</td>
+                    <td ${isEditMode ? 'contenteditable="true"' : ''}>${item.material_stock}</td>
+                    <td ${isEditMode ? 'contenteditable="true"' : ''}>${item.material_price}</td>
+                    <td>
+                        ${isEditMode
                                     ? `<button class="archive-toggle" data-id="${item.material_id}" data-archived="${item.material_archived}">
-                                        ${item.material_archived ? 'Unarchive' : 'Archive'}
-                                       </button>`
+                            ${item.material_archived ? 'Unarchive' : 'Archive'}
+                           </button>`
                                     : ''}
-                            </td>`;
+                    </td>`;
 
                                 categoriesSet.add(item.material_category);
                                 inventoryData.appendChild(row);
@@ -1087,8 +1149,49 @@
 
                             generateCategoryFilters([...categoriesSet]);
                             applyCategoryFilter();
+
+                            // ✅ Notification dropdown behavior
+                            const dot = document.getElementById("notificationDot");
+                            const bell = document.getElementById("notificationBell");
+                            const dropdown = document.getElementById("notificationDropdown");
+                            const list = document.getElementById("notificationList");
+                            const modal = document.getElementById("lowStockModal");
+                            const message = document.getElementById("lowStockMessage");
+
+                            list.innerHTML = ""; // Clear previous
+                            console.log(lowStockMaterials.length);
+                            if (lowStockMaterials.length > 0) {
+                                dot.style.display = "block";
+                                lowStockMaterials.forEach(material => {
+                                    const li = document.createElement("li");
+                                    li.textContent = `Low quantity of ${material}`;
+                                    li.style.cursor = "pointer";
+                                    li.style.padding = "5px 0";
+                                    li.onclick = () => {
+                                        message.textContent = `Low quantity of ${material}`;
+                                        modal.style.display = "block";
+                                        dropdown.style.display = "none";
+                                    };
+                                    list.appendChild(li);
+                                });
+                            } else {
+                                dot.style.display = "none";
+                                const li = document.createElement("li");
+                                li.textContent = "No low stock materials";
+                                li.style.color = "#888";
+                                li.style.padding = "5px 0";
+                                list.appendChild(li);
+                            }
+
+                            // Bell toggles dropdown
+                            bell.onclick = () => {
+                                const isVisible = dropdown.style.display === "block";
+                                dropdown.style.display = isVisible ? "none" : "block";
+                            };
                         });
                 }
+
+
 
                 inventoryData.addEventListener("click", e => {
                     if (e.target.classList.contains("archive-toggle")) {
