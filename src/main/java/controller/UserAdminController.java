@@ -27,7 +27,7 @@ public class  UserAdminController {
     @GetMapping("/userAdmin/getUsers")
     @ResponseBody
     public List<User> getAllUsers() {
-        return userRepository.findByStatus("active"); // Only return active users
+        return userRepository.findAll(); // Return both ACTIVE and INACTIVE users
     }
 
     @PostMapping("/userAdmin/addUser")
