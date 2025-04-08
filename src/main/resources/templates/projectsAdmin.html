@@ -1567,7 +1567,71 @@
     });
     document.getElementById('editProgressBtn').addEventListener('click', function () {
         openModal('editProgressModal');
+        document.getElementById('projectSelect').dispatchEvent(new Event('change')); // load progress
     });
+
+
+    document.getElementById('projectSelect').addEventListener('change', function () {
+        const projectId = this.value;
+        if (!projectId) return;
+
+        fetch(`/projectsAdmin/getStages/${projectId}`)
+            .then(res => res.json())
+            .then(stages => {
+                const stageContainer = document.querySelector('.stage-container');
+                stageContainer.innerHTML = ''; // clear current stages
+
+                stages.forEach(stage => {
+                    const stageDiv = document.createElement('div');
+                    stageDiv.classList.add('stage');
+                    stageDiv.id = `stage${stage.stageNumber}`;
+                    stageDiv.innerHTML = `
+                    <h4>Stage ${stage.stageNumber}</h4>
+                    <div class="task-list"></div>
+                    <button type="button" class="add-task-btn" onclick="addTask('stage${stage.stageNumber}')">Add Task</button>
+                    <div class="progress-bar">
+                        <p>Progress: <span id="stage${stage.stageNumber}Progress"></span></p>
+                        <progress id="progress${stage.stageNumber}" value="0" max="100"></progress>
+                    </div>
+                `;
+                    stageContainer.appendChild(stageDiv);
+
+                    const taskList = stageDiv.querySelector('.task-list');
+                    stage.tasks.forEach(task => {
+                        const taskItem = document.createElement('div');
+                        taskItem.classList.add('task-item');
+
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.checked = task.completed;
+                        checkbox.addEventListener('change', () => updateProgress(stageDiv.id));
+
+                        const taskInput = document.createElement('input');
+                        taskInput.type = 'text';
+                        taskInput.classList.add('task-name');
+                        taskInput.value = task.taskName;
+                        taskInput.setAttribute('readonly', true);
+
+                        const editButton = document.createElement('button');
+                        editButton.innerHTML = '<i class="bx bx-edit"></i>';
+                        editButton.addEventListener('click', () => toggleEditTask(taskInput, editButton));
+
+                        const deleteButton = document.createElement('button');
+                        deleteButton.innerHTML = '<i class="bx bx-trash"></i>';
+                        deleteButton.addEventListener('click', () => deleteTask(taskItem, stageDiv.id));
+
+                        taskItem.appendChild(checkbox);
+                        taskItem.appendChild(taskInput);
+                        taskItem.appendChild(editButton);
+                        taskItem.appendChild(deleteButton);
+                        taskList.appendChild(taskItem);
+                    });
+
+                    updateProgress(stageDiv.id);
+                });
+            });
+    });
+
 
     // Dummy functions for task management in modals
     function addTask(stage) {
@@ -1647,18 +1711,44 @@
         progressBar.value = progressPercent;
         progressBar.max = 100;
     }
+
     document.querySelector('.submit-btn').addEventListener('click', function () {
-        closeModal('editProgressModal');
+        const projectId = document.getElementById('projectSelect').value;
+        if (!projectId) return;
+
+        const stageElements = document.querySelectorAll('.stage');
+        const stagesPayload = [];
+
+        stageElements.forEach((stageEl, i) => {
+            const tasks = [];
+            const taskItems = stageEl.querySelectorAll('.task-item');
+
+            taskItems.forEach(taskEl => {
+                const taskName = taskEl.querySelector('.task-name').value;
+                const completed = taskEl.querySelector('input[type="checkbox"]').checked;
+                tasks.push({ taskName, completed });
+            });
+
+            stagesPayload.push({ stageNumber: i + 1, tasks });
+        });
+
+        fetch(`/projectsAdmin/saveStages/${projectId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(stagesPayload)
+        })
+
+            .then(response => response.text())
+            .then(msg => {
+                alert(msg);
+                closeModal('editProgressModal');
+            })
+            .catch(err => {
+                console.error('Error saving progress:', err);
+                alert('Failed to save progress.');
+            });
     });
-    let sidebar = document.querySelector(".sidebar");
-    let closeBtn = document.querySelector("#btn");
-    let searchBtn = document.querySelector(".bx-search");
-    closeBtn.addEventListener("click", () => {
-        sidebar.classList.toggle("open");
-    });
-    searchBtn.addEventListener("click", () => {
-        sidebar.classList.toggle("open");
-    });
+
 
 </script>
 </body>

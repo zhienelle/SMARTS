@@ -929,7 +929,8 @@
 
         function showEditUserModal() {
             if (selectedRow) {
-                document.getElementById('modalTitle').innerText = 'EDIT USER DETAILS';
+                const username = selectedRow.cells[0].innerText;
+                document.getElementById('modalTitle').innerText = `Edit  ${username}`;
                 document.getElementById('username').value = selectedRow.cells[0].innerText;
                 document.getElementById('password').value = selectedRow.cells[1].innerText;
                 document.getElementById('role').value = selectedRow.cells[2].innerText;
