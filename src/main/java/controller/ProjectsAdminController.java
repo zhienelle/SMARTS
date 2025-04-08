@@ -29,7 +29,7 @@ public class ProjectsAdminController {
     @GetMapping("/projectsAdmin/getProjects")
     @ResponseBody
     public List<Project> getAllProjects() {
-        return projectRepository.findByProjectstatusIgnoreCaseNot("archived");
+        return projectRepository.findAll();
     }
 
     @PostMapping("/projectsAdmin/addProject")
