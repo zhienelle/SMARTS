@@ -72,4 +72,15 @@ public class  UserAdminController {
         return "userAdmin"; // sure "userAdmin.html" exists
     }
 
+    @PutMapping("/userAdmin/archiveUser/{user_id}")
+    @ResponseBody
+    public User archiveUser(@PathVariable int user_id) {
+        Optional<User> userOptional = userRepository.findById(user_id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setStatus("INACTIVE"); // Mark as archived
+            return userRepository.save(user);
+        }
+        return null;
+    }
 }
