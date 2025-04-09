@@ -1104,10 +1104,27 @@
                     console.log("load inventory function is called");
                     return fetch('/generalInventory/getInventory')
                         .then(res => res.json())
+                        // .then(data => {
+                        //     inventoryData.innerHTML = "";
+                        //     const categoriesSet = new Set();
+                        //     const lowStockMaterials = [];
+
                         .then(data => {
-                            inventoryData.innerHTML = "";
-                            const categoriesSet = new Set();
-                            const lowStockMaterials = [];
+                                inventoryData.innerHTML = "";
+                                const categoriesSet = new Set();
+                                const lowStockMaterials = [];
+
+                                // ✅ Sort inventory by category, then material name
+                                data.sort((a, b) => {
+                                    const categoryA = a.material_category.toUpperCase();
+                                    const categoryB = b.material_category.toUpperCase();
+                                    if (categoryA < categoryB) return -1;
+                                    if (categoryA > categoryB) return 1;
+
+                                    const nameA = a.material_name.toUpperCase();
+                                    const nameB = b.material_name.toUpperCase();
+                                    return nameA.localeCompare(nameB);
+                                });
 
                             data.forEach(item => {
                                 const row = document.createElement("tr");
