@@ -970,6 +970,7 @@
                 return;
             }
 
+            console.log(`projectName=${encodeURIComponent(projectName)}&category=${encodeURIComponent(category)}&material=${encodeURIComponent(material)}&quantity=${encodeURIComponent(quantity)}`);
             fetch("/exestaff/inventory/requestMaterial", {
                 method: "POST",
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
