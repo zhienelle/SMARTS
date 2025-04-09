@@ -1,5 +1,6 @@
 package entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,7 +27,7 @@ public class ProjectStage {
 
     @ManyToOne
     @JoinColumn(name = "project_id")
-    @JsonProperty("project")
+    @JsonIgnore  // 🔒 Prevent recursion
     private Project project;
 
     @OneToMany(mappedBy = "stage", cascade = CascadeType.ALL, orphanRemoval = true)

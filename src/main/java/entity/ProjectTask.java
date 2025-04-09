@@ -1,6 +1,7 @@
 package entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,11 +17,12 @@ public class ProjectTask {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "task_id")
+    @JsonIgnore  // 🔒 Prevents loop back to stage
     @JsonProperty("task_id")
     private Integer taskId;
 
     @Column(name = "task_name", length = 255)
-    @JsonProperty("task_name")
+    @JsonProperty("taskName")
     private String taskName;
 
     @Column(name = "completed")
@@ -29,6 +31,7 @@ public class ProjectTask {
 
     @ManyToOne
     @JoinColumn(name = "stage_id")
-    @JsonProperty("stage")
+    @JsonIgnore
     private ProjectStage stage;
+
 }

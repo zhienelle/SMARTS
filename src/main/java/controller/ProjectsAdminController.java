@@ -72,22 +72,40 @@ public class ProjectsAdminController {
     @PostMapping("/projectsAdmin/saveStages/{projectId}")
     @ResponseBody
     public String saveStages(@PathVariable int projectId, @RequestBody List<ProjectStage> stages) {
-        Project project = projectRepository.findById(projectId).orElse(null);
-        if (project == null) return "Project not found";
+        try {
+            Project project = projectRepository.findById(projectId).orElse(null);
+            if (project == null) return "Project not found";
 
-        for (ProjectStage stage : stages) {
-            stage.setProject(project);
-            if (stage.getTasks() != null) {
-                for (ProjectTask task : stage.getTasks()) {
-                    task.setStage(stage);
-                    if (task.getTaskName() == null || task.getTaskName().trim().isEmpty()) {
-                        task.setTaskName("Untitled Task");  // Or handle how you'd like
+            for (ProjectStage stage : stages) {
+                stage.setProject(project);
+
+                if (stage.getTasks() != null) {
+                    for (ProjectTask task : stage.getTasks()) {
+                        task.setStage(stage);
+
+                        if (task.getTaskName() == null || task.getTaskName().trim().isEmpty()) {
+                            task.setTaskName("Untitled Task");
+                        }
+
+                        if (task.getTaskId() != null) {
+                            Optional<ProjectTask> existingTask = taskRepo.findById(task.getTaskId());
+                            if (existingTask.isPresent()) {
+                                ProjectTask updateTask = existingTask.get();
+                                updateTask.setTaskName(task.getTaskName());
+                                updateTask.setCompleted(task.isCompleted());
+                                updateTask.setStage(stage);
+                            }
+                        }
                     }
                 }
             }
-        }
 
-        stageRepo.saveAll(stages);
-        return "Progress saved successfully";
+            stageRepo.saveAll(stages);
+            return "Progress saved successfully";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error saving progress: " + e.getMessage();
+        }
     }
 }

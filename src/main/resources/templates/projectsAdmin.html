@@ -1622,41 +1622,47 @@
                     stageContainer.appendChild(stageDiv);
 
                     const taskList = stageDiv.querySelector('.task-list');
-                    stage.tasks.forEach(task => {
-                        const taskItem = document.createElement('div');
-                        taskItem.classList.add('task-item');
+                    if (Array.isArray(stage.tasks)) {
+                        stage.tasks.forEach(task => {
+                            const taskItem = document.createElement('div');
+                            taskItem.classList.add('task-item');
+                            taskItem.setAttribute('data-task-id', task.task_id || task.taskId);
 
-                        const checkbox = document.createElement('input');
-                        checkbox.type = 'checkbox';
-                        checkbox.checked = task.completed;
-                        checkbox.addEventListener('change', () => updateProgress(stageDiv.id));
+                            const checkbox = document.createElement('input');
+                            checkbox.type = 'checkbox';
+                            checkbox.checked = !!task.completed;
+                            checkbox.addEventListener('change', () => updateProgress(stageDiv.id));
 
-                        const taskInput = document.createElement('input');
-                        taskInput.type = 'text';
-                        taskInput.classList.add('task-name');
-                        taskInput.value = task.taskName;
-                        taskInput.setAttribute('readonly', true);
+                            const taskInput = document.createElement('input');
+                            taskInput.type = 'text';
+                            taskInput.classList.add('task-name');
+                            taskInput.value = task.task_name || task.taskName || 'Untitled Task';
+                            taskInput.setAttribute('readonly', true);
 
-                        const editButton = document.createElement('button');
-                        editButton.innerHTML = '<i class="bx bx-edit"></i>';
-                        editButton.addEventListener('click', () => toggleEditTask(taskInput, editButton));
+                            const editButton = document.createElement('button');
+                            editButton.innerHTML = '<i class="bx bx-edit"></i>';
+                            editButton.addEventListener('click', () => toggleEditTask(taskInput, editButton));
 
-                        const deleteButton = document.createElement('button');
-                        deleteButton.innerHTML = '<i class="bx bx-trash"></i>';
-                        deleteButton.addEventListener('click', () => deleteTask(taskItem, stageDiv.id));
+                            const deleteButton = document.createElement('button');
+                            deleteButton.innerHTML = '<i class="bx bx-trash"></i>';
+                            deleteButton.addEventListener('click', () => deleteTask(taskItem, stageDiv.id));
 
-                        taskItem.appendChild(checkbox);
-                        taskItem.appendChild(taskInput);
-                        taskItem.appendChild(editButton);
-                        taskItem.appendChild(deleteButton);
-                        taskList.appendChild(taskItem);
-                    });
+                            taskItem.appendChild(checkbox);
+                            taskItem.appendChild(taskInput);
+                            taskItem.appendChild(editButton);
+                            taskItem.appendChild(deleteButton);
+                            taskList.appendChild(taskItem);
+                        });
+                    }
 
                     updateProgress(stageDiv.id);
                 });
+            })
+            .catch(err => {
+                console.error("Error fetching stages:", err);
+                alert("Failed to load project stages. Please try again.");
             });
     });
-
 
     // Dummy functions for task management in modals
     function addTask(stage) {
@@ -1749,12 +1755,23 @@
             const taskItems = stageEl.querySelectorAll('.task-item');
 
             taskItems.forEach(taskEl => {
-                const taskName = taskEl.querySelector('.task-name').value;
+                const taskInput = taskEl.querySelector('.task-name');
+                let taskName = taskInput?.value?.trim();
                 const completed = taskEl.querySelector('input[type="checkbox"]').checked;
-                tasks.push({ taskName, completed });
+                const taskId = taskEl.getAttribute('data-task-id'); // ← Get it from DOM attribute
+
+                tasks.push({
+                    taskId: taskId ? parseInt(taskId) : null,  // Send taskId if it exists
+                    taskName: taskName || "Untitled Task",
+                    completed: completed
+                });
             });
 
-            stagesPayload.push({ stageNumber: i + 1, tasks });
+
+            stagesPayload.push({
+                stageNumber: i + 1,
+                tasks
+            });
         });
 
         fetch(`/projectsAdmin/saveStages/${projectId}`, {
@@ -1762,7 +1779,6 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(stagesPayload)
         })
-
             .then(response => response.text())
             .then(msg => {
                 alert(msg);
@@ -1773,6 +1789,7 @@
                 alert('Failed to save progress.');
             });
     });
+
 
 
 </script>

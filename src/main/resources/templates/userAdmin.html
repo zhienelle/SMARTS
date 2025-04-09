@@ -705,13 +705,15 @@
         <!-- Placeholder for dynamically inserted checkboxes -->
         <div id="projectCheckboxes" style="display: none; padding: 10px 0;"></div>
 
-
         <!-- Account Status dropdown -->
-        <select id="status" style="width: 100%; padding: 10px;">
-            <option value="" disabled selected>Status</option>
-            <option value="ACTIVE">ACTIVE</option>
-            <option value="INACTIVE">INACTIVE</option>
-        </select>
+        <div id="statusContainer">
+            <select id="status" style="width: 100%; padding: 10px;">
+                <option value="" disabled selected>Status</option>
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="INACTIVE">INACTIVE</option>
+            </select>
+        </div>
+
 
         <div class="popup-btn-container">
             <button class="cancel-btn" onclick="closeModal()">CANCEL</button>
@@ -729,6 +731,7 @@
         </p>
     </footer>
     <script>
+        let originalPassword = '';
         let selectedRow = null;
         let allProjects = [];
 
@@ -880,17 +883,37 @@
 
         function saveUserDetails() {
             const userId = selectedRow ? selectedRow.getAttribute('data-user-id') : null;
+
+            const username = document.getElementById('username').value.trim();
+            const passwordInput = document.getElementById('password').value.trim();
+            const password = passwordInput === '********' ? originalPassword : passwordInput;
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const role = document.getElementById('role').value;
+            const permissions = document.getElementById('permissions').value;
+            const selectedProjects = getSelectedProjects();
+            const isAdmin = role === 'ADMIN';
+            const status = userId ? document.getElementById('status').value : 'ACTIVE';  // ← NEW USERS default to ACTIVE
+
+            // 🚨 Validate all fields
+            if (!username || !password || !firstName || !lastName || !phone || !email || !role || !permissions || (!isAdmin && (!selectedProjects || selectedProjects.length === 0))) {
+                alert("Please fill out all required fields.");
+                return;
+            }
+
             const userData = {
-                username: document.getElementById('username').value,
-                password: document.getElementById('password').value,
-                role: document.getElementById('role').value,
-                permissions: document.getElementById('permissions').value,
-                project: getSelectedProjects().join(', '),
-                status: document.getElementById('status').value,
-                firstName: document.getElementById('firstName').value,
-                lastName: document.getElementById('lastName').value,
-                phone: document.getElementById('phone').value,
-                email: document.getElementById('email').value
+                username,
+                password,
+                role,
+                permissions,
+                project: isAdmin ? 'All Projects' : selectedProjects.join(', '),
+                status,
+                firstName,
+                lastName,
+                phone,
+                email
             };
 
             const url = userId ? `/userAdmin/updateUser/${userId}` : '/userAdmin/addUser';
@@ -910,6 +933,7 @@
                 .catch(error => console.error('Error saving user:', error));
         }
 
+
         function showAddUserModal() {
             selectedRow = null;
             document.getElementById('modalTitle').innerText = 'ADD NEW USER';
@@ -924,6 +948,7 @@
             document.getElementById('status').value = '';
             refreshProjectDropdown();
             renderProjectCheckboxes(allProjects);
+
             projectSelect.style.display = 'block';
             projectCheckboxesDiv.style.display = 'none';
             document.getElementById('archiveBtn').style.display = 'none';
@@ -935,7 +960,8 @@
                 const username = selectedRow.cells[0].innerText;
                 document.getElementById('modalTitle').innerText = `Edit  ${username}`;
                 document.getElementById('username').value = selectedRow.cells[0].innerText;
-                document.getElementById('password').value = selectedRow.cells[1].innerText;
+                originalPassword = selectedRow.dataset.password || '';
+                document.getElementById('password').value = '********';
                 document.getElementById('role').value = selectedRow.cells[2].innerText;
                 document.getElementById('permissions').value = selectedRow.cells[3].innerText;
                 document.getElementById('status').value = selectedRow.cells[5].innerText;
@@ -959,7 +985,14 @@
                     document.getElementById('project').value = selectedRow.cells[4].innerText;
                 }, 200);
 
-                document.getElementById('archiveBtn').style.display = 'inline-block';
+                if (showingArchived) {
+                    document.getElementById('archiveBtn').style.display = 'none';
+                    document.getElementById('statusContainer').style.display = 'block';
+                } else {
+                    document.getElementById('archiveBtn').style.display = 'inline-block';
+                    document.getElementById('statusContainer').style.display = 'none';
+                }
+
                 showModal();
             }
         }
@@ -979,6 +1012,7 @@
             const newRow = table.insertRow();
             const projectDisplay = userData.role === 'ADMIN' ? 'All Projects' : userData.project;
 
+            newRow.setAttribute('data-password', userData.password || '');
             newRow.setAttribute('data-user-id', userData.userId);
             newRow.setAttribute('data-first-name', userData.firstName || '');
             newRow.setAttribute('data-last-name', userData.lastName || '');
@@ -1012,7 +1046,7 @@
                 selectedRow.cells[1].innerText = '********';
                 selectedRow.cells[2].innerText = updatedUser.role;
                 selectedRow.cells[3].innerText = updatedUser.permissions;
-                selectedRow.cells[4].innerText = updatedUser.project;
+                selectedRow.cells[4].innerText = updatedUser.role === 'ADMIN' ? 'All Projects' : updatedUser.project;
                 selectedRow.cells[5].innerText = updatedUser.status;
             }
         }
@@ -1031,17 +1065,20 @@
                             .filter(user => user.status !== "INACTIVE")
                             .forEach(user => addRowToTable(user));
                         document.getElementById('toggleArchiveBtn').innerText = "ARCHIVED USERS";
+                        document.querySelector('button[onclick="showAddUserModal()"]').style.display = "inline-block";
                     } else {
                         // Show INACTIVE users
                         users
                             .filter(user => user.status === "INACTIVE")
                             .forEach(user => addRowToTable(user));
                         document.getElementById('toggleArchiveBtn').innerText = "ACTIVE USERS";
+                        document.querySelector('button[onclick="showAddUserModal()"]').style.display = "none";
                     }
                     showingArchived = !showingArchived;
                 })
                 .catch(error => console.error('Error toggling users:', error));
         }
+
         
         function archiveUser() {
             if (selectedRow) {
