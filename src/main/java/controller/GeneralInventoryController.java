@@ -81,8 +81,8 @@ public class GeneralInventoryController {
 
 // Save and return the saved item
             Inventory savedInventory = inventoryRepository.save(inventory);
-            System.out.println("✅ Saved item ID: " + savedInventory.getMaterialId());
-            return savedInventory;
+                System.out.println("✅ Saved item ID: " + savedInventory.getMaterialId());
+                return savedInventory;
 
 
         } catch (Exception e) {

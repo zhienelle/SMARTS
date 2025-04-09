@@ -63,6 +63,16 @@ public class RequestsStatusExestaffController {
         return List.of();
     }
 
+    @GetMapping("/exestaff/requests/projects")
+    @ResponseBody
+    public List<String> getAssignedProjects(HttpSession session) {
+        User user = (User) session.getAttribute("authenticatedUser");
+        if (user != null && user.getProject() != null && !user.getProject().isEmpty()) {
+            return List.of(user.getProject().split(",\\s*"));
+        }
+        return List.of();
+    }
+
 
 
     // ✅ Direct view rendering route (for fallback or manual navigation)

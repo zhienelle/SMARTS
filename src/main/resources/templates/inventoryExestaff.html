@@ -825,6 +825,18 @@
             fetch("/exestaff/inventory/getInventory")
                 .then(res => res.json())
                 .then(data => {
+                    // 🔽 Sort by category, then material name
+                    data.sort((a, b) => {
+                        const catA = a.material_category.toUpperCase();
+                        const catB = b.material_category.toUpperCase();
+                        if (catA < catB) return -1;
+                        if (catA > catB) return 1;
+
+                        const nameA = a.material_name.toUpperCase();
+                        const nameB = b.material_name.toUpperCase();
+                        return nameA.localeCompare(nameB);
+                    });
+
                     globalInventory = data;
                     const categories = new Set();
                     inventoryTableBody.innerHTML = "";
@@ -834,17 +846,18 @@
                         const row = document.createElement("tr");
                         row.setAttribute("data-category", item.material_category.toLowerCase().replace(/\s+/g, "-"));
                         row.innerHTML = `
-                            <td>${item.material_category}</td>
-                            <td>${item.material_name}</td>
-                            <td>${item.material_stock}</td>
-                            <td>${item.material_price}</td>
-                        `;
+                    <td>${item.material_category}</td>
+                    <td>${item.material_name}</td>
+                    <td>${item.material_stock}</td>
+                    <td>${item.material_price}</td>
+                `;
                         inventoryTableBody.appendChild(row);
                     });
 
                     renderCategoryCheckboxes([...categories]);
                 });
         }
+
 
         function renderCategoryCheckboxes(categories) {
             categoryList.innerHTML = "";

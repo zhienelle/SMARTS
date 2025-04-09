@@ -89,7 +89,7 @@ public class InventoryExestaffController {
                                         @RequestParam("material") String material,
                                         @RequestParam("quantity") Integer quantity,
                                         HttpSession session) {
-
+        System.out.println("Received request: projectName=" + projectName + ", category=" + category + ", material=" + material + ", quantity=" + quantity);
         User user = (User) session.getAttribute("authenticatedUser");
         if (user == null) {
             return "❌ Not authenticated.";

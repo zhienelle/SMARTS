@@ -433,6 +433,39 @@
             background-color: #F9744B;
             color: white;
         }
+        .project-filter-container {
+            width: 90%;
+            margin: 0 auto 20px auto;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .project-filter-container label {
+            color: #124D54;
+            font-weight: bold;
+        }
+
+        #projectFilter {
+            padding: 8px 16px;
+            font-size: 16px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            background-color: white;
+            color: #333;
+            font-family: 'Numans', sans-serif;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s ease-in-out;
+        }
+
+        #projectFilter:hover,
+        #projectFilter:focus {
+            border-color: #F9744B;
+        }
+
     </style>
 </head>
 
@@ -518,6 +551,13 @@
     <section class="home-section">
         <h1>Requests Status</h1>
 
+        <div class="project-filter-container">
+            <label for="projectFilter">Filter by Project:</label>
+            <select id="projectFilter">
+                <option value="ALL">All Projects</option>
+            </select>
+        </div>
+
         <table>
             <thead>
                 <tr>
@@ -542,35 +582,81 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            const tbody = document.getElementById("requestTableBody");
+            const projectFilter = document.getElementById("projectFilter");
+
+            let allRequests = [];
+
+            // Fetch assigned projects for the dropdown
+            fetch("/exestaff/requests/projects")
+                .then(res => res.json())
+                .then(projects => {
+                    projects.forEach(name => {
+                        const opt = document.createElement("option");
+                        opt.value = name;
+                        opt.textContent = name;
+                        projectFilter.appendChild(opt);
+                    });
+                });
+
+            // Fetch all material requests
             fetch("/exestaff/requests/getMaterialRequests")
                 .then(res => res.json())
                 .then(data => {
-                    const tbody = document.getElementById("requestTableBody");
-                    tbody.innerHTML = "";
-
-                    if (data.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="5">No material requests found.</td></tr>`;
-                        return;
-                    }
-
-                    data.forEach(req => {
-                        const row = document.createElement("tr");
-                        row.innerHTML = `
-                    <td>${req.inventory?.materialCategory || req.materialCategory || '-'}</td>
-                    <td>${req.inventory?.materialName || req.materialName || '-'}</td>
-                    <td>${req.materialStock}</td>
-                    <td>${new Date(req.requestDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</td>
-                    <td>${req.materialRequestStatus}</td>
-                `;
-                        tbody.appendChild(row);
-                    });
-                })
-                .catch(err => {
-                    console.error("❌ Failed to load material requests:", err);
+                    allRequests = data;
+                    renderTable(data); // initial render
                 });
-        });
 
+            // Re-render table when project filter changes
+            projectFilter.addEventListener("change", () => {
+                const selected = projectFilter.value;
+                const filtered = selected === "ALL"
+                    ? allRequests
+                    : allRequests.filter(req => req.project?.projectname === selected);
+                renderTable(filtered);
+            });
+
+            function renderTable(data) {
+                tbody.innerHTML = "";
+
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5">No material requests found.</td></tr>`;
+                    return;
+                }
+
+                // 🧠 Sort: Date (desc), then Category, then Material
+                data.sort((a, b) => {
+                    const dateA = new Date(a.requestDate);
+                    const dateB = new Date(b.requestDate);
+                    if (dateA < dateB) return 1;
+                    if (dateA > dateB) return -1;
+
+                    const catA = (a.inventory?.materialCategory || a.materialCategory || "").toUpperCase();
+                    const catB = (b.inventory?.materialCategory || b.materialCategory || "").toUpperCase();
+                    if (catA < catB) return -1;
+                    if (catA > catB) return 1;
+
+                    const nameA = (a.inventory?.materialName || a.materialName || "").toUpperCase();
+                    const nameB = (b.inventory?.materialName || b.materialName || "").toUpperCase();
+                    return nameA.localeCompare(nameB);
+                });
+
+                data.forEach(req => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+            <td>${req.inventory?.materialCategory || req.materialCategory || '-'}</td>
+            <td>${req.inventory?.materialName || req.materialName || '-'}</td>
+            <td>${req.materialStock}</td>
+            <td>${new Date(req.requestDate).toLocaleDateString('en-US')}</td>
+            <td>${req.materialRequestStatus}</td>
+        `;
+                    tbody.appendChild(row);
+                });
+            }
+
+        });
     </script>
+
 
 </body>
 

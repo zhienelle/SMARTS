@@ -12,7 +12,6 @@ import repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +43,7 @@ public class RequestsAdminController {
     public List<MaterialRequest> getAllRequests() {
         List<MaterialRequest> pending = materialRequestRepository.findByMaterialRequestStatus("PENDING");
 
-        // Ensure lazy-loaded fields are triggered
+        // Trigger lazy-loaded fields
         pending.forEach(req -> {
             if (req.getInventory() != null) {
                 req.getInventory().getMaterialName();
@@ -58,7 +57,6 @@ public class RequestsAdminController {
         return pending;
     }
 
-
     @PostMapping("/admin/requests/approve/{id}")
     @ResponseBody
     public String approveRequest(@PathVariable Long id) {
@@ -71,7 +69,7 @@ public class RequestsAdminController {
         return updateRequestStatus(id, "DENIED");
     }
 
-    // Refactored logic to avoid duplication
+    // ✅ Shared logic for approving/denying
     private String updateRequestStatus(Long requestId, String action) {
         Optional<MaterialRequest> optional = materialRequestRepository.findById(requestId);
         if (optional.isEmpty()) return "❌ Request not found.";
@@ -88,12 +86,26 @@ public class RequestsAdminController {
                 return "❌ Not enough stock to approve.";
             }
 
+            // Deduct and update stock
             inventory.setMaterialStock(inventory.getMaterialStock() - quantity);
+
+            // ✅ Update stock status
+            int newStock = inventory.getMaterialStock();
+            if (newStock <= 30) {
+                inventory.setMaterialStockStatus("LOW");
+            } else if (newStock <= 100) {
+                inventory.setMaterialStockStatus("MODERATE");
+            } else {
+                inventory.setMaterialStockStatus("HIGH");
+            }
+
             inventoryRepository.save(inventory);
 
+            // ✅ Insert/update project_inventory
             ProjectInventory existing = projectInventoryRepository.findByProjectAndInventory(project, inventory);
             if (existing != null) {
                 existing.setQuantityAssigned(existing.getQuantityAssigned() + quantity);
+                existing.setTotalPrice(existing.getMaterialPrice() * existing.getQuantityAssigned());
                 projectInventoryRepository.save(existing);
             } else {
                 ProjectInventory newEntry = new ProjectInventory();
@@ -101,6 +113,8 @@ public class RequestsAdminController {
                 newEntry.setInventory(inventory);
                 newEntry.setQuantityAssigned(quantity);
                 newEntry.setQuantityUsed(0);
+                newEntry.setMaterialPrice(inventory.getMaterialPrice());
+                newEntry.setTotalPrice(inventory.getMaterialPrice() * quantity);
                 projectInventoryRepository.save(newEntry);
             }
         }
@@ -125,16 +139,26 @@ public class RequestsAdminController {
                 Project project = request.getProject();
                 int quantity = request.getMaterialStock();
 
-                if (inventory.getMaterialStock() < quantity) {
-                    continue; // skip if not enough stock
-                }
+                if (inventory.getMaterialStock() < quantity) continue;
 
                 inventory.setMaterialStock(inventory.getMaterialStock() - quantity);
+
+                // ✅ Update stock status
+                int newStock = inventory.getMaterialStock();
+                if (newStock <= 30) {
+                    inventory.setMaterialStockStatus("LOW");
+                } else if (newStock <= 100) {
+                    inventory.setMaterialStockStatus("MODERATE");
+                } else {
+                    inventory.setMaterialStockStatus("HIGH");
+                }
+
                 inventoryRepository.save(inventory);
 
                 ProjectInventory existing = projectInventoryRepository.findByProjectAndInventory(project, inventory);
                 if (existing != null) {
                     existing.setQuantityAssigned(existing.getQuantityAssigned() + quantity);
+                    existing.setTotalPrice(existing.getMaterialPrice() * existing.getQuantityAssigned());
                     projectInventoryRepository.save(existing);
                 } else {
                     ProjectInventory newEntry = new ProjectInventory();
@@ -142,6 +166,8 @@ public class RequestsAdminController {
                     newEntry.setInventory(inventory);
                     newEntry.setQuantityAssigned(quantity);
                     newEntry.setQuantityUsed(0);
+                    newEntry.setMaterialPrice(inventory.getMaterialPrice());
+                    newEntry.setTotalPrice(inventory.getMaterialPrice() * quantity);
                     projectInventoryRepository.save(newEntry);
                 }
             }
@@ -150,8 +176,6 @@ public class RequestsAdminController {
         }
 
         return "✅ Bulk request update complete.";
-
-
     }
 
     @PostMapping("/admin/requests/updateMultipleStatus")
@@ -163,20 +187,27 @@ public class RequestsAdminController {
         return "✅ Bulk request status updated.";
     }
 
-    // DTO class for the request body
     public static class BulkRequestUpdate {
         private List<Long> requestIds;
         private String action;
 
-        public List<Long> getRequestIds() { return requestIds; }
-        public void setRequestIds(List<Long> requestIds) { this.requestIds = requestIds; }
+        public List<Long> getRequestIds() {
+            return requestIds;
+        }
 
-        public String getAction() { return action; }
-        public void setAction(String action) { this.action = action; }
+        public void setRequestIds(List<Long> requestIds) {
+            this.requestIds = requestIds;
+        }
+
+        public String getAction() {
+            return action;
+        }
+
+        public void setAction(String action) {
+            this.action = action;
+        }
     }
 
-
-    // ✅ Project filter list
     @GetMapping("/admin/requests/projects")
     @ResponseBody
     public List<String> getAllProjectNames() {
@@ -186,5 +217,4 @@ public class RequestsAdminController {
                 .distinct()
                 .collect(Collectors.toList());
     }
-
 }
