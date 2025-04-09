@@ -618,23 +618,42 @@
 
             function renderTable(data) {
                 tbody.innerHTML = "";
+
                 if (data.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="5">No material requests found.</td></tr>`;
                     return;
                 }
 
+                // 🧠 Sort: Date (desc), then Category, then Material
+                data.sort((a, b) => {
+                    const dateA = new Date(a.requestDate);
+                    const dateB = new Date(b.requestDate);
+                    if (dateA < dateB) return 1;
+                    if (dateA > dateB) return -1;
+
+                    const catA = (a.inventory?.materialCategory || a.materialCategory || "").toUpperCase();
+                    const catB = (b.inventory?.materialCategory || b.materialCategory || "").toUpperCase();
+                    if (catA < catB) return -1;
+                    if (catA > catB) return 1;
+
+                    const nameA = (a.inventory?.materialName || a.materialName || "").toUpperCase();
+                    const nameB = (b.inventory?.materialName || b.materialName || "").toUpperCase();
+                    return nameA.localeCompare(nameB);
+                });
+
                 data.forEach(req => {
                     const row = document.createElement("tr");
                     row.innerHTML = `
-                    <td>${req.inventory?.materialCategory || req.materialCategory || '-'}</td>
-                    <td>${req.inventory?.materialName || req.materialName || '-'}</td>
-                    <td>${req.materialStock}</td>
-                    <td>${new Date(req.requestDate).toLocaleDateString('en-US')}</td>
-                    <td>${req.materialRequestStatus}</td>
-                `;
+            <td>${req.inventory?.materialCategory || req.materialCategory || '-'}</td>
+            <td>${req.inventory?.materialName || req.materialName || '-'}</td>
+            <td>${req.materialStock}</td>
+            <td>${new Date(req.requestDate).toLocaleDateString('en-US')}</td>
+            <td>${req.materialRequestStatus}</td>
+        `;
                     tbody.appendChild(row);
                 });
             }
+
         });
     </script>
 
