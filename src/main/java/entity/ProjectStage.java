@@ -1,10 +1,12 @@
 package entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,9 +23,10 @@ public class ProjectStage {
     @JsonProperty("stage_id")
     private Integer stageId;
 
+    @JsonProperty("stageNumber")
     @Column(name = "stage_number")
-    @JsonProperty("stage_number")
-    private int stageNumber;
+    private Integer stageNumber;
+
 
     @ManyToOne
     @JoinColumn(name = "project_id")
@@ -31,6 +34,7 @@ public class ProjectStage {
     private Project project;
 
     @OneToMany(mappedBy = "stage", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonProperty("tasks")
-    private List<ProjectTask> tasks;
+    @JsonIgnoreProperties("stage") // Prevent infinite loop
+    private List<ProjectTask> tasks = new ArrayList<>();
+
 }

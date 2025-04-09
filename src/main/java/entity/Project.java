@@ -1,6 +1,7 @@
 package entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -40,17 +41,20 @@ public class Project {
     @Column(name = "downpayment")
     private double downpayment;
 
+    @JsonProperty("companyname")
     @Column(name = "company_name", length = 100)
     private String companyname;
 
+    @JsonProperty("companyLocation")
     @Column(name = "company_location", length = 100)
     private String companyLocation;
 
+    @JsonProperty("companycontact")
     @Column(name = "company_contact", length = 100)
     private String companycontact;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonIgnore // 🔥 This ignores it for JSON deserialization (fixes 415)
     private List<ProjectInventory> projectInventoryList;
 
 }

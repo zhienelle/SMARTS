@@ -2,6 +2,7 @@ package entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,7 +32,8 @@ public class ProjectTask {
 
     @ManyToOne
     @JoinColumn(name = "stage_id")
-    @JsonIgnore
+    @JsonIgnoreProperties("tasks")
     private ProjectStage stage;
+
 
 }

@@ -1282,7 +1282,7 @@
 
     function populateProjectDropdown(dropdownId, projects) {
         const dropdown = document.getElementById(dropdownId);
-        if (dropdown) {
+        if (dropdown && dropdown.options.length <= 1) { // don't repopulate if already filled
             dropdown.innerHTML = '<option value="">Select Project</option>';
             projects.forEach(project => {
                 const option = document.createElement('option');
@@ -1292,6 +1292,7 @@
             });
         }
     }
+
 
     // Event listener for change on the edit project dropdown
     document.getElementById('editProjectNameSelect').addEventListener('change', function() {
@@ -1604,192 +1605,178 @@
             .then(res => res.json())
             .then(stages => {
                 const stageContainer = document.querySelector('.stage-container');
-                stageContainer.innerHTML = ''; // clear current stages
+                stageContainer.innerHTML = '';
 
                 stages.forEach(stage => {
                     const stageDiv = document.createElement('div');
                     stageDiv.classList.add('stage');
-                    stageDiv.id = `stage${stage.stageNumber}`;
+                    stageDiv.dataset.stageNumber = stage.stageNumber;
+
                     stageDiv.innerHTML = `
-                    <h4>Stage ${stage.stageNumber}</h4>
-                    <div class="task-list"></div>
-                    <button type="button" class="add-task-btn" onclick="addTask('stage${stage.stageNumber}')">Add Task</button>
-                    <div class="progress-bar">
-                        <p>Progress: <span id="stage${stage.stageNumber}Progress"></span></p>
-                        <progress id="progress${stage.stageNumber}" value="0" max="100"></progress>
-                    </div>
-                `;
-                    stageContainer.appendChild(stageDiv);
+          <h4>STAGE ${stage.stageNumber ?? 'UNDEFINED'}</h4>
+          <div class="task-list"></div>
+          <button type="button" class="add-task-btn" onclick="addTaskToStage(this)">ADD TASK</button>
+          <div class="progress-bar">
+            <p>PROGRESS: <span class="progress-label">0%</span></p>
+            <progress value="0" max="100"></progress>
+          </div>
+        `;
 
                     const taskList = stageDiv.querySelector('.task-list');
-                    if (Array.isArray(stage.tasks)) {
-                        stage.tasks.forEach(task => {
-                            const taskItem = document.createElement('div');
-                            taskItem.classList.add('task-item');
-                            taskItem.setAttribute('data-task-id', task.task_id || task.taskId);
+                    stage.tasks.forEach(task => {
+                        const taskItem = document.createElement('div');
+                        taskItem.classList.add('task-item');
+                        taskItem.setAttribute('data-task-id', task.taskId || task.task_id);
 
-                            const checkbox = document.createElement('input');
-                            checkbox.type = 'checkbox';
-                            checkbox.checked = !!task.completed;
-                            checkbox.addEventListener('change', () => updateProgress(stageDiv.id));
+                        taskItem.innerHTML = `
+            <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="updateProgress(this)">
+            <input type="text" class="task-name" value="${task.taskName || task.task_name}" readonly>
+            <button onclick="toggleEditTask(this)"><i class="bx bx-edit"></i></button>
+            <button onclick="deleteTask(this)"><i class="bx bx-trash"></i></button>
+          `;
+                        taskList.appendChild(taskItem);
+                    });
 
-                            const taskInput = document.createElement('input');
-                            taskInput.type = 'text';
-                            taskInput.classList.add('task-name');
-                            taskInput.value = task.task_name || task.taskName || 'Untitled Task';
-                            taskInput.setAttribute('readonly', true);
-
-                            const editButton = document.createElement('button');
-                            editButton.innerHTML = '<i class="bx bx-edit"></i>';
-                            editButton.addEventListener('click', () => toggleEditTask(taskInput, editButton));
-
-                            const deleteButton = document.createElement('button');
-                            deleteButton.innerHTML = '<i class="bx bx-trash"></i>';
-                            deleteButton.addEventListener('click', () => deleteTask(taskItem, stageDiv.id));
-
-                            taskItem.appendChild(checkbox);
-                            taskItem.appendChild(taskInput);
-                            taskItem.appendChild(editButton);
-                            taskItem.appendChild(deleteButton);
-                            taskList.appendChild(taskItem);
-                        });
-                    }
-
-                    updateProgress(stageDiv.id);
+                    stageContainer.appendChild(stageDiv);
+                    updateProgress(stageDiv);
                 });
-            })
-            .catch(err => {
-                console.error("Error fetching stages:", err);
-                alert("Failed to load project stages. Please try again.");
             });
     });
 
-    // Dummy functions for task management in modals
-    function addTask(stage) {
-        const stageElement = document.getElementById(stage);
-        const taskList = stageElement.querySelector('.task-list');
+    // ✅ ADD STAGE BUTTON
+
+   /* document.querySelector('.add-stage-btn').addEventListener('click', () => {
+        const stageContainer = document.querySelector('.stage-container');
+        const stageCount = stageContainer.children.length + 1;
+
+        const stageDiv = document.createElement('div');
+        stageDiv.classList.add('stage');
+        stageDiv.dataset.stageNumber = stageCount;
+
+        stageDiv.innerHTML = `
+    <h4>STAGE ${stageCount}</h4>
+    <div class="task-list"></div>
+    <button type="button" class="add-task-btn" onclick="addTaskToStage(this)">ADD TASK</button>
+    <div class="progress-bar">
+      <p>PROGRESS: <span class="progress-label">0%</span></p>
+      <progress value="0" max="100"></progress>
+    </div>
+  `;
+
+        stageContainer.appendChild(stageDiv);
+    }); */
+
+    // ✅ ADD TASK FUNCTION
+
+    function addTaskToStage(button) {
+        const stageDiv = button.closest('.stage');
+        const taskList = stageDiv.querySelector('.task-list');
+
         const taskItem = document.createElement('div');
         taskItem.classList.add('task-item');
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.addEventListener('change', () => updateProgress(stage));
-        const taskInput = document.createElement('input');
-        taskInput.type = 'text';
-        taskInput.classList.add('task-name');
-        taskInput.placeholder = 'New Task';
-        taskInput.setAttribute('readonly', true);
-        const deleteButton = document.createElement('button');
-        deleteButton.innerHTML = '<i class="bx bx-trash"></i>';
-        deleteButton.addEventListener('click', () => deleteTask(taskItem, stage));
-        const editButton = document.createElement('button');
-        editButton.innerHTML = '<i class="bx bx-edit"></i>';
-        editButton.addEventListener('click', () => toggleEditTask(taskInput, editButton));
-        taskItem.appendChild(checkbox);
-        taskItem.appendChild(taskInput);
-        taskItem.appendChild(editButton);
-        taskItem.appendChild(deleteButton);
+
+        taskItem.innerHTML = `
+    <input type="checkbox" onchange="updateProgress(this)">
+    <input type="text" class="task-name" value="Untitled Task" readonly>
+    <button onclick="toggleEditTask(this)"><i class="bx bx-edit"></i></button>
+    <button onclick="deleteTask(this)"><i class="bx bx-trash"></i></button>
+  `;
+
         taskList.appendChild(taskItem);
-        updateProgress(stage);
-    }
-    function deleteTask(taskItem, stage) {
-        const taskList = taskItem.parentNode;
-        taskList.removeChild(taskItem);
-        updateProgress(stage);
-    }
-    function toggleEditTask(taskInput, editButton) {
-        if (taskInput.hasAttribute('readonly')) {
-            taskInput.removeAttribute('readonly');
-            taskInput.focus();
-            editButton.innerHTML = '<i class="bx bx-save"></i>';
-        } else {
-            taskInput.setAttribute('readonly', true);
-            editButton.innerHTML = '<i class="bx bx-edit"></i>';
-        }
-    }
-    let stageCount = 3;
-    function addStage() {
-        stageCount++;
-        const stageContainer = document.querySelector('.stage-container');
-        const stage = document.createElement('div');
-        stage.id = `stage${stageCount}`;
-        stage.classList.add('stage');
-        stage.innerHTML = `
-          <h4>Stage ${stageCount}</h4>
-          <div class="task-list"></div>
-          <button type="button" class="add-task-btn" onclick="addTask('stage${stageCount}')">Add Task</button>
-          <div class="progress-bar">
-              <p>Progress: <span id="stage${stageCount}Progress"></span></p>
-              <progress id="progress${stageCount}" value="0" max="100"></progress>
-          </div>
-      `;
-        stageContainer.appendChild(stage);
-    }
-    function updateProgress(stage) {
-        const stageElement = document.getElementById(stage);
-        const taskList = stageElement.querySelectorAll('.task-item');
-        const totalTasks = taskList.length;
-        let checkedTasks = 0;
-        taskList.forEach(task => {
-            const checkbox = task.querySelector('input[type="checkbox"]');
-            if (checkbox.checked) {
-                checkedTasks++;
-            }
-        });
-        const progressPercent = totalTasks > 0 ? Math.round((checkedTasks / totalTasks) * 100) : 0;
-        const progressText = stageElement.querySelector('.progress-bar p');
-        progressText.innerHTML = `Progress: ${checkedTasks}/${totalTasks} - ${progressPercent}/100%`;
-        const progressBar = stageElement.querySelector('progress');
-        progressBar.value = progressPercent;
-        progressBar.max = 100;
+        updateProgress(stageDiv);
     }
 
-    document.querySelector('.submit-btn').addEventListener('click', function () {
+    function toggleEditTask(button) {
+        const input = button.parentElement.querySelector('.task-name');
+        input.toggleAttribute('readonly');
+        input.focus();
+    }
+
+    function deleteTask(button) {
+        const taskItem = button.parentElement;
+        const stageDiv = taskItem.closest('.stage');
+        taskItem.remove();
+        updateProgress(stageDiv);
+    }
+
+    function updateProgress(el) {
+        const stageDiv = el.closest('.stage');
+        const checkboxes = stageDiv.querySelectorAll('input[type="checkbox"]');
+        const total = checkboxes.length;
+        const checked = Array.from(checkboxes).filter(c => c.checked).length;
+        const percent = total ? Math.round((checked / total) * 100) : 0;
+
+        stageDiv.querySelector('progress').value = percent;
+        stageDiv.querySelector('.progress-label').textContent = `${checked}/${total} – ${percent}%`;
+    }
+    // ✅ SUBMIT BUTTON: send all progress data
+
+    document.querySelector('.submit-btn').addEventListener('click', () => {
         const projectId = document.getElementById('projectSelect').value;
         if (!projectId) return;
 
         const stageElements = document.querySelectorAll('.stage');
-        const stagesPayload = [];
+        const stages = [];
 
-        stageElements.forEach((stageEl, i) => {
-            const tasks = [];
+        stageElements.forEach(stageEl => {
+            const stageNumber = parseInt(stageEl.dataset.stageNumber);
             const taskItems = stageEl.querySelectorAll('.task-item');
+            const tasks = [];
 
             taskItems.forEach(taskEl => {
-                const taskInput = taskEl.querySelector('.task-name');
-                let taskName = taskInput?.value?.trim();
+                const taskName = taskEl.querySelector('.task-name').value.trim();
                 const completed = taskEl.querySelector('input[type="checkbox"]').checked;
-                const taskId = taskEl.getAttribute('data-task-id'); // ← Get it from DOM attribute
+                const taskId = taskEl.getAttribute('data-task-id');
 
                 tasks.push({
-                    taskId: taskId ? parseInt(taskId) : null,  // Send taskId if it exists
+                    taskId: taskId ? parseInt(taskId) : null,
                     taskName: taskName || "Untitled Task",
                     completed: completed
                 });
             });
 
-
-            stagesPayload.push({
-                stageNumber: i + 1,
-                tasks
+            stages.push({
+                stageNumber: stageNumber,
+                tasks: tasks
             });
         });
 
         fetch(`/projectsAdmin/saveStages/${projectId}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(stagesPayload)
+            body: JSON.stringify(stages)
         })
-            .then(response => response.text())
+            .then(res => res.text())
             .then(msg => {
                 alert(msg);
-                closeModal('editProgressModal');
-            })
-            .catch(err => {
-                console.error('Error saving progress:', err);
-                alert('Failed to save progress.');
+
+                // ✅ Persist selected project and reload its data
+                const selectedProjectId = document.getElementById('projectSelect').value;
+                document.getElementById('projectSelect').value = selectedProjectId;
+                document.getElementById('projectSelect').dispatchEvent(new Event('change'));
             });
     });
 
+    function addStage() {
+        const stageContainer = document.querySelector('.stage-container');
+        const stageCount = stageContainer.children.length + 1;
+
+        const stageDiv = document.createElement('div');
+        stageDiv.classList.add('stage');
+        stageDiv.dataset.stageNumber = stageCount;
+
+        stageDiv.innerHTML = `
+        <h4>STAGE ${stageCount}</h4>
+        <div class="task-list"></div>
+        <button type="button" class="add-task-btn" onclick="addTaskToStage(this)">ADD TASK</button>
+        <div class="progress-bar">
+          <p>PROGRESS: <span class="progress-label">0%</span></p>
+          <progress value="0" max="100"></progress>
+        </div>
+    `;
+
+        stageContainer.appendChild(stageDiv);
+    }
 
 
 </script>
