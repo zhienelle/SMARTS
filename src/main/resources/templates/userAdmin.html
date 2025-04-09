@@ -694,13 +694,13 @@
         </select>
 
         <!-- Project dropdown -->
-        <!-- Project Selection Container -->
+        <!-- Project Selection Container
         <div id="projectSelectionContainer">
             <select id="project" style="width: 100%; padding: 10px;">
-                <option value="" disabled selected>Project</option>
-                <!-- Dynamically populated -->
+                <option value="" disabled selected>Project</option>-->
+                <!-- Dynamically populated
             </select>
-        </div>
+        </div>-->
 
         <!-- Placeholder for dynamically inserted checkboxes -->
         <div id="projectCheckboxes" style="display: none; padding: 10px 0;"></div>
@@ -737,9 +737,9 @@
 
         const roleSelect = document.getElementById('role');
         const permissionsSelect = document.getElementById('permissions');
-        const projectSelect = document.getElementById('project');
+        //const projectSelect = document.getElementById('project');
         const projectCheckboxesDiv = document.getElementById('projectCheckboxes');
-        const projectContainer = document.getElementById('projectSelectionContainer');
+        //const projectContainer = document.getElementById('projectSelectionContainer');
 
         document.addEventListener("DOMContentLoaded", function () {
             fetchUsersFromDatabase();
@@ -769,16 +769,16 @@
         }
 
         function refreshProjectDropdown() {
-            projectSelect.innerHTML = '<option value="" disabled selected>Project</option>';
+        //    projectSelect.innerHTML = '<option value="" disabled selected>Project</option>';
             allProjects.forEach(project => {
                 const option = document.createElement('option');
                 option.value = project.projectname;
                 option.textContent = project.projectname;
-                projectSelect.appendChild(option);
+             //   projectSelect.appendChild(option);
             });
         }
 
-        function renderProjectCheckboxes(projects) {
+        function renderProjectCheckboxes(projects, shouldCheck = false) {
             projectCheckboxesDiv.innerHTML = '';
             projects.forEach(project => {
                 const label = document.createElement('label');
@@ -794,45 +794,44 @@
                 }
 
                 input.value = project.projectname;
-                input.checked = true;
+                input.checked = shouldCheck;
                 label.appendChild(input);
                 label.appendChild(document.createTextNode(` ${project.projectname}`));
                 projectCheckboxesDiv.appendChild(label);
             });
         }
 
+
         roleSelect.addEventListener('change', function () {
-            if (!selectedRow) { // Only reset fields in Add User mode
+            if (!selectedRow) {
                 permissionsSelect.value = '';
                 document.getElementById('status').value = '';
-                projectSelect.value = '';
                 projectCheckboxesDiv.innerHTML = '';
             }
+
             const selectedRole = roleSelect.value;
 
+            // Hide all permissions first
             Array.from(permissionsSelect.options).forEach(opt => {
                 opt.style.display = 'none';
             });
 
             if (selectedRole === 'ADMIN') {
+                permissionsSelect.value = 'MANAGE EVERYTHING';
                 permissionsSelect.querySelector('option[value="MANAGE EVERYTHING"]').style.display = 'block';
-                projectSelect.style.display = 'none';
                 projectCheckboxesDiv.style.display = 'none';
             } else if (selectedRole === 'STAFF') {
-                permissionsSelect.querySelector('option[value="MANAGE EVERYTHING"]').style.display = 'block';
+                permissionsSelect.value = 'MANAGE CERTAIN PROJECT';
                 permissionsSelect.querySelector('option[value="MANAGE CERTAIN PROJECT"]').style.display = 'block';
-                projectSelect.style.display = 'block';
-                projectCheckboxesDiv.style.display = 'none';
+                projectCheckboxesDiv.style.display = 'block';
+                renderProjectCheckboxes(allProjects, false); // ✅ no pre-check
             } else if (selectedRole === 'MAIN CONTRACTOR') {
+                permissionsSelect.value = 'VIEWING MODE OF THEIR PROJECT';
                 permissionsSelect.querySelector('option[value="VIEWING MODE OF THEIR PROJECT"]').style.display = 'block';
-                projectSelect.style.display = 'block';
-                projectCheckboxesDiv.style.display = 'none';
-            } else if (selectedRole === 'STAFF') {
-                permissionsSelect.querySelector('option[value="MANAGE EVERYTHING"]').style.display = 'block';
-                permissionsSelect.querySelector('option[value="MANAGE CERTAIN PROJECT"]').style.display = 'block';
-            } else if (selectedRole === 'MAIN CONTRACTOR') {
-                permissionsSelect.querySelector('option[value="VIEWING MODE OF THEIR PROJECT"]').style.display = 'block';
+                projectCheckboxesDiv.style.display = 'block';
+                renderProjectCheckboxes(allProjects, false); // ✅ also no pre-check
             }
+
         });
 
         permissionsSelect.addEventListener('change', function () {
@@ -840,29 +839,26 @@
             const permission = permissionsSelect.value;
 
             if (role === 'ADMIN') {
-                projectSelect.style.display = 'none';
+
                 projectCheckboxesDiv.style.display = 'none';
                 return;
             }
 
             if (role === 'MAIN CONTRACTOR' && permission === 'VIEWING MODE OF THEIR PROJECT') {
-                projectSelect.style.display = 'none';
                 projectCheckboxesDiv.style.display = 'block';
                 renderProjectCheckboxes(allProjects); // will render as radio buttons
                 projectCheckboxesDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
 
             } else if (permission === 'MANAGE EVERYTHING') {
-                projectSelect.style.display = 'none';
                 projectCheckboxesDiv.style.display = 'block';
                 renderProjectCheckboxes(allProjects);
                 projectCheckboxesDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
             } else if (permission === 'MANAGE CERTAIN PROJECT') {
-                projectSelect.style.display = 'none';
                 projectCheckboxesDiv.style.display = 'block';
                 renderProjectCheckboxes(allProjects);
-                projectCheckboxesDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-            } else {
-                projectSelect.style.display = 'block';
+                // DO NOT pre-check anything
+            }
+            else {
                 projectCheckboxesDiv.style.display = 'none';
             }
         });
@@ -876,7 +872,7 @@
                 const checkboxes = projectCheckboxesDiv.querySelectorAll('input[name="projectCheckbox"]:checked');
                 return Array.from(checkboxes).map(cb => cb.value);
             } else {
-                return [projectSelect.value];
+                return [];
             }
         }
 
@@ -949,7 +945,7 @@
             refreshProjectDropdown();
             renderProjectCheckboxes(allProjects);
 
-            projectSelect.style.display = 'block';
+       //     projectSelect.style.display = 'block';
             projectCheckboxesDiv.style.display = 'none';
             document.getElementById('archiveBtn').style.display = 'none';
             showModal();
