@@ -83,10 +83,7 @@ public class LandingPageController {
         return "redirect:/captcha";
     }
 
-    @GetMapping("/projectManagementAdmin")
-    public String projectManagementAdminPage() {
-        return "projectManagementAdmin"; // redirection
-    }
+
 
     @GetMapping("/invalidUsername")
     public String showInvalidUsernamePage() {

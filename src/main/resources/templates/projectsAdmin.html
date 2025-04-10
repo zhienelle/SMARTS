@@ -1216,8 +1216,10 @@
                         row.appendChild(clientCell);
 
                         row.addEventListener('click', () => {
-                            window.location.href = 'projectManagementAdmin';
+                            const projectId = project.projectId;
+                            window.location.href = `projectManagementAdmin?projectId=${projectId}`;
                         });
+
 
                         tableBody.appendChild(row);
                     });

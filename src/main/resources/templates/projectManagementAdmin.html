@@ -972,7 +972,16 @@
                         <th class="actions">Actions</th>
                     </tr>
                     </thead>
-                    <tbody></tbody>
+                    <tbody id="materialsTableBody">
+                    <tr th:each="item, iterStat : ${project.projectInventoryList}" th:if="${!item.archived}">
+                        <td th:text="${#numbers.formatInteger(iterStat.count, 3)}"></td>
+                        <td th:text="${item.inventory.materialName}"></td>
+                        <td th:text="${item.quantityAssigned} + ' PCS'"></td>
+                        <td th:text="'PHP ' + item.inventory.materialPrice"></td>
+                        <td th:text="'PHP ' + item.totalPrice"></td>
+                    </tr>
+                    </tbody>
+
                 </table>
             </div>
             <button id="addRowBtn" style="display:none;">Add Row</button>
@@ -1020,6 +1029,8 @@
                     });
                 }
 
+
+
                 function createRow(data = ['', '', '', '', ''], archived = false) {
                     const row = document.createElement('tr');
                     if (archived) row.classList.add('archived');
@@ -1046,66 +1057,93 @@
                 addBtn.addEventListener('click', () => createRow());
                 addRowBtn.addEventListener('click', () => createRow());
 
-                toggleArchiveBtn.addEventListener('click', () => {
-                    showArchived = !showArchived;
-                    toggleArchiveBtn.textContent = showArchived ? 'Hide Archived Rows' : 'Show Archived Rows';
-                    document.querySelectorAll('.archived').forEach(row => {
-                        row.style.display = showArchived ? '' : 'none';
-                    });
-                });
-
-                tableBody.addEventListener('click', (e) => {
-                    const row = e.target.closest('tr');
-                    if (e.target.classList.contains('edit-icon')) {
-                        for (let i = 1; i <= 4; i++) {
-                            const cell = row.children[i];
-                            const input = document.createElement('input');
-                            input.type = 'text';
-                            input.value = cell.textContent;
-                            cell.innerHTML = '';
-                            cell.appendChild(input);
-                        }
-                        e.target.textContent = '💾';
-                        e.target.classList.remove('edit-icon');
-                        e.target.classList.add('save-icon');
-                    } else if (e.target.classList.contains('save-icon')) {
-                        for (let i = 1; i <= 4; i++) {
-                            const cell = row.children[i];
-                            const input = cell.querySelector('input');
-                            cell.textContent = input.value;
-                        }
-                        e.target.textContent = '✏️';
-                        e.target.classList.remove('save-icon');
-                        e.target.classList.add('edit-icon');
-                    } else if (e.target.classList.contains('delete-icon')) {
-                        row.classList.add('archived');
-                        if (!showArchived) row.style.display = 'none';
-                    }
-                });
+                const urlProjectId = new URLSearchParams(window.location.search).get("projectId");
 
                 fetch('/projectsAdmin/getProjects')
                     .then(res => res.json())
                     .then(projects => {
-                        dropdown.innerHTML = '<option disabled selected hidden>Select a project</option>';
+                        dropdown.innerHTML = '<option disabled hidden>Select a project</option>';
                         projects.forEach(project => {
                             const option = document.createElement('option');
                             option.value = project.projectId;
                             option.textContent = project.projectname;
+
                             option.dataset.companyname = project.companyname || 'N/A';
                             option.dataset.companylocation = project.companyLocation || 'N/A';
                             option.dataset.companycontact = project.companycontact || 'N/A';
+
                             dropdown.appendChild(option);
+
+                            // ✅ If this is the URL-matching project, select it and trigger load
+                            if (urlProjectId && project.projectId == urlProjectId) {
+                                option.selected = true;
+                            }
                         });
+
+                        // ✅ Force load the selected project's data
+                        if (urlProjectId) {
+                            dropdown.dispatchEvent(new Event('change'));
+                        }
                     });
+
 
                 dropdown.addEventListener('change', () => {
                     const selected = dropdown.selectedOptions[0];
+                    const selectedId = selected.value;
+
                     nameField.textContent = selected.textContent || 'N/A';
                     companyField.textContent = selected.dataset.companyname || 'N/A';
                     locationField.textContent = selected.dataset.companylocation || 'N/A';
                     contactField.textContent = selected.dataset.companycontact || 'N/A';
+
+                    fetch(`/projectManagementAdmin/data?projectId=${selectedId}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            displayProjectInfo(data.project);
+                            renderMaterialsTable(data.materials);
+                        });
                 });
-            });
+
+
+            const projectId = new URLSearchParams(window.location.search).get("projectId");
+
+            if (projectId) {
+                fetch(`/projectManagementAdmin/data?projectId=${projectId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        displayProjectInfo(data.project);
+                        renderMaterialsTable(data.materials);
+                    });
+            }
+            function displayProjectInfo(project) {
+                document.getElementById("projectName").textContent = project.projectname || 'N/A';
+                document.getElementById("projectLocation").textContent = project.companyLocation || 'N/A';
+                document.getElementById("companyName").textContent = project.companyname || 'N/A';
+                document.getElementById("companyContact").textContent = project.companycontact || 'N/A';
+            }
+
+            function renderMaterialsTable(materials) {
+                const tableBody = document.getElementById("materialsTableBody");
+                tableBody.innerHTML = ""; // Clear existing rows
+
+                materials.forEach((item, index) => {
+                    if (item.archived) return; // skip archived unless toggled
+
+                    const row = document.createElement("tr");
+
+                    row.innerHTML = `
+            <td>${String(index + 1).padStart(3, '0')}</td>
+            <td>${item.inventory.materialName}</td>
+            <td>${item.quantityAssigned} PCS</td>
+            <td>PHP ${item.inventory.materialPrice}</td>
+            <td>PHP ${item.totalPrice}</td>
+        `;
+
+                    tableBody.appendChild(row);
+                });
+            }
+
+
         </script>
     </section>
 </body>
