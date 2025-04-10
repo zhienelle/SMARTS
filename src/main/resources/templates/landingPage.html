@@ -424,7 +424,14 @@
     </div>
 
     <script>
-        
+        var animation = lottie.loadAnimation({
+            container: document.getElementById('lottie-animation'),
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: 'https://lottie.host/ff744c0c-42a0-4f9e-8e41-cef5502ed03f/7qOmL4IDKq.json'
+        });
+
         const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('inactive') === 'true') {
                 alert("Your account is inactive. Please contact the admin.");

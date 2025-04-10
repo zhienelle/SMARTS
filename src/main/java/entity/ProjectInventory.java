@@ -1,5 +1,6 @@
 package entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,7 +16,7 @@ public class ProjectInventory {
 
     @ManyToOne
     @JoinColumn(name = "project_id")
-    @JsonIgnore
+    @JsonBackReference
     private Project project;
 
 

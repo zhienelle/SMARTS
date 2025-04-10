@@ -6,8 +6,8 @@
     <title>Admin Requests</title>
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
     <link
-        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
-        rel="stylesheet">
+            href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
+            rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -460,229 +460,297 @@
         .approval-buttons button:hover {
             opacity: 0.9;
         }
+
+        #bulkConfirmModal.modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.2);
+            overflow: auto;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #bulkConfirmModal .modal-content {
+            background: radial-gradient(50% 50% at 50% 50%, #ee9b7b 0%, #FFFFFF 100%);
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.25);
+            margin: 20vh auto;
+            padding: 40px 30px;
+            border: 4px solid #102937;
+            border-radius: 30px;
+            width: 400px;
+            max-width: 90%;
+            text-align: center;
+            color: #F9744B;
+            font-family: 'Fredoka', sans-serif;
+            text-transform: uppercase;
+        }
+
+        #bulkConfirmModal .modal-content h3 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        #bulkConfirmModal .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #bulkConfirmModal .buttons button {
+            box-sizing: border-box;
+            width: 250px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 8px 16px;
+            background: linear-gradient(180deg, #124d54 0%, rgb(16, 41, 55) 100%);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            text-transform: uppercase;
+            overflow: hidden;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        #bulkConfirmModal .buttons button:hover {
+            background: linear-gradient(180deg, #16a085 0%, rgb(22, 60, 77) 100%);
+        }
     </style>
 </head>
 
 <body>
-    <!-- Header -->
-    <header>
-        <div class="smarts-logo">
-            <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
-        </div>
-        <div>
-            <p>ROLE: <span>ADMIN</span></p>
-            <i class='bx bxs-user-circle'></i>
-        </div>
-    </header>
+<!-- Header -->
+<header>
+    <div class="smarts-logo">
+        <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
+    </div>
+    <div>
+        <p>ROLE: <span>ADMIN</span></p>
+        <i class='bx bxs-user-circle'></i>
+    </div>
+</header>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="logo-details">
-            <div class="logo_name">ACCE Construction</div>
-            <i class='bx bx-menu' id="btn"></i>
-        </div>
-        <ul class="nav-list">
-            <li>
-                <a href="homepageAdmin">
-                    <i class='bx bx-home'></i>
-                    <span class="links_name">Homepage</span>
-                </a>
-                <span class="tooltip">Homepage</span>
-            </li>
-            <li>
-                <a href="projectsAdmin">
-                    <i class='bx bx-task'></i>
-                    <span class="links_name">Projects</span>
-                </a>
-                <span class="tooltip">Projects</span>
-            </li>
-            <li>
-                <a href="inventoryAdmin">
-                    <i class='bx bx-store-alt'></i>
-                    <span class="links_name">Inventory</span>
-                </a>
-                <span class="tooltip">Inventory</span>
-            </li>
-            <li>
-                <a href="invoiceAdmin">
-                    <i class='bx bx-receipt'></i>
-                    <span class="links_name">Invoice</span>
-                </a>
-                <span class="tooltip">Invoice</span>
-            </li>
-            <li>
-                <a href="reportsAdmin">
-                    <i class='bx bx-bar-chart'></i>
-                    <span class="links_name">Reports & Analytics</span>
-                </a>
-                <span class="tooltip">Reports & Analytics</span>
-            </li>
-            <li>
-                <a href="userAdmin">
-                    <i class='bx bx-user'></i>
-                    <span class="links_name">User</span>
-                </a>
-                <span class="tooltip">User</span>
-            </li>
-            <li>
-                <a href="requestsAdmin">
-                    <i class='bx bx-comment-dots'></i>
-                    <span class="links_name">Requests</span>
-                </a>
-                <span class="tooltip">Requests</span>
-            </li>
-            <li>
-                <a href="settingsAdmin">
-                    <i class='bx bx-cog'></i>
-                    <span class="links_name">Settings</span>
-                </a>
-                <span class="tooltip">Settings</span>
-            </li>
-            <li>
-                <a href="confirmLogout">
-                    <i class='bx bx-log-out'></i>
-                    <span class="links_name">Logout</span>
-                </a>
-                <span class="tooltip">Logout</span>
-            </li>
-        </ul>
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="logo-details">
+        <div class="logo_name">ACCE Construction</div>
+        <i class='bx bx-menu' id="btn"></i>
+    </div>
+    <ul class="nav-list">
+        <li>
+            <a href="homepageAdmin">
+                <i class='bx bx-home'></i>
+                <span class="links_name">Homepage</span>
+            </a>
+            <span class="tooltip">Homepage</span>
+        </li>
+        <li>
+            <a href="projectsAdmin">
+                <i class='bx bx-task'></i>
+                <span class="links_name">Projects</span>
+            </a>
+            <span class="tooltip">Projects</span>
+        </li>
+        <li>
+            <a href="inventoryAdmin">
+                <i class='bx bx-store-alt'></i>
+                <span class="links_name">Inventory</span>
+            </a>
+            <span class="tooltip">Inventory</span>
+        </li>
+        <li>
+            <a href="invoiceAdmin">
+                <i class='bx bx-receipt'></i>
+                <span class="links_name">Invoice</span>
+            </a>
+            <span class="tooltip">Invoice</span>
+        </li>
+        <li>
+            <a href="reportsAdmin">
+                <i class='bx bx-bar-chart'></i>
+                <span class="links_name">Reports & Analytics</span>
+            </a>
+            <span class="tooltip">Reports & Analytics</span>
+        </li>
+        <li>
+            <a href="userAdmin">
+                <i class='bx bx-user'></i>
+                <span class="links_name">User</span>
+            </a>
+            <span class="tooltip">User</span>
+        </li>
+        <li>
+            <a href="requestsAdmin">
+                <i class='bx bx-comment-dots'></i>
+                <span class="links_name">Requests</span>
+            </a>
+            <span class="tooltip">Requests</span>
+        </li>
+        <li>
+            <a href="settingsAdmin">
+                <i class='bx bx-cog'></i>
+                <span class="links_name">Settings</span>
+            </a>
+            <span class="tooltip">Settings</span>
+        </li>
+        <li>
+            <a href="confirmLogout">
+                <i class='bx bx-log-out'></i>
+                <span class="links_name">Logout</span>
+            </a>
+            <span class="tooltip">Logout</span>
+        </li>
+    </ul>
+</div>
+
+<!-- Main Section -->
+<section class="home-section">
+    <h1>Requests</h1>
+    <div style="text-align: right; margin-right: 5%; margin-bottom: 10px;">
+        <label for="projectFilter">Filter by Project:</label>
+        <select id="projectFilter" style="padding: 8px; border-radius: 8px;">
+            <option value="">All Projects</option>
+        </select>
     </div>
 
-    <!-- Main Section -->
-    <section class="home-section">
-        <h1>Requests</h1>
-        <div style="text-align: right; margin-right: 5%; margin-bottom: 10px;">
-            <label for="projectFilter">Filter by Project:</label>
-            <select id="projectFilter" style="padding: 8px; border-radius: 8px;">
-                <option value="">All Projects</option>
-            </select>
-        </div>
 
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Users</th>
-                    <th>Role</th>
-                    <th>Requested Material</th>
-                    <th>Requested Quantity</th>
-                    <th>Project</th>
-                    <th>Approval</th>
-                </tr>
-            </thead>
-            <tbody id="requestsTableBody">
-            <tr>
-                    <td>Staff1</td>
-                    <td>Staff</td>
-                    <td>Steel Rods</td>
-                    <td>50</td>
-                    <td>Project #1</td>
-                    <td>
-                        <div class="approval-buttons">
-                            <button onclick="hideRow(this)">Yes</button>
-                            <button onclick="hideRow(this)">No</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Staff2</td>
-                    <td>Staff</td>
-                    <td>Aluminum Sheets</td>
-                    <td>30</td>
-                    <td>Project #2</td>
-                    <td>
-                        <div class="approval-buttons">
-                            <button onclick="hideRow(this)">Yes</button>
-                            <button onclick="hideRow(this)">No</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Staff3</td>
-                    <td>Staff</td>
-                    <td>Copper Wires</td>
-                    <td>100</td>
-                    <td>Project #3</td>
-                    <td>
-                        <div class="approval-buttons">
-                            <button onclick="hideRow(this)">Yes</button>
-                            <button onclick="hideRow(this)">No</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Staff4</td>
-                    <td>Staff</td>
-                    <td>Iron Beams</td>
-                    <td>40</td>
-                    <td>Project #4</td>
-                    <td>
-                        <div class="approval-buttons">
-                            <button onclick="hideRow(this)">Yes</button>
-                            <button onclick="hideRow(this)">No</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Staff5</td>
-                    <td>Staff</td>
-                    <td>Brass Plates</td>
-                    <td>20</td>
-                    <td>Project #5</td>
-                    <td>
-                        <div class="approval-buttons">
-                            <button onclick="hideRow(this)">Yes</button>
-                            <button onclick="hideRow(this)">No</button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="approval-buttons" style="justify-content: center; margin-top: 20px;">
-            <button id="approveSelectedBtn">Approve Selected</button>
-            <button id="denySelectedBtn">Deny Selected</button>
-        </div>
-
-
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
-    </footer>
-    <div id="bulkConfirmModal" class="modal" style="display: none;">
-        <div class="modal-content" style="background-color: white; padding: 30px; border-radius: 20px; width: 300px; margin: auto; top: 30%; position: fixed; left: 0; right: 0; box-shadow: 0px 0px 20px rgba(0,0,0,0.3); z-index: 999;">
-            <h3 style="color: #124D54;">Are you sure?</h3>
-            <div style="display: flex; justify-content: space-around; margin-top: 20px;">
-                <button id="confirmBulkYes">YES</button>
-                <button id="confirmBulkNo">NO</button>
-            </div>
-        </div>
+    <table>
+        <thead>
+        <tr>
+            <th>Users</th>
+            <th>Role</th>
+            <th>Requested Material</th>
+            <th>Requested Quantity</th>
+            <th>Project</th>
+            <th>Approval</th>
+        </tr>
+        </thead>
+        <tbody id="requestsTableBody">
+        <tr>
+            <td>Staff1</td>
+            <td>Staff</td>
+            <td>Steel Rods</td>
+            <td>50</td>
+            <td>Project #1</td>
+            <td>
+                <div class="approval-buttons">
+                    <button onclick="hideRow(this)">Yes</button>
+                    <button onclick="hideRow(this)">No</button>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>Staff2</td>
+            <td>Staff</td>
+            <td>Aluminum Sheets</td>
+            <td>30</td>
+            <td>Project #2</td>
+            <td>
+                <div class="approval-buttons">
+                    <button onclick="hideRow(this)">Yes</button>
+                    <button onclick="hideRow(this)">No</button>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>Staff3</td>
+            <td>Staff</td>
+            <td>Copper Wires</td>
+            <td>100</td>
+            <td>Project #3</td>
+            <td>
+                <div class="approval-buttons">
+                    <button onclick="hideRow(this)">Yes</button>
+                    <button onclick="hideRow(this)">No</button>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>Staff4</td>
+            <td>Staff</td>
+            <td>Iron Beams</td>
+            <td>40</td>
+            <td>Project #4</td>
+            <td>
+                <div class="approval-buttons">
+                    <button onclick="hideRow(this)">Yes</button>
+                    <button onclick="hideRow(this)">No</button>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>Staff5</td>
+            <td>Staff</td>
+            <td>Brass Plates</td>
+            <td>20</td>
+            <td>Project #5</td>
+            <td>
+                <div class="approval-buttons">
+                    <button onclick="hideRow(this)">Yes</button>
+                    <button onclick="hideRow(this)">No</button>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="approval-buttons" style="justify-content: center; margin-top: 20px;">
+        <button id="approveSelectedBtn">Approve Selected</button>
+        <button id="denySelectedBtn">Deny Selected</button>
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const tbody = document.querySelector("#requestsTableBody");
-            const projectFilter = document.getElementById("projectFilter");
 
-            // Load all material requests
-            function loadRequests(project = "") {
-                fetch("/admin/requests/getAll")
-                    .then(res => res.json())
-                    .then(data => {
-                        tbody.innerHTML = "";
-                        const projectSet = new Set();
+</section>
 
-                        data.forEach(req => {
-                            const projName = req.project?.projectname || "-";
-                            projectSet.add(projName);
+<!-- Footer -->
+<footer>
+    <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
+</footer>
+<div id="bulkConfirmModal" class="modal">
+    <div class="modal-content">
+        <h3>Are you sure?</h3>
+        <div class="buttons">
+            <button id="confirmBulkYes">YES</button>
+            <button id="confirmBulkNo">NO</button>
+        </div>
+    </div>
+</div>
 
-                            if (project && projName !== project) return;
 
-                            const row = document.createElement("tr");
-                            row.setAttribute("data-id", req.materialRequestId);
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const tbody = document.querySelector("#requestsTableBody");
+        const projectFilter = document.getElementById("projectFilter");
 
-                            row.innerHTML = `
+        // Load all material requests
+        function loadRequests(project = "") {
+            fetch("/admin/requests/getAll")
+                .then(res => res.json())
+                .then(data => {
+                    tbody.innerHTML = "";
+                    const projectSet = new Set();
+
+                    data.forEach(req => {
+                        const projName = req.project?.projectname || "-";
+                        projectSet.add(projName);
+
+                        if (project && projName !== project) return;
+
+                        const row = document.createElement("tr");
+                        row.setAttribute("data-id", req.materialRequestId);
+
+                        row.innerHTML = `
                             <td><input type="checkbox" class="row-checkbox" data-id="${req.materialRequestId}"> ${req.user?.username || 'N/A'}</td>
                             <td>${req.user?.role || 'N/A'}</td>
                             <td>${req.materialName || '-'}</td>
@@ -696,124 +764,124 @@
                             </td>
                         `;
 
-                            tbody.appendChild(row);
-                        });
-
-                        // Populate the filter dropdown
-                        const currentSelection = projectFilter.value; // 👈 preserve selection
-                        projectFilter.innerHTML = '<option value="">All Projects</option>';
-                        Array.from(projectSet).sort().forEach(p => {
-                            const opt = document.createElement("option");
-                            opt.value = p;
-                            opt.textContent = p;
-                            if (p === project) opt.selected = true; // 👈 reselect current
-                            projectFilter.appendChild(opt);
-                        });
-
-                        if (project === "") {
-                            projectFilter.value = ""; // 👈 reselect "All Projects" explicitly
-                        }
-                    })
-                    .catch(err => {
-                        console.error("❌ Failed to fetch material requests:", err);
+                        tbody.appendChild(row);
                     });
 
-                // if (req.materialRequestStatus !== "PENDING") return; // show only pending
-
-            }
-
-
-            // Handle approve/deny click
-            window.handleApproval = (requestId, approved) => {
-                const url = approved ? "/admin/requests/approve/" : "/admin/requests/deny/";
-                fetch(url + requestId, { method: "POST" })
-                    .then(res => {
-                        if (res.ok) {
-                            const row = document.querySelector(`tr[data-id="${requestId}"]`);
-                            if (row) row.style.display = "none";
-                        } else {
-                            alert("❌ Failed to update request.");
-                        }
+                    // Populate the filter dropdown
+                    const currentSelection = projectFilter.value; // 👈 preserve selection
+                    projectFilter.innerHTML = '<option value="">All Projects</option>';
+                    Array.from(projectSet).sort().forEach(p => {
+                        const opt = document.createElement("option");
+                        opt.value = p;
+                        opt.textContent = p;
+                        if (p === project) opt.selected = true; // 👈 reselect current
+                        projectFilter.appendChild(opt);
                     });
-            };
 
-
-            // Filter by project dropdown
-            projectFilter.addEventListener("change", () => {
-                loadRequests(projectFilter.value);
-            });
-
-            // Initial load
-            loadRequests();
-        });
-
-        let selectedAction = null;
-
-        function getSelectedRequestIds() {
-            return [...document.querySelectorAll(".row-checkbox:checked")].map(cb => parseInt(cb.dataset.id));
-        }
-
-        function toggleModal(show) {
-            const modal = document.getElementById("bulkConfirmModal");
-            modal.style.display = show ? "block" : "none";
-        }
-
-        document.getElementById("approveSelectedBtn").addEventListener("click", () => {
-            const selected = getSelectedRequestIds();
-            if (selected.length === 0) {
-                alert("⚠️ No requests selected.");
-                return;
-            }
-            selectedAction = "APPROVED";
-            toggleModal(true);
-        });
-
-        document.getElementById("denySelectedBtn").addEventListener("click", () => {
-            const selected = getSelectedRequestIds();
-            if (selected.length === 0) {
-                alert("⚠️ No requests selected.");
-                return;
-            }
-            selectedAction = "DENIED";
-            toggleModal(true);
-        });
-
-
-
-        document.getElementById("confirmBulkNo").addEventListener("click", () => {
-            toggleModal(false);
-            selectedAction = null;
-        });
-
-        document.getElementById("confirmBulkYes").addEventListener("click", () => {
-            const requestIds = getSelectedRequestIds();
-            if (requestIds.length === 0) {
-                alert("Please select at least one request.");
-                toggleModal(false);
-                return;
-            }
-
-            fetch("/admin/requests/updateMultipleStatus", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ requestIds, action: selectedAction })
-            })
-                .then(res => res.text())
-                .then(msg => {
-                    requestIds.forEach(id => {
-                        const row = document.querySelector(`tr[data-id="${id}"]`);
-                        if (row) row.style.display = "none";
-                    });
-                    toggleModal(false);
-                    alert(msg);
+                    if (project === "") {
+                        projectFilter.value = ""; // 👈 reselect "All Projects" explicitly
+                    }
                 })
                 .catch(err => {
-                    console.error("❌ Bulk update failed", err);
-                    alert("❌ Something went wrong.");
-                    toggleModal(false);
+                    console.error("❌ Failed to fetch material requests:", err);
                 });
+
+            // if (req.materialRequestStatus !== "PENDING") return; // show only pending
+
+        }
+
+
+        // Handle approve/deny click
+        window.handleApproval = (requestId, approved) => {
+            const url = approved ? "/admin/requests/approve/" : "/admin/requests/deny/";
+            fetch(url + requestId, { method: "POST" })
+                .then(res => {
+                    if (res.ok) {
+                        const row = document.querySelector(`tr[data-id="${requestId}"]`);
+                        if (row) row.style.display = "none";
+                    } else {
+                        alert("❌ Failed to update request.");
+                    }
+                });
+        };
+
+
+        // Filter by project dropdown
+        projectFilter.addEventListener("change", () => {
+            loadRequests(projectFilter.value);
         });
-    </script>
+
+        // Initial load
+        loadRequests();
+    });
+
+    let selectedAction = null;
+
+    function getSelectedRequestIds() {
+        return [...document.querySelectorAll(".row-checkbox:checked")].map(cb => parseInt(cb.dataset.id));
+    }
+
+    function toggleModal(show) {
+        const modal = document.getElementById("bulkConfirmModal");
+        modal.style.display = show ? "block" : "none";
+    }
+
+    document.getElementById("approveSelectedBtn").addEventListener("click", () => {
+        const selected = getSelectedRequestIds();
+        if (selected.length === 0) {
+            alert("⚠️ No requests selected.");
+            return;
+        }
+        selectedAction = "APPROVED";
+        toggleModal(true);
+    });
+
+    document.getElementById("denySelectedBtn").addEventListener("click", () => {
+        const selected = getSelectedRequestIds();
+        if (selected.length === 0) {
+            alert("⚠️ No requests selected.");
+            return;
+        }
+        selectedAction = "DENIED";
+        toggleModal(true);
+    });
+
+
+
+    document.getElementById("confirmBulkNo").addEventListener("click", () => {
+        toggleModal(false);
+        selectedAction = null;
+    });
+
+    document.getElementById("confirmBulkYes").addEventListener("click", () => {
+        const requestIds = getSelectedRequestIds();
+        if (requestIds.length === 0) {
+            alert("Please select at least one request.");
+            toggleModal(false);
+            return;
+        }
+
+        fetch("/admin/requests/updateMultipleStatus", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ requestIds, action: selectedAction })
+        })
+            .then(res => res.text())
+            .then(msg => {
+                requestIds.forEach(id => {
+                    const row = document.querySelector(`tr[data-id="${id}"]`);
+                    if (row) row.style.display = "none";
+                });
+                toggleModal(false);
+                alert(msg);
+            })
+            .catch(err => {
+                console.error("❌ Bulk update failed", err);
+                alert("❌ Something went wrong.");
+                toggleModal(false);
+            });
+    });
+</script>
 
 </body>
 

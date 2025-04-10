@@ -702,8 +702,10 @@
             </select>
         </div>
 
-        <!-- Placeholder for dynamically inserted checkboxes -->
-        <div id="projectCheckboxes" style="display: none; padding: 10px 0;"></div>
+        <!-- Multi-select project dropdown -->
+        <select id="projectCheckboxes" multiple style="display: none; width: 100%; padding: 10px; border-radius: 8px; font-family: 'Fredoka', sans-serif;">
+            <!-- options will be added dynamically -->
+        </select>
 
 
         <!-- Account Status dropdown -->
@@ -778,23 +780,10 @@
         function renderProjectCheckboxes(projects) {
             projectCheckboxesDiv.innerHTML = '';
             projects.forEach(project => {
-                const label = document.createElement('label');
-                label.style.display = 'block';
-                const input = document.createElement('input');
-
-                if (roleSelect.value === 'MAIN CONTRACTOR' && permissionsSelect.value === 'VIEWING MODE OF THEIR PROJECT') {
-                    input.type = 'checkbox';
-                    input.name = 'projectRadio';
-                } else {
-                    input.type = 'checkbox';
-                    input.name = 'projectCheckbox';
-                }
-
-                input.value = project.projectname;
-                input.checked = true;
-                label.appendChild(input);
-                label.appendChild(document.createTextNode(` ${project.projectname}`));
-                projectCheckboxesDiv.appendChild(label);
+                const option = document.createElement('option');
+                option.value = project.projectname;
+                option.textContent = project.projectname;
+                projectCheckboxesDiv.appendChild(option);
             });
         }
 
@@ -812,23 +801,19 @@
             });
 
             if (selectedRole === 'ADMIN') {
+                permissionsSelect.value = 'MANAGE EVERYTHING';
                 permissionsSelect.querySelector('option[value="MANAGE EVERYTHING"]').style.display = 'block';
-                projectSelect.style.display = 'none';
                 projectCheckboxesDiv.style.display = 'none';
             } else if (selectedRole === 'STAFF') {
-                permissionsSelect.querySelector('option[value="MANAGE EVERYTHING"]').style.display = 'block';
+                permissionsSelect.value = 'MANAGE CERTAIN PROJECT';
                 permissionsSelect.querySelector('option[value="MANAGE CERTAIN PROJECT"]').style.display = 'block';
-                projectSelect.style.display = 'block';
-                projectCheckboxesDiv.style.display = 'none';
+                projectCheckboxesDiv.style.display = 'block';
+                renderProjectCheckboxes(allProjects, false); // ✅ no pre-check
             } else if (selectedRole === 'MAIN CONTRACTOR') {
+                permissionsSelect.value = 'VIEWING MODE OF THEIR PROJECT';
                 permissionsSelect.querySelector('option[value="VIEWING MODE OF THEIR PROJECT"]').style.display = 'block';
-                projectSelect.style.display = 'block';
-                projectCheckboxesDiv.style.display = 'none';
-            } else if (selectedRole === 'STAFF') {
-                permissionsSelect.querySelector('option[value="MANAGE EVERYTHING"]').style.display = 'block';
-                permissionsSelect.querySelector('option[value="MANAGE CERTAIN PROJECT"]').style.display = 'block';
-            } else if (selectedRole === 'MAIN CONTRACTOR') {
-                permissionsSelect.querySelector('option[value="VIEWING MODE OF THEIR PROJECT"]').style.display = 'block';
+                projectCheckboxesDiv.style.display = 'block';
+                renderProjectCheckboxes(allProjects, false); // ✅ also no pre-check
             }
         });
 
@@ -870,7 +855,8 @@
                 if (radios.length > 0) {
                     return [radios[0].value];
                 }
-                const checkboxes = projectCheckboxesDiv.querySelectorAll('input[name="projectCheckbox"]:checked');
+                const selectedOptions = Array.from(projectCheckboxesDiv.selectedOptions);
+                return selectedOptions.map(option => option.value);
                 return Array.from(checkboxes).map(cb => cb.value);
             } else {
                 return [projectSelect.value];
@@ -1042,7 +1028,7 @@
                 })
                 .catch(error => console.error('Error toggling users:', error));
         }
-        
+
         function archiveUser() {
             if (selectedRow) {
                 const userId = selectedRow.getAttribute('data-user-id');

@@ -6,8 +6,8 @@
     <title>Staff My Projects</title>
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
     <link
-        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
-        rel="stylesheet">
+            href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
+            rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -849,265 +849,376 @@
             border-left: none;
             height: auto;
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            align-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content.small-modal {
+            width: 90%;
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 30px;
+            background: radial-gradient(50% 50% at 50% 50%, #ee9b7b 0%, #FFFFFF 100%);
+            border: 4px solid #102937;
+            border-radius: 30px;
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.25);
+            font-family: 'Fredoka', sans-serif;
+            text-transform: uppercase;
+            text-align: center;
+            color: #F9744B;
+        }
+
+        .modal-content select,
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            font-family: 'Fredoka', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+        }
     </style>
 </head>
 
 <body>
-    <!-- Header -->
-    <header>
-        <div class="smarts-logo">
-            <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
-        </div>
-        <div>
-            <p>ROLE: <span>ADMIN</span></p>
-            <i class='bx bxs-user-circle'></i>
-        </div>
-    </header>
-
-    <div class="sidebar">
-        <div class="logo-details">
-            <div class="logo_name">ACCE Construction</div>
-            <i class='bx bx-menu' id="btn"></i>
-        </div>
-        <ul class="nav-list">
-            <li>
-                <a href="homepageAdmin">
-                    <i class='bx bx-home'></i>
-                    <span class="links_name">Homepage</span>
-                </a>
-                <span class="tooltip">Homepage</span>
-            </li>
-            <li>
-                <a href="projectsAdmin">
-                    <i class='bx bx-task'></i>
-                    <span class="links_name">Projects</span>
-                </a>
-                <span class="tooltip">Projects</span>
-            </li>
-            <li>
-                <a href="inventoryAdmin">
-                    <i class='bx bx-store-alt'></i>
-                    <span class="links_name">Inventory</span>
-                </a>
-                <span class="tooltip">Inventory</span>
-            </li>
-            <li>
-                <a href="invoiceAdmin">
-                    <i class='bx bx-receipt'></i>
-                    <span class="links_name">Invoice</span>
-                </a>
-                <span class="tooltip">Invoice</span>
-            </li>
-            <li>
-                <a href="reportsAdmin">
-                    <i class='bx bx-bar-chart'></i>
-                    <span class="links_name">Reports & Analytics</span>
-                </a>
-                <span class="tooltip">Reports & Analytics</span>
-            </li>
-            <li>
-                <a href="userAdmin">
-                    <i class='bx bx-user'></i>
-                    <span class="links_name">User</span>
-                </a>
-                <span class="tooltip">User</span>
-            </li>
-            <li>
-                <a href="requestsAdmin">
-                    <i class='bx bx-comment-dots'></i>
-                    <span class="links_name">Requests</span>
-                </a>
-                <span class="tooltip">Requests</span>
-            </li>
-            <li>
-                <a href="settingsAdmin">
-                    <i class='bx bx-cog'></i>
-                    <span class="links_name">Settings</span>
-                </a>
-                <span class="tooltip">Settings</span>
-            </li>
-            <li>
-                <a href="confirmLogout">
-                    <i class='bx bx-log-out'></i>
-                    <span class="links_name">Logout</span>
-                </a>
-                <span class="tooltip">Logout</span>
-            </li>
-        </ul>
+<!-- Header -->
+<header>
+    <div class="smarts-logo">
+        <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
     </div>
-    <!-- Main Section -->
-    <section class="home-section">
-        <div class="upper">
-            <h1>PROJECT MANAGEMENT</h1>
-            <div id="dropdown" class="functionality">
-                <select id="projectDropdown">
-                    <option disabled selected hidden>Select a project</option>
+    <div>
+        <p>ROLE: <span>ADMIN</span></p>
+        <i class='bx bxs-user-circle'></i>
+    </div>
+</header>
+
+<div class="sidebar">
+    <div class="logo-details">
+        <div class="logo_name">ACCE Construction</div>
+        <i class='bx bx-menu' id="btn"></i>
+    </div>
+    <ul class="nav-list">
+        <li>
+            <a href="homepageAdmin">
+                <i class='bx bx-home'></i>
+                <span class="links_name">Homepage</span>
+            </a>
+            <span class="tooltip">Homepage</span>
+        </li>
+        <li>
+            <a href="projectsAdmin">
+                <i class='bx bx-task'></i>
+                <span class="links_name">Projects</span>
+            </a>
+            <span class="tooltip">Projects</span>
+        </li>
+        <li>
+            <a href="inventoryAdmin">
+                <i class='bx bx-store-alt'></i>
+                <span class="links_name">Inventory</span>
+            </a>
+            <span class="tooltip">Inventory</span>
+        </li>
+        <li>
+            <a href="invoiceAdmin">
+                <i class='bx bx-receipt'></i>
+                <span class="links_name">Invoice</span>
+            </a>
+            <span class="tooltip">Invoice</span>
+        </li>
+        <li>
+            <a href="reportsAdmin">
+                <i class='bx bx-bar-chart'></i>
+                <span class="links_name">Reports & Analytics</span>
+            </a>
+            <span class="tooltip">Reports & Analytics</span>
+        </li>
+        <li>
+            <a href="userAdmin">
+                <i class='bx bx-user'></i>
+                <span class="links_name">User</span>
+            </a>
+            <span class="tooltip">User</span>
+        </li>
+        <li>
+            <a href="requestsAdmin">
+                <i class='bx bx-comment-dots'></i>
+                <span class="links_name">Requests</span>
+            </a>
+            <span class="tooltip">Requests</span>
+        </li>
+        <li>
+            <a href="settingsAdmin">
+                <i class='bx bx-cog'></i>
+                <span class="links_name">Settings</span>
+            </a>
+            <span class="tooltip">Settings</span>
+        </li>
+        <li>
+            <a href="confirmLogout">
+                <i class='bx bx-log-out'></i>
+                <span class="links_name">Logout</span>
+            </a>
+            <span class="tooltip">Logout</span>
+        </li>
+    </ul>
+</div>
+<!-- Main Section -->
+<section class="home-section">
+    <div class="upper">
+        <h1>PROJECT MANAGEMENT</h1>
+        <div id="dropdown" class="functionality">
+            <select id="projectDropdown">
+                <option disabled selected hidden>Select a project</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="materials-container">
+        <div class="project-details">
+            <div>
+                <h2><strong>Project:</strong> <span id="projectName"></span></h2>
+                <p><strong>Location:</strong> <span id="projectLocation"></span></p>
+            </div>
+            <div class="b">
+                <h2><strong>Company:</strong> <span id="companyName"></span></h2>
+                <p><strong>Contact:</strong> <span id="companyContact"></span></p>
+            </div>
+        </div>
+
+        <h2 style="text-align: center; color: #F9744B; font-weight: bold; font-family: 'Fredoka';">PROJECT MATERIALS
+            OVERVIEW</h2>
+
+        <div class="materials-table">
+            <table id="materialsTable">
+                <thead>
+                <tr>
+                    <th>Item No.</th>
+                    <th>Materials</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                    <th class="actions">Actions</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="buttons">
+        <button id="backBtn" class="hidden">Back</button>
+        <button id="addBtn" class="hidden">Add</button>
+        <button id="editBtn">Edit</button>
+        <button id="editProgressBtn">Edit Project Progress</button>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Add Material Modal -->
+    <div id="addMaterialModal" class="modal">
+        <div class="modal-content small-modal">
+            <h3>Request Material</h3>
+            <form id="addMaterialForm">
+                <label for="projectName">Project Name</label>
+                <select id="projectName" name="projectName" required>
+                    <option value="">SELECT PROJECT</option>
                 </select>
-            </div>
-        </div>
 
-        <div class="materials-container">
-            <div class="project-details">
-                <div>
-                    <h2><strong>Project:</strong> <span id="projectName"></span></h2>
-                    <p><strong>Location:</strong> <span id="projectLocation"></span></p>
+                <label for="category">Category</label>
+                <select id="category" name="category" required>
+                    <option value="">SELECT CATEGORY</option>
+                </select>
+
+                <label for="material">Material</label>
+                <select id="material" name="material" required>
+                    <option value="">SELECT MATERIAL</option>
+                </select>
+
+                <label for="quantity">Quantity</label>
+                <input type="number" id="quantity" name="quantity" placeholder="ENTER QUANTITY" required>
+
+                <div class="button-container">
+                    <button type="button" onclick="closeModal('addMaterialModal')">Cancel</button>
+                    <button type="submit">Add</button>
                 </div>
-                <div class="b">
-                    <h2><strong>Company:</strong> <span id="companyName"></span></h2>
-                    <p><strong>Contact:</strong> <span id="companyContact"></span></p>
-                </div>
-            </div>
-
-            <h2 style="text-align: center; color: #F9744B; font-weight: bold; font-family: 'Fredoka';">PROJECT MATERIALS OVERVIEW</h2>
-
-            <div class="materials-table">
-                <table id="materialsTable">
-                    <thead>
-                    <tr>
-                        <th>Item No.</th>
-                        <th>Materials</th>
-                        <th>Quantity</th>
-                        <th>Unit Price</th>
-                        <th>Total</th>
-                        <th class="actions">Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-            <button id="addRowBtn" style="display:none;">Add Row</button>
-            <button id="toggleArchiveBtn">Show Archived Rows</button>
+            </form>
         </div>
+    </div>
 
-        <div class="buttons">
-            <button id="backBtn" class="hidden">Back</button>
-            <button id="addBtn" class="hidden">Add</button>
-            <button id="editBtn">Edit</button>
-            <button id="editProgressBtn">Edit Project Progress</button>
-        </div>
+    <!-- Footer -->
+    <footer>
+        <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span>
+        </p>
+    </footer>
 
-        <!-- Footer -->
-        <footer>
-            <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
-        </footer>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const dropdown = document.getElementById('projectDropdown');
+            const nameField = document.getElementById('projectName');
+            const locationField = document.getElementById('projectLocation');
+            const companyField = document.getElementById('companyName');
+            const contactField = document.getElementById('companyContact');
+            const tableBody = document.querySelector('#materialsTable tbody');
+            const editBtn = document.getElementById('editBtn');
+            const addBtn = document.getElementById('addBtn');
+            const backBtn = document.getElementById('backBtn');
+            const addRowBtn = document.getElementById('addRowBtn');
+            const toggleArchiveBtn = document.getElementById('toggleArchiveBtn');
 
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                const dropdown = document.getElementById('projectDropdown');
-                const nameField = document.getElementById('projectName');
-                const locationField = document.getElementById('projectLocation');
-                const companyField = document.getElementById('companyName');
-                const contactField = document.getElementById('companyContact');
-                const tableBody = document.querySelector('#materialsTable tbody');
-                const editBtn = document.getElementById('editBtn');
-                const addBtn = document.getElementById('addBtn');
-                const backBtn = document.getElementById('backBtn');
-                const addRowBtn = document.getElementById('addRowBtn');
-                const toggleArchiveBtn = document.getElementById('toggleArchiveBtn');
+            let inEditMode = false;
+            let showArchived = false;
 
-                let inEditMode = false;
-                let showArchived = false;
+            function toggleEditMode() {
+                inEditMode = !inEditMode;
+                editBtn.textContent = inEditMode ? 'Save' : 'Edit';
+                addBtn.classList.toggle('hidden', !inEditMode);
+                backBtn.classList.toggle('hidden', !inEditMode);
+                addRowBtn.style.display = inEditMode ? 'inline-block' : 'none';
 
-                function toggleEditMode() {
-                    inEditMode = !inEditMode;
-                    editBtn.textContent = inEditMode ? 'Save' : 'Edit';
-                    addBtn.classList.toggle('hidden', !inEditMode);
-                    backBtn.classList.toggle('hidden', !inEditMode);
-                    addRowBtn.style.display = inEditMode ? 'inline-block' : 'none';
+                document.querySelectorAll('.actions').forEach(cell => {
+                    cell.innerHTML = inEditMode ? '<span class="delete-icon">❌</span>' : '';
+                });
+            }
 
-                    document.querySelectorAll('.actions').forEach(cell => {
-                        cell.innerHTML = inEditMode ? '<span class="edit-icon">✏️</span><span class="delete-icon">❌</span>' : '';
-                    });
+            function createRow(data = ['', '', '', '', ''], archived = false) {
+                const row = document.createElement('tr');
+                if (archived) row.classList.add('archived');
+
+                data.forEach(text => {
+                    const cell = document.createElement('td');
+                    cell.textContent = text;
+                    row.appendChild(cell);
+                });
+
+                const actions = document.createElement('td');
+                actions.className = 'actions';
+                if (inEditMode) {
+                    actions.innerHTML = '<span class="delete-icon">❌</span>';
                 }
+                row.appendChild(actions);
+                tableBody.appendChild(row);
+            }
 
-                function createRow(data = ['', '', '', '', ''], archived = false) {
-                    const row = document.createElement('tr');
-                    if (archived) row.classList.add('archived');
+            editBtn.addEventListener('click', toggleEditMode);
+            backBtn.addEventListener('click', () => {
+                window.location.href = 'projectsAdmin';
+            });
+            addBtn.addEventListener('click', () => createRow());
+            addRowBtn.addEventListener('click', () => createRow());
 
-                    data.forEach(text => {
-                        const cell = document.createElement('td');
-                        cell.textContent = text;
-                        row.appendChild(cell);
-                    });
-
-                    const actions = document.createElement('td');
-                    actions.className = 'actions';
-                    if (inEditMode) {
-                        actions.innerHTML = '<span class="edit-icon">✏️</span><span class="delete-icon">❌</span>';
-                    }
-                    row.appendChild(actions);
-                    tableBody.appendChild(row);
-                }
-
-                editBtn.addEventListener('click', toggleEditMode);
-                backBtn.addEventListener('click', () => {
-                    window.location.href = 'projectsAdmin';
-                });
-                addBtn.addEventListener('click', () => createRow());
-                addRowBtn.addEventListener('click', () => createRow());
-
-                toggleArchiveBtn.addEventListener('click', () => {
-                    showArchived = !showArchived;
-                    toggleArchiveBtn.textContent = showArchived ? 'Hide Archived Rows' : 'Show Archived Rows';
-                    document.querySelectorAll('.archived').forEach(row => {
-                        row.style.display = showArchived ? '' : 'none';
-                    });
-                });
-
-                tableBody.addEventListener('click', (e) => {
-                    const row = e.target.closest('tr');
-                    if (e.target.classList.contains('edit-icon')) {
-                        for (let i = 1; i <= 4; i++) {
-                            const cell = row.children[i];
-                            const input = document.createElement('input');
-                            input.type = 'text';
-                            input.value = cell.textContent;
-                            cell.innerHTML = '';
-                            cell.appendChild(input);
-                        }
-                        e.target.textContent = '💾';
-                        e.target.classList.remove('edit-icon');
-                        e.target.classList.add('save-icon');
-                    } else if (e.target.classList.contains('save-icon')) {
-                        for (let i = 1; i <= 4; i++) {
-                            const cell = row.children[i];
-                            const input = cell.querySelector('input');
-                            cell.textContent = input.value;
-                        }
-                        e.target.textContent = '✏️';
-                        e.target.classList.remove('save-icon');
-                        e.target.classList.add('edit-icon');
-                    } else if (e.target.classList.contains('delete-icon')) {
-                        row.classList.add('archived');
-                        if (!showArchived) row.style.display = 'none';
-                    }
-                });
-
-                fetch('/projectsAdmin/getProjects')
-                    .then(res => res.json())
-                    .then(projects => {
-                        dropdown.innerHTML = '<option disabled selected hidden>Select a project</option>';
-                        projects.forEach(project => {
-                            const option = document.createElement('option');
-                            option.value = project.projectId;
-                            option.textContent = project.projectname;
-                            option.dataset.companyname = project.companyname || 'N/A';
-                            option.dataset.companylocation = project.companyLocation || 'N/A';
-                            option.dataset.companycontact = project.companycontact || 'N/A';
-                            dropdown.appendChild(option);
-                        });
-                    });
-
-                dropdown.addEventListener('change', () => {
-                    const selected = dropdown.selectedOptions[0];
-                    nameField.textContent = selected.textContent || 'N/A';
-                    companyField.textContent = selected.dataset.companyname || 'N/A';
-                    locationField.textContent = selected.dataset.companylocation || 'N/A';
-                    contactField.textContent = selected.dataset.companycontact || 'N/A';
+            toggleArchiveBtn.addEventListener('click', () => {
+                showArchived = !showArchived;
+                toggleArchiveBtn.textContent = showArchived ? 'Hide Archived Rows' : 'Show Archived Rows';
+                document.querySelectorAll('.archived').forEach(row => {
+                    row.style.display = showArchived ? '' : 'none';
                 });
             });
-        </script>
-    </section>
+
+            tableBody.addEventListener('click', (e) => {
+                const row = e.target.closest('tr');
+                if (e.target.classList.contains('delete-icon')) {
+                    row.classList.add('archived');
+                    if (!showArchived) row.style.display = 'none';
+                }
+            });
+
+            fetch('/projectsAdmin/getProjects')
+                .then(res => res.json())
+                .then(projects => {
+                    dropdown.innerHTML = '<option disabled selected hidden>Select a project</option>';
+                    projects.forEach(project => {
+                        const option = document.createElement('option');
+                        option.value = project.projectId;
+                        option.textContent = project.projectname;
+                        option.dataset.companyname = project.companyname || 'N/A';
+                        option.dataset.companylocation = project.companyLocation || 'N/A';
+                        option.dataset.companycontact = project.companycontact || 'N/A';
+                        dropdown.appendChild(option);
+                    });
+                });
+
+            dropdown.addEventListener('change', () => {
+                const selected = dropdown.selectedOptions[0];
+                nameField.textContent = selected.textContent || 'N/A';
+                companyField.textContent = selected.dataset.companyname || 'N/A';
+                locationField.textContent = selected.dataset.companylocation || 'N/A';
+                contactField.textContent = selected.dataset.companycontact || 'N/A';
+            });
+        });
+
+        // Open Modal
+        document.getElementById('addBtn').addEventListener('click', function () {
+            openModal('addMaterialModal');
+        });
+
+        // Modal Open/Close Helpers
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const overlay = document.getElementById('overlay');
+            if (modal && overlay) {
+                modal.style.display = "block";
+                overlay.style.display = "block";
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+            document.getElementById('overlay').style.display = "none";
+        }
+
+        window.addEventListener('click', function (event) {
+            const modals = document.querySelectorAll('.modal');
+            const overlay = document.getElementById('overlay');
+            modals.forEach(modal => {
+                if (event.target === modal || event.target === overlay) {
+                    modal.style.display = "none";
+                    overlay.style.display = "none";
+                }
+            });
+        });
+
+        // Optional: Handle form submission
+        document.getElementById('addMaterialForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            // TODO: Replace this with actual logic
+            const formData = {
+                project: document.getElementById('projectName').value,
+                category: document.getElementById('category').value,
+                material: document.getElementById('material').value,
+                quantity: document.getElementById('quantity').value,
+            };
+            console.log('Submitted:', formData);
+            this.reset();
+            closeModal('addMaterialModal');
+        });
+
+    </script>
+</section>
 </body>
 
 </html>
