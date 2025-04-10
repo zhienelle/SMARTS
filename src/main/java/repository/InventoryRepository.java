@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface InventoryRepository extends JpaRepository<Inventory, Integer> {
     Inventory findByMaterialCategoryAndMaterialName(String materialCategory, String materialName);
     Inventory findByMaterialName(String materialName);
+    Inventory findByMaterialCategoryIgnoreCaseAndMaterialNameIgnoreCase(String category, String name);
+
 }

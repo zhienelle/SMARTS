@@ -842,7 +842,7 @@
                     inventoryTableBody.innerHTML = "";
 
                     data.forEach(item => {
-                        categories.add(item.material_category);
+                        categories.add(item.material_category.trim().toLowerCase());
                         const row = document.createElement("tr");
                         row.setAttribute("data-category", item.material_category.toLowerCase().replace(/\s+/g, "-"));
                         row.innerHTML = `
@@ -864,7 +864,9 @@
             categories.sort().forEach(category => {
                 const value = category.toLowerCase().replace(/\s+/g, "-");
                 const label = document.createElement("label");
-                label.innerHTML = `<input type="checkbox" class="category-checkbox" value="${value}"> ${category}`;
+                const displayName = category.charAt(0).toUpperCase() + category.slice(1);
+                label.innerHTML = `<input type="checkbox" class="category-checkbox" value="${value}"> ${displayName}`;
+
                 categoryList.appendChild(label);
             });
 
@@ -910,13 +912,14 @@
             });
 
         function populateCategories() {
-            const uniqueCategories = [...new Set(globalInventory.map(item => item.material_category))];
+            const uniqueCategories = [...new Set(globalInventory.map(item => item.material_category.trim().toLowerCase()))];
             const select = document.getElementById("category");
             select.innerHTML = `<option value="">Select Category</option>`;
             uniqueCategories.forEach(cat => {
+                const displayName = cat.charAt(0).toUpperCase() + cat.slice(1);
                 const option = document.createElement("option");
-                option.value = cat;
-                option.textContent = cat;
+                option.value = displayName;
+                option.textContent = displayName;
                 select.appendChild(option);
             });
         }
@@ -929,7 +932,9 @@
             let filtered;
 
             if (selectedCategory) {
-                filtered = globalInventory.filter(item => item.material_category === selectedCategory);
+                filtered = globalInventory.filter(item =>
+                    item.material_category.trim().toLowerCase() === selectedCategory.trim().toLowerCase()
+                );
             } else {
                 filtered = globalInventory;
             }
@@ -942,6 +947,7 @@
                 materialSelect.appendChild(option);
             });
         }
+
 
 // 🔁 Trigger material population when category changes
         document.getElementById("category").addEventListener("change", () => {
@@ -958,7 +964,11 @@
             const material = document.getElementById("material").value;
             const quantity = parseInt(document.getElementById("quantity").value);
 
-            const matched = globalInventory.find(item => item.material_category === category && item.material_name === material);
+            const matched = globalInventory.find(item =>
+                item.material_category.trim().toLowerCase() === category.trim().toLowerCase() &&
+                item.material_name === material
+            );
+
 
             if (!matched) {
                 alert("❌ Material not found in inventory.");
