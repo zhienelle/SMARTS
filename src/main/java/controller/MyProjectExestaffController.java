@@ -3,6 +3,11 @@ package controller;
 import entity.Project;
 import entity.User;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import repository.InventoryRepository;
+import repository.ProjectInventoryRepository;
 import repository.ProjectRepository;
 import repository.UserRepository;
 import entity.ProjectInventory;
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -27,6 +33,13 @@ public class MyProjectExestaffController {
 
     @Autowired
     private ProjectRepository projectRepository;
+
+    @Autowired
+    private ProjectInventoryRepository projectInventoryRepository;
+
+    @Autowired
+    private InventoryRepository inventoryRepository;
+
 
     @GetMapping("/myProjectExestaff")
     public String myProjectExestaff(HttpSession session, Model model) {
@@ -95,5 +108,35 @@ public class MyProjectExestaffController {
         return list;
     }
 
+    @PostMapping("/myProjectExestaff/removeMaterial")
+    @ResponseBody
+    public ResponseEntity<?> removeMaterialFromProject(@RequestBody Map<String, String> body) {
+        String projectName = body.get("projectName");
+        String materialName = body.get("materialName");
+        int quantity = Integer.parseInt(body.get("quantity"));
+
+        Project project = projectRepository.findByProjectname(projectName);
+        if (project == null) return ResponseEntity.badRequest().body("Project not found");
+
+        ProjectInventory target = null;
+        for (ProjectInventory pi : project.getProjectInventoryList()) {
+            if (pi.getInventory().getMaterialName().equalsIgnoreCase(materialName)) {
+                target = pi;
+                break;
+            }
+        }
+
+        if (target == null) return ResponseEntity.badRequest().body("Material not found");
+
+        // Return quantity to main inventory
+        target.getInventory().setMaterialStock(target.getInventory().getMaterialStock() + quantity);
+        inventoryRepository.save(target.getInventory());
+
+        // Remove from project_inventory and delete it
+        project.getProjectInventoryList().remove(target);
+        projectInventoryRepository.delete(target); // ✅ hard-delete
+
+        return ResponseEntity.ok("Removed");
+    }
 
 }

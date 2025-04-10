@@ -637,7 +637,7 @@
                 border-radius: 8px;
                 font-size: 16px;
                 font-family: 'Fredoka', sans-serif;
-                text-transform: uppercase;
+                /*text-transform: uppercase; */
             }
 
             #projectSelect {
@@ -979,12 +979,12 @@
 
                     </table>
                 </div>
-                <button id="addRowBtn" style="display:none;">Add Row</button>
-                <button id="toggleArchiveBtn">Show Archived Rows</button>
+                <!--    <button id="addRowBtn" style="display:none;">Add Row</button>
+                   <button id="toggleArchiveBtn">Show Archived Rows</button> -->
             </div>
             <div class="buttons">
                 <button id="backBtn" class="hidden">Back</button>
-                <button id="editBtn">Edit</button>
+          <!-- <button id="editBtn">Edit</button> -->
                 <button id="editProgressBtn">Edit Project Progress</button>
             </div>
             <div class="overlay" id="overlay"></div>
@@ -1065,9 +1065,9 @@
                 const overlay = document.getElementById("overlay");
                 const modal = document.getElementById("modal");
                 const editBtn = document.getElementById("editBtn");
-                const addRowBtn = document.getElementById("addRowBtn");
+               // const addRowBtn = document.getElementById("addRowBtn");
                 const materialsTable = document.getElementById("materialsTable");
-                const toggleArchiveBtn = document.getElementById("toggleArchiveBtn");
+               // const toggleArchiveBtn = document.getElementById("toggleArchiveBtn");
                 const projectSelect = document.getElementById("projectSelect");
 
                 // Helper function: Display project info
@@ -1092,7 +1092,7 @@
                         <td>PHP ${material.materialPrice.toLocaleString()}</td>
                         <td>PHP ${material.totalPrice.toLocaleString()}</td>
                         <td class="actions">
-                            <span class="edit-icon">✏️</span>
+                            <!--<span class="edit-icon">✏️</span> -->
                             <span class="delete-icon">❌</span>
                         </td>
                     `;
@@ -1107,6 +1107,25 @@
                         .then(materials => renderMaterialsTable(materials))
                         .catch(error => console.error("Error fetching materials:", error));
                 }
+
+                // Auto-refresh material list every 10 seconds
+                setInterval(() => {
+                    const projectName = document.getElementById("projectName").textContent.trim();
+                    if (projectName) {
+                        fetchAndDisplayMaterials(projectName);
+                    }
+                }, 10000); // refresh every 10 seconds
+
+
+// Refresh material table if user switches back to the tab
+                document.addEventListener("visibilitychange", () => {
+                    if (document.visibilityState === "visible") {
+                        const projectName = document.getElementById("projectName").textContent.trim();
+                        if (projectName) {
+                            fetchAndDisplayMaterials(projectName);
+                        }
+                    }
+                });
 
 
                 // Auto-select first project on load
@@ -1129,20 +1148,20 @@
                 });
 
 
-                // Toggle Archive button
+                /*Toggle Archive button
                 toggleArchiveBtn.addEventListener('click', () => {
                     const archivedRows = materialsTable.querySelectorAll('tbody tr.archived');
                     const isVisible = Array.from(archivedRows).some(row => row.style.display !== 'none');
                     archivedRows.forEach(row => row.style.display = isVisible ? 'none' : '');
                     toggleArchiveBtn.textContent = isVisible ? "Show Archived Rows" : "Hide Archived Rows";
-                });
+                }); */
 
-                // Edit button logic
+                /* Edit button logic
                 function toggleLastColumn(show) {
                     materialsTable.querySelectorAll("td.actions, th:last-child").forEach(el => {
                         el.style.display = show ? "inline-block" : "none";
                     });
-                    addRowBtn.style.display = show ? "inline-block" : "none";
+                  //  addRowBtn.style.display = show ? "inline-block" : "none";
                     editBtn.textContent = show ? "Save" : "Edit";
                 }
 
@@ -1155,12 +1174,12 @@
                     }
                     const isEditing = editBtn.textContent === "Edit";
                     toggleLastColumn(isEditing);
-                });
+                });*/
 
                 // Edit/Delete actions
                 materialsTable.addEventListener("click", (e) => {
                     const row = e.target.closest("tr");
-                    if (e.target.classList.contains("edit-icon")) {
+                    /*if (e.target.classList.contains("edit-icon")) {
                         const isEditing = e.target.textContent === "💾";
                         row.querySelectorAll("td").forEach((cell, idx) => {
                             if (idx < 5) {
@@ -1174,19 +1193,33 @@
                             }
                         });
                         e.target.textContent = isEditing ? "✏️" : "💾";
-                    }
+                    }*/
 
                     if (e.target.classList.contains("delete-icon")) {
-                        if (row.querySelector('.edit-icon').textContent === "💾") {
-                            alert("You cannot archive a row while editing it.");
-                            return;
-                        }
-                        row.classList.toggle("archived");
-                        row.style.display = "none";
+                        const row = e.target.closest("tr");
+                        const materialName = row.querySelector("td:nth-child(2)").textContent;
+                        const quantity = parseInt(row.querySelector("td:nth-child(3)").textContent); // "10 pcs" → 10
+                        const projectName = document.getElementById("projectName").textContent.trim();
+
+                        fetch(`/myProjectExestaff/removeMaterial`, {
+                            method: "POST",
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ projectName, materialName, quantity })
+                        })
+                            .then(res => {
+                                if (res.ok) {
+                                    row.remove(); // visually remove row
+                                } else {
+                                    alert("Failed to remove material.");
+                                }
+                            });
                     }
+
                 });
 
-                // Add row
+                /* Add row
                 addRowBtn.addEventListener("click", () => {
                     const newRow = document.createElement("tr");
                     newRow.innerHTML = `
@@ -1200,7 +1233,7 @@
                         <span class="delete-icon" style="display:inline-block;">❌</span>
                     </td>`;
                     materialsTable.querySelector("tbody").appendChild(newRow);
-                });
+                }); */
 
                 // Back
                 document.getElementById("backBtn").addEventListener("click", () => {

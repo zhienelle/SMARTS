@@ -837,18 +837,24 @@
             background-color: #FF6347;
         }
 
-        #materialsTable th:last-child,
-        #materialsTable td:last-child {
+        /*  #materialsTable th:last-child,
+           #materialsTable td:last-child {
+               display: none;
+               width: 100%;
+               height: auto;
+               }
+
+*/
+           .actions {
+               border-top: none;
+               border-left: none;
+               height: auto;
+           }
+
+        .actions-col {
             display: none;
-            width: 100%;
-            height: auto;
         }
 
-        .actions {
-            border-top: none;
-            border-left: none;
-            height: auto;
-        }
     </style>
 </head>
 
@@ -969,17 +975,13 @@
                         <th>Quantity</th>
                         <th>Unit Price</th>
                         <th>Total</th>
-                        <th class="actions">Actions</th>
+                        <th class="actions-col actions-header" style="display: none;">Actions</th>
+
+
                     </tr>
                     </thead>
                     <tbody id="materialsTableBody">
-                    <tr th:each="item, iterStat : ${project.projectInventoryList}" th:if="${!item.archived}">
-                        <td th:text="${#numbers.formatInteger(iterStat.count, 3)}"></td>
-                        <td th:text="${item.inventory.materialName}"></td>
-                        <td th:text="${item.quantityAssigned} + ' PCS'"></td>
-                        <td th:text="'PHP ' + item.inventory.materialPrice"></td>
-                        <td th:text="'PHP ' + item.totalPrice"></td>
-                    </tr>
+
                     </tbody>
 
                 </table>
@@ -1020,13 +1022,14 @@
                 function toggleEditMode() {
                     inEditMode = !inEditMode;
                     editBtn.textContent = inEditMode ? 'Save' : 'Edit';
-                    addBtn.classList.toggle('hidden', !inEditMode);
-                    backBtn.classList.toggle('hidden', !inEditMode);
-                    addRowBtn.style.display = inEditMode ? 'inline-block' : 'none';
 
-                    document.querySelectorAll('.actions').forEach(cell => {
-                        cell.innerHTML = inEditMode ? '<span class="edit-icon">✏️</span><span class="delete-icon">❌</span>' : '';
+                    // Show/hide Actions column (header and all .actions cells)
+                    document.querySelectorAll('.actions-header, .actions-col').forEach(el => {
+                        el.style.display = inEditMode ? 'table-cell' : 'none';
                     });
+
+                    // Re-render the table to show/hide ❌ buttons
+                    renderMaterialsTable(currentMaterials);
                 }
 
 
@@ -1042,11 +1045,12 @@
                     });
 
                     const actions = document.createElement('td');
-                    actions.className = 'actions';
+                    actions.className = 'actions actions-col'; // ✅ includes .actions-col for visibility toggle
                     if (inEditMode) {
-                        actions.innerHTML = '<span class="edit-icon">✏️</span><span class="delete-icon">❌</span>';
+                        actions.innerHTML = '<span class="delete-icon">❌</span>';
                     }
                     row.appendChild(actions);
+
                     tableBody.appendChild(row);
                 }
 
@@ -1086,6 +1090,31 @@
                         }
                     });
 
+                document.querySelector('#materialsTable').addEventListener('click', (e) => {
+                    if (e.target.classList.contains('delete-icon')) {
+                        const row = e.target.closest('tr');
+                        const materialName = row.querySelector("td:nth-child(2)").textContent.trim();
+                        const quantity = parseInt(row.querySelector("td:nth-child(3)").textContent);
+                        const projectName = document.getElementById("projectName").textContent.trim();
+
+                        fetch('/projectManagementAdmin/removeMaterial', {
+                            method: "POST",
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({projectName, materialName, quantity})
+                        }).then(res => {
+                            if (res.ok) {
+                                row.remove();
+
+                                // ✅ remove from currentMaterials to persist deletion across Save toggle
+                                currentMaterials = currentMaterials.filter(m =>
+                                    !(m.materialName === materialName && m.quantityAssigned === quantity)
+                                );
+                            } else {
+                                alert("Failed to remove material.");
+                            }
+                        });
+                    }
+                });
 
                 dropdown.addEventListener('change', () => {
                     const selected = dropdown.selectedOptions[0];
@@ -1099,6 +1128,7 @@
                     fetch(`/projectManagementAdmin/data?projectId=${selectedId}`)
                         .then(res => res.json())
                         .then(data => {
+                            console.log("📦 Materials received:", data.materials);
                             displayProjectInfo(data.project);
                             renderMaterialsTable(data.materials);
                         });
@@ -1122,26 +1152,29 @@
                 document.getElementById("companyContact").textContent = project.companycontact || 'N/A';
             }
 
-            function renderMaterialsTable(materials) {
-                const tableBody = document.getElementById("materialsTableBody");
-                tableBody.innerHTML = ""; // Clear existing rows
+                function renderMaterialsTable(materials) {
+                    const tableBody = document.getElementById("materialsTableBody");
+                    tableBody.innerHTML = "";
+                    currentMaterials = materials; // store globally
 
-                materials.forEach((item, index) => {
-                    if (item.archived) return; // skip archived unless toggled
+                    materials.forEach((item, index) => {
+                        const row = document.createElement("tr");
 
-                    const row = document.createElement("tr");
-
-                    row.innerHTML = `
+                        row.innerHTML = `
             <td>${String(index + 1).padStart(3, '0')}</td>
-            <td>${item.inventory.materialName}</td>
+            <td>${item.materialName || 'N/A'}</td>
             <td>${item.quantityAssigned} PCS</td>
-            <td>PHP ${item.inventory.materialPrice}</td>
+            <td>PHP ${item.materialPrice}</td>
             <td>PHP ${item.totalPrice}</td>
+            <td class="actions-col actions" style="display: ${inEditMode ? 'table-cell' : 'none'};">
+                ${inEditMode ? '<span class="delete-icon" title="Remove">❌</span>' : ''}
+            </td>
         `;
 
-                    tableBody.appendChild(row);
-                });
-            }
+                        tableBody.appendChild(row);
+                    });
+                }
+            });
 
 
         </script>

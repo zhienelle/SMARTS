@@ -53,7 +53,7 @@ public class Project {
     @Column(name = "company_contact", length = 100)
     private String companycontact;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore // 🔥 This ignores it for JSON deserialization (fixes 415)
     private List<ProjectInventory> projectInventoryList;
 

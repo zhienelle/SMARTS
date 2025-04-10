@@ -17,6 +17,7 @@ public class ProjectInventory {
     @ManyToOne
     @JoinColumn(name = "project_id")
     @JsonBackReference
+    @JsonIgnore
     private Project project;
 
 
