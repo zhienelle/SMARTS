@@ -90,13 +90,17 @@ public class InventoryExestaffController {
                                         @RequestParam("quantity") Integer quantity,
                                         HttpSession session) {
         System.out.println("Received request: projectName=" + projectName + ", category=" + category + ", material=" + material + ", quantity=" + quantity);
+
         User user = (User) session.getAttribute("authenticatedUser");
         if (user == null) {
             return "❌ Not authenticated.";
         }
 
-        Inventory inventory = inventoryRepository.findByMaterialCategoryAndMaterialName(category, material);
-        Project project = projectRepository.findByProjectname(projectName);
+        // ✅ Case-insensitive and trimmed matching
+        Inventory inventory = inventoryRepository.findByMaterialCategoryIgnoreCaseAndMaterialNameIgnoreCase(
+                category.trim(), material.trim());
+
+        Project project = projectRepository.findByProjectname(projectName.trim());
 
         if (inventory == null || project == null) {
             return "❌ Invalid material or project.";
@@ -109,13 +113,12 @@ public class InventoryExestaffController {
         request.setMaterialCategory(category);
         request.setMaterialStock(quantity);
         request.setMaterialRequestStatus("PENDING");
-
-        // ✅ Add user to request
         request.setUser(user);
 
         materialRequestRepository.save(request);
         return "✅ Request submitted successfully!";
     }
+
 
 
 

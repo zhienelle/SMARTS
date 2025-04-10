@@ -1030,11 +1030,14 @@
                     container.appendChild(toggleAllLabel);
 
                     categories.sort().forEach(cat => {
-                        const idValue = cat.toLowerCase().replace(/\s+/g, '-');
+                        const normalized = cat.toLowerCase();
+                        const displayName = normalized.charAt(0).toUpperCase() + normalized.slice(1);
+                        const idValue = normalized.replace(/\s+/g, '-');
                         const label = document.createElement("label");
-                        label.innerHTML = `<input type="checkbox" class="category-checkbox" value="${idValue}"> ${cat}`;
+                        label.innerHTML = `<input type="checkbox" class="category-checkbox" value="${idValue}"> ${displayName}`;
                         container.appendChild(label);
                     });
+
 
                     if (archiveBtnWrapper) {
                         container.appendChild(archiveBtnWrapper); // Re-add the archive buttons at the bottom
@@ -1160,7 +1163,7 @@
                                     : ''}
                     </td>`;
 
-                                categoriesSet.add(item.material_category);
+                                categoriesSet.add(item.material_category.trim().toLowerCase());
                                 inventoryData.appendChild(row);
                             });
 
