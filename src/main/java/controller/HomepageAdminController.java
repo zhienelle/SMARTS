@@ -17,4 +17,5 @@ public class HomepageAdminController {
         model.addAttribute("username", user.getUsername());
         return "homepageAdmin";
     }
+
 }

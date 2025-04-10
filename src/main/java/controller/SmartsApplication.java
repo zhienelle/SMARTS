@@ -5,9 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication(scanBasePackages = {"controller", "entity", "repository", "service"})
+@SpringBootApplication(scanBasePackages = {"config", "controller", "entity", "repository", "service"})
 @EntityScan("entity")
 @EnableJpaRepositories(basePackages = "repository")
+
 
 public class SmartsApplication {
 
