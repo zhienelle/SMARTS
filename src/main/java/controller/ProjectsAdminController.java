@@ -67,6 +67,11 @@ public class ProjectsAdminController {
             return "redirect:/";
         }
 
+        String role = (String) session.getAttribute("role");
+        if (!"admin".equalsIgnoreCase(role)) {
+            return "error/error403";
+        }
+
         model.addAttribute("projects", projectRepository.findAll());
         return "projectsAdmin";
     }
