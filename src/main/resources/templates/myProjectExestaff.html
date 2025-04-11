@@ -931,11 +931,14 @@
         <h1>MY PROJECTS</h1>
         <div class="functionality" id="dropdown">
             <select id="projectSelect">
-                <option disabled="" selected="" value="">Choose a project</option>
-                <option th:each="project : ${projects}" th:text="${project.projectname}" th:value="${project.projectname}">
+                <option disabled selected value="">Choose a project</option>
+                <option th:each="project : ${projects}"
+                        th:value="${project.projectname}"
+                        th:text="${project.projectname}">
                 </option>
             </select>
         </div>
+
     </div>
     <div class="materials-container">
         <div class="project-details">
@@ -970,8 +973,8 @@
         <!--    <button id="addRowBtn" style="display:none;">Add Row</button>
                            <button id="toggleArchiveBtn">Show Archived Rows</button> -->
     </div>
-    <div class="buttons"><button id="editDetailsBtn">Edit Project Details</button>
-        <button class="hidden" id="backBtn">Back</button>
+    <div class="buttons">
+       <!-- <button class="hidden" id="backBtn">Back</button> -->
         <!-- <button id="editBtn">Edit</button> -->
         <button id="editProgressBtn">Edit Project Progress</button>
     </div>
@@ -980,9 +983,6 @@
     <div class="modal" id="editProgressModal">
         <div class="modal-content">
             <h3>Edit Project Progress</h3>
-            <select id="projectSelect" name="projectSelect">
-                <!-- Options populated dynamically -->
-            </select>
             <div class="stage-container">
                 <!-- Stage 1 -->
                 <div class="stage" id="stage1">
@@ -1144,12 +1144,6 @@
             }
         });
 
-        document.getElementById('editProgressBtn').addEventListener('click', function () {
-            openModal('editProgressModal');
-            document.getElementById('projectSelect').dispatchEvent(new Event('change')); // load progress
-        });
-
-
         // Auto-select first project on load
         // On page load, auto-select first project
         if (projectData.length > 0) {
@@ -1198,24 +1192,60 @@
 
         });
 
-        // Back
-        document.getElementById("backBtn").addEventListener("click", () => {
-            window.location.href = "homepageExestaff";
+
+        document.querySelector(".cancel-btn").addEventListener("click", function () {
+            closeModal("editProgressModal");
         });
+
 
         document.getElementById('editProgressBtn').addEventListener('click', function () {
             openModal('editProgressModal');
+
+            const projectName = document.getElementById("projectName").textContent.trim();
+            fetch(`/projectsAdmin/getStagesByName?projectName=${encodeURIComponent(projectName)}`)
+                .then(res => res.json())
+                .then(stages => {
+                    const stageContainer = document.querySelector('.stage-container');
+                    stageContainer.innerHTML = '';
+
+                    stages.forEach(stage => {
+                        const stageDiv = document.createElement('div');
+                        stageDiv.classList.add('stage');
+                        stageDiv.dataset.stageNumber = stage.stageNumber;
+
+                        stageDiv.innerHTML = `
+                    <h4>STAGE ${stage.stageNumber}</h4>
+                    <div class="task-list"></div>
+                    <button type="button" class="add-task-btn" onclick="addTaskToStage(this)">ADD TASK</button>
+                    <div class="progress-bar">
+                        <p>PROGRESS: <span class="progress-label">0%</span></p>
+                        <progress value="0" max="100"></progress>
+                    </div>
+                `;
+
+                        const taskList = stageDiv.querySelector('.task-list');
+                        stage.tasks.forEach(task => {
+                            const taskItem = document.createElement('div');
+                            taskItem.classList.add('task-item');
+                            taskItem.setAttribute('data-task-id', task.taskId);
+
+                            taskItem.innerHTML = `
+                        <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="updateProgress(this)">
+                        <input type="text" class="task-name" value="${task.taskName}" readonly>
+                        <button onclick="toggleEditTask(this)"><i class="bx bx-edit"></i></button>
+                        <button onclick="deleteTask(this)"><i class="bx bx-trash"></i></button>
+                    `;
+                            taskList.appendChild(taskItem);
+                        });
+
+                        stageContainer.appendChild(stageDiv);
+                        updateProgress(stageDiv);
+                    });
+                });
         });
 
-        function openModal(modalId) {
-            document.getElementById(modalId).style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-        }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-        }
+
 
         // Sidebar
         const sidebar = document.querySelector(".sidebar");
@@ -1224,7 +1254,148 @@
 
         toggleBtn.addEventListener("click", () => sidebar.classList.toggle("open"));
         if (searchBtn) searchBtn.addEventListener("click", () => sidebar.classList.toggle("open"));
-    });
+
+        document.querySelector('.submit-btn').addEventListener('click', () => {
+            const projectName = document.getElementById('projectName').textContent.trim();
+            if (!projectName) return;
+
+            const stageElements = document.querySelectorAll('.stage');
+            const stages = [];
+
+            stageElements.forEach(stageEl => {
+                const stageNumber = parseInt(stageEl.dataset.stageNumber);
+                const taskItems = stageEl.querySelectorAll('.task-item');
+                const tasks = [];
+
+                taskItems.forEach(taskEl => {
+                    const taskName = taskEl.querySelector('.task-name').value.trim();
+                    const completed = taskEl.querySelector('input[type="checkbox"]').checked;
+                    const taskId = taskEl.getAttribute('data-task-id');
+
+                    tasks.push({
+                        taskId: taskId ? parseInt(taskId) : null,
+                        taskName: taskName || "Untitled Task",
+                        completed: completed
+                    });
+                });
+
+                stages.push({
+                    stageNumber: stageNumber,
+                    tasks: tasks
+                });
+            });
+
+            fetch(`/projectsAdmin/saveStagesByName?projectName=${encodeURIComponent(projectName)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(stages)
+            })
+                .then(res => res.text())
+                .then(msg => {
+                    alert(msg);
+                    closeModal('editProgressModal');
+                });
+
+        });
+    }); //DOMCONTENTLOADED
+    function addStage() {
+        const stageContainer = document.querySelector('.stage-container');
+        const existingStages = stageContainer.querySelectorAll('.stage');
+
+        if (existingStages.length >= 20) {
+            alert("Maximum of 20 stages reached.");
+            return;
+        }
+
+        let maxStage = 0;
+        existingStages.forEach(stage => {
+            const num = parseInt(stage.dataset.stageNumber);
+            if (!isNaN(num) && num > maxStage) {
+                maxStage = num;
+            }
+        });
+
+        const nextStageNumber = maxStage + 1;
+
+        const stageDiv = document.createElement('div');
+        stageDiv.classList.add('stage');
+        stageDiv.dataset.stageNumber = nextStageNumber;
+
+        stageDiv.innerHTML = `
+        <h4>STAGE ${nextStageNumber}</h4>
+        <div class="task-list"></div>
+        <button type="button" class="add-task-btn" onclick="addTaskToStage(this)">ADD TASK</button>
+        <div class="progress-bar">
+            <p>PROGRESS: <span class="progress-label">0%</span></p>
+            <progress value="0" max="100"></progress>
+        </div>
+    `;
+
+        stageContainer.appendChild(stageDiv);
+    }
+
+
+    function addTaskToStage(button) {
+        const taskList = button.parentElement.querySelector('.task-list');
+        const existingTasks = taskList.querySelectorAll('.task-item');
+
+        if (existingTasks.length >= 10) {
+            alert("Maximum of 10 tasks per stage reached.");
+            return;
+        }
+
+        const taskItem = document.createElement('div');
+        taskItem.classList.add('task-item');
+        taskItem.innerHTML = `
+        <input type="checkbox" onchange="updateProgress(this)">
+        <input type="text" class="task-name" placeholder="New Task">
+        <button onclick="toggleEditTask(this)"><i class="bx bx-edit"></i></button>
+        <button onclick="deleteTask(this)"><i class="bx bx-trash"></i></button>
+    `;
+        taskList.appendChild(taskItem);
+        updateProgress(taskList.parentElement);
+    }
+
+
+    function toggleEditTask(btn) {
+        const input = btn.parentElement.querySelector('.task-name');
+        input.readOnly = !input.readOnly;
+        if (!input.readOnly) input.focus();
+    }
+
+    function deleteTask(btn) {
+        btn.parentElement.remove();
+    }
+
+    function updateProgress(el) {
+        const stageEl = el.closest('.stage');
+        if (!stageEl) return;
+
+        const checkboxes = stageEl.querySelectorAll('.task-item input[type="checkbox"]');
+        const completed = Array.from(checkboxes).filter(cb => cb.checked).length;
+        const total = checkboxes.length;
+
+        const progress = stageEl.querySelector('progress');
+        const label = stageEl.querySelector('.progress-label');
+
+        if (progress && label) {
+            const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+            progress.value = percent;
+            label.textContent = percent + '%';
+        }
+    }
+
+
+
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    }
 </script>
 </body>
 </html>

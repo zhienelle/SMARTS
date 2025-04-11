@@ -121,5 +121,14 @@ public class ProjectsAdminController {
 
         return ResponseEntity.ok("Project progress saved successfully.");
     }
+
+    @GetMapping("/projectsAdmin/getStagesByName")
+    @ResponseBody
+    public List<ProjectStage> getStagesByProjectName(@RequestParam String projectName) {
+        Project project = projectRepository.findByProjectname(projectName);
+        return stageRepo.findByProject(project);
     }
+
+
+}
 

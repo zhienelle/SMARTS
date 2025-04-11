@@ -1600,10 +1600,19 @@
     document.getElementById('editDetailsBtn').addEventListener('click', function () {
         openModal('editDetailsModal');
     });
+
     document.getElementById('editProgressBtn').addEventListener('click', function () {
         openModal('editProgressModal');
-        document.getElementById('projectSelect').dispatchEvent(new Event('change')); // load progress
+
+        // Reset dropdown to default
+        const projectSelect = document.getElementById('projectSelect');
+        projectSelect.value = "";
+
+        // Clear existing stage view
+        const stageContainer = document.querySelector('.stage-container');
+        stageContainer.innerHTML = '';
     });
+
 
     document.getElementById('archiveButton').addEventListener('click', function () {
         showArchived = !showArchived; // Toggle the visibility state
@@ -1689,20 +1698,27 @@
     function addTaskToStage(button) {
         const stageDiv = button.closest('.stage');
         const taskList = stageDiv.querySelector('.task-list');
+        const existingTasks = taskList.querySelectorAll('.task-item');
+
+        if (existingTasks.length >= 10) {
+            alert("Maximum of 10 tasks per stage reached.");
+            return;
+        }
 
         const taskItem = document.createElement('div');
         taskItem.classList.add('task-item');
 
         taskItem.innerHTML = `
-    <input type="checkbox" onchange="updateProgress(this)">
-    <input type="text" class="task-name" value="Untitled Task" readonly>
-    <button onclick="toggleEditTask(this)"><i class="bx bx-edit"></i></button>
-    <button onclick="deleteTask(this)"><i class="bx bx-trash"></i></button>
-  `;
+        <input type="checkbox" onchange="updateProgress(this)">
+        <input type="text" class="task-name" value="Untitled Task" readonly>
+        <button onclick="toggleEditTask(this)"><i class="bx bx-edit"></i></button>
+        <button onclick="deleteTask(this)"><i class="bx bx-trash"></i></button>
+    `;
 
         taskList.appendChild(taskItem);
         updateProgress(stageDiv);
     }
+
 
     function toggleEditTask(button) {
         const input = button.parentElement.querySelector('.task-name');
@@ -1777,7 +1793,14 @@
 
     function addStage() {
         const stageContainer = document.querySelector('.stage-container');
-        const stageCount = stageContainer.children.length + 1;
+        const existingStages = stageContainer.querySelectorAll('.stage');
+
+        if (existingStages.length >= 20) {
+            alert("Maximum of 20 stages reached.");
+            return;
+        }
+
+        const stageCount = existingStages.length + 1;
 
         const stageDiv = document.createElement('div');
         stageDiv.classList.add('stage');
@@ -1788,13 +1811,14 @@
         <div class="task-list"></div>
         <button type="button" class="add-task-btn" onclick="addTaskToStage(this)">ADD TASK</button>
         <div class="progress-bar">
-          <p>PROGRESS: <span class="progress-label">0%</span></p>
-          <progress value="0" max="100"></progress>
+            <p>PROGRESS: <span class="progress-label">0%</span></p>
+            <progress value="0" max="100"></progress>
         </div>
     `;
 
         stageContainer.appendChild(stageDiv);
     }
+
 
 
 </script>

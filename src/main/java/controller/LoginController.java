@@ -27,13 +27,11 @@ public class LoginController {
             String storedPassword = user.getPassword();
 
             boolean matchesEncrypted = passwordEncoder.matches(password, storedPassword);
-            boolean matchesPlain = password.equals(storedPassword); // fallback
+            boolean matchesPlain = password.equals(storedPassword); // fallback for legacy passwords
 
             if (matchesEncrypted || matchesPlain) {
                 session.setAttribute("authenticatedUser", user);
-
-                // ✅ Return role as keyword
-                return "ROLE:" + user.getRole(); // Example: "ROLE:ADMIN"
+                return "ROLE:" + user.getRole();
             } else {
                 return "invalidPassword";
             }
@@ -41,4 +39,5 @@ public class LoginController {
             return "invalidUsername";
         }
     }
+
 }

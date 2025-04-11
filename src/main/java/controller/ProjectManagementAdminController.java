@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.*;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 public class ProjectManagementAdminController {
@@ -51,6 +52,72 @@ public class ProjectManagementAdminController {
         }
 
         return "redirect:/projectsAdmin";
+    }
+
+    @GetMapping("/inventory/getByCategory")
+    @ResponseBody
+    public List<Map<String, Object>> getMaterialsByCategory(@RequestParam String category) {
+        List<Inventory> materials = inventoryRepository.findByMaterialCategoryIgnoreCase(category);
+
+        return materials.stream().map(inv -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("materialName", inv.getMaterialName());
+            map.put("materialStock", inv.getMaterialStock());
+            return map;
+        }).collect(Collectors.toList());
+    }
+
+    @GetMapping("/inventory/categories")
+    @ResponseBody
+    public List<String> getAllMaterialCategories() {
+        return inventoryRepository.findDistinctMaterialCategories();
+    }
+
+
+    @PostMapping("/projectManagementAdmin/addMaterials")
+    @ResponseBody
+    public ResponseEntity<?> addMaterialsToProject(@RequestBody Map<String, Object> payload) {
+        String category = (String) payload.get("category");
+        String projectName = (String) payload.get("projectName");
+        List<Map<String, Object>> materials = (List<Map<String, Object>>) payload.get("materials");
+
+        Project project = projectRepository.findByProjectname(projectName);
+        if (project == null) return ResponseEntity.badRequest().body("Project not found");
+
+        for (Map<String, Object> mat : materials) {
+            String materialName = (String) mat.get("materialName");
+            int quantity = (int) mat.get("quantity");
+
+            Inventory inventory = inventoryRepository.findByMaterialName(materialName);
+            if (inventory == null) continue;
+
+            // Check stock
+            if (inventory.getMaterialStock() < quantity) {
+                return ResponseEntity.badRequest().body("Insufficient stock for " + materialName);
+            }
+
+            // Deduct stock
+            inventory.setMaterialStock(inventory.getMaterialStock() - quantity);
+            inventoryRepository.save(inventory);
+
+            // Create or update ProjectInventory
+            ProjectInventory existing = projectInventoryRepository.findByProjectAndInventory(project, inventory);
+            if (existing != null) {
+                existing.setQuantityAssigned(existing.getQuantityAssigned() + quantity);
+                existing.setTotalPrice(existing.getQuantityAssigned() * inventory.getMaterialPrice());
+                projectInventoryRepository.save(existing);
+            } else {
+                ProjectInventory pi = new ProjectInventory();
+                pi.setProject(project);
+                pi.setInventory(inventory);
+                pi.setQuantityAssigned(quantity);
+                pi.setMaterialPrice(inventory.getMaterialPrice());
+                pi.setTotalPrice(quantity * inventory.getMaterialPrice());
+                projectInventoryRepository.save(pi);
+            }
+        }
+
+        return ResponseEntity.ok("Materials added and inventory updated");
     }
 
 

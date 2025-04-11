@@ -6,8 +6,9 @@
     <title>Gencon Homepage</title>
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
     <link
-        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
-        rel="stylesheet">
+            href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
+            rel="stylesheet">
+
     <style>
         * {
             margin: 0;
@@ -47,8 +48,9 @@
         header div p {
             margin: 0;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 500;
             color: #124D54;
+            font-weight: bold;
         }
 
         header div p span {
@@ -84,6 +86,11 @@
             padding-right: 20px;
         }
 
+        .sidebar.open~footer {
+            left: 250px;
+            width: calc(100% - 250px);
+        }
+
         footer p {
             margin: 0;
             font-size: 14px;
@@ -96,6 +103,7 @@
         footer p span {
             display: inline-block;
         }
+
 
         .smarts-logo img {
             height: 25px;
@@ -118,7 +126,6 @@
             background-position: center;
             transition: left 0.3s ease;
             opacity: 0.9;
-            padding-top: 60px;
         }
 
         .home-section::before {
@@ -132,474 +139,337 @@
             z-index: -1;
         }
 
-        body {
-            font-family: 'Fredoka', sans-serif;
-            margin: 0;
-            background: #1A1A2E;
-            color: black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
-            padding: 10px;
+        .home-section .text {
+            display: inline-block;
+            color: #11101d;
+            font-size: 25px;
+            font-weight: 500;
+            margin: 18px;
+        }
+
+        @media (max-width: 1024px) {
+            header {
+                left: 0;
+                width: 100%;
+            }
+
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar.open {
+                width: 220px;
+            }
+
+            .home-section {
+                left: 70px;
+                width: calc(100% - 70px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                font-size: 12px;
+            }
+
+            .sidebar {
+                width: 60px;
+            }
+
+            .sidebar.open {
+                width: 200px;
+            }
+
+            .home-section {
+                left: 60px;
+                width: calc(100% - 60px);
+            }
+
+            .sidebar i {
+                font-size: 22px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .sidebar {
+                width: 55px;
+            }
+
+            .sidebar.open {
+                width: 180px;
+            }
+
+            .home-section {
+                left: 55px;
+                width: calc(100% - 55px);
+            }
+
+            .sidebar i {
+                font-size: 20px;
+            }
+
+            .sidebar li a .links_name {
+                font-size: 12px;
+            }
         }
 
         .container {
             display: flex;
-            justify-content: space-between;
             gap: 20px;
-            width: 90%;
-            max-width: 1200px;
-            padding: 20px;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .left-container, .right-container {
+            background-color: white;
+            border: 3px solid #F9744B;
             border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .left-container,
-        .right-container {
-            width: 48%;
             padding: 20px;
-            background: #FFF;
-            border-radius: 20px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-            border: 5px solid #F9744B;
+            width: 48%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-
         .project-details {
             display: flex;
             justify-content: space-between;
-            gap: 50px;
             margin-bottom: 20px;
-            align-items: flex-start;
-            text-align: justify;
-            text-transform: uppercase;
-        }
-
-        .project-details div {
-            width: 48%;
-        }
-
-        .project-details h2 {
-            font-family: 'Fredoka', sans-serif;
-            font-size: 16px;
             color: #124D54;
-            margin: 0;
         }
-
-        .project-details p {
-            font-family: 'Nunito', sans-serif;
-            font-size: 14px;
+        .project-details h2, .project-details p {
             margin: 5px 0;
-            color: black;
+            font-size: 14px;
         }
-
-        .b {
-            text-align: right;
+        select {
+            padding: 5px;
+            border-radius: 5px;
+            margin-bottom: 10px;
         }
-
-        .table-container {
-            margin-top: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
         }
-
-        th,
-        td {
-            text-align: center;
-            padding: 12px;
-            border: 1px solid #DDD;
-            font-size: 14px;
-        }
-
         th {
-            background-color: #FF6F61;
-            color: #FFF;
-        }
-
-        td {
-            background-color: #FFE0DC;
-            color: #333;
-        }
-
-        .logout {
-            margin-top: 20px;
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #FF6F61;
-            color: #FFF;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .logout:hover {
-            background-color: #E05B50;
-        }
-
-        .buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
-            padding-bottom: 70px;
-        }
-
-        .buttons button {
-            box-sizing: border-box;
-            width: 199px;
-            height: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 8px 16px;
-            background: linear-gradient(180deg, #124d54 0%, rgb(16, 41, 55) 100%);
+            background-color: #F9744B;
             color: white;
-            border: none;
-            border-radius: 40px;
-            cursor: pointer;
-            text-transform: uppercase;
-            overflow: hidden;
-            font-family: 'Fredoka', sans-serif;
-            font-weight: bold;
-            font-size: 20px;
+            padding: 10px;
         }
-
-        .buttons button:hover {
-            background: linear-gradient(180deg, #16a085 0%, rgb(22, 60, 77) 100%);
-        }
-
-        a {
-            text-decoration: none;
-        }
-
-        .progress-card {
-            width: 100%;
-            max-width: 500px;
-            padding: 20px;
-            background: #124D54;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        td {
+            background-color: #fff4f0;
+            color: #333;
+            padding: 10px;
             text-align: center;
         }
-
         .progress-report {
-            color: #FF6F61;
-            margin-bottom: 20px;
+            font-size: 24px;
+            color: #F9744B;
             text-align: center;
-            font-size: 30px;
-            font-family: 'Fredoka', sans-serif;
+            margin-bottom: 15px;
         }
-
+        .progress-card {
+            background-color: #124D54;
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+        }
         .legend {
             display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            gap: 10px;
-            font-size: 12px;
+            justify-content: space-around;
             flex-wrap: wrap;
+            font-size: 12px;
+            margin-bottom: 10px;
         }
-
         .legend-item {
             display: flex;
             align-items: center;
             gap: 5px;
         }
-
         .legend-color {
             width: 15px;
             height: 15px;
             border-radius: 3px;
         }
-
-        .task-1-color {
-            background-color: #ee6842;
-        }
-
-        .task-2-color {
-            background-color: #000000;
-        }
-
-        .task-3-color {
-            background-color: #132c39;
-        }
-
-        .task-4-color {
-            background-color: #a6a6a6;
-        }
-
-        .task-5-color {
-            background-color: #f5a88d;
-        }
-
-        .progress-bar-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .stage {
+        .task-1-color { background-color: #ee6842; }
+        .task-2-color { background-color: #000000; }
+        .task-3-color { background-color: #132c39; }
+        .task-4-color { background-color: #a6a6a6; }
+        .task-5-color { background-color: #f5a88d; }
+        .task-6-color { background-color: #f9c74f; }
+        .task-7-color { background-color: #90be6d; }
+        .task-8-color { background-color: #577590; }
+        .task-9-color { background-color: #f94144; }
+        .task-10-color { background-color: #43aa8b; }
+        .progress-bar-container .stage {
             display: flex;
             align-items: center;
-            gap: 10px;
+            margin-bottom: 10px;
         }
 
-        .checkbox {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 25px;
-            height: 25px;
-            border: 2px solid #FF6F61;
-            border-radius: 4px;
-            background-color: #FFF;
-            flex-shrink: 0;
+        .progress-bar-container, .table-container {
+            max-height: 400px;
+            overflow-y: auto;
         }
-
-        .checkbox.checked {
-            background-color: #FF6F61;
-            color: #FFF;
-            font-size: 16px;
-        }
-
-        .stage-label {
-            flex-shrink: 0;
-            min-width: 60px;
-            text-align: left;
-            color: #FFB199;
-            font-size: 14px;
-        }
-
-        .progress-bar {
-            flex-grow: 1;
-            height: 25px;
-            background: #E0E0E0;
-            border-radius: 5px;
-            display: flex;
-            overflow: hidden;
-        }
-
-        .progress-segment {
-            height: 100%;
-        }
-
-        .task-1 {
-            background-color: #ee6842;
-            width: 20%;
-        }
-
-        .task-2 {
-            background-color: #000000;
-            width: 20%;
-        }
-
-        .task-3 {
-            background-color: #132c39;
-            width: 20%;
-        }
-
-        .task-4 {
-            background-color: #a6a6a6;
-            width: 20%;
-        }
-
-        .task-5 {
-            background-color: #f5a88d;
-            width: 20%;
-        }
-
-        .progress-axis {
-            margin-top: 10px;
-            display: flex;
-            color: #EDEDED;
-            font-size: 16px;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        @media (max-width: 768px) {
-            .progress-card {
-                padding: 15px;
-            }
-
-            h2 {
-                font-size: 20px;
-            }
-
-            .legend {
-                font-size: 10px;
-                gap: 5px;
-            }
-
-            .checkbox {
-                width: 20px;
-                height: 20px;
-            }
-
-            .stage-label {
-                font-size: 12px;
-            }
-
-            .progress-bar {
-                height: 20px;
-            }
-
-            .progress-axis {
-                font-size: 14px;
-            }
-        }
-        .progress-segment {
-            height: 10px;
-            width: 20px;
-            margin: 2px;
-            display: inline-block;
-            background-color: #ccc;
-            border-radius: 4px;
-        }
-        .task-1 { background-color: #F9744B; }
-        .task-2 { background-color: #FFC107; }
-        .task-3 { background-color: #4CAF50; }
-        .task-4 { background-color: #2196F3; }
-        .task-5 { background-color: #9C27B0; }
-
         .checkbox {
             width: 20px;
             height: 20px;
-            background-color: #eee;
+            border: 2px solid #f9744b;
             border-radius: 50%;
-            text-align: center;
-            line-height: 20px;
-            font-weight: bold;
-            margin-bottom: 5px;
+            margin-right: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
         }
-
         .checkbox.checked {
-            background-color: #4CAF50;
+            background-color: #f9744b;
             color: white;
         }
+        .stage-label {
+            width: 60px;
+            font-size: 14px;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 20px;
+            display: flex;
+            border-radius: 5px;
+            overflow: hidden;
+            background-color: #ccc;
+        }
+        .progress-segment {
+            flex: 1;
+            height: 100%;
+        }
+        .task-1 { background-color: #ee6842; }
+        .task-2 { background-color: #000000; }
+        .task-3 { background-color: #132c39; }
+        .task-4 { background-color: #a6a6a6; }
+        .task-5 { background-color: #f5a88d; }
+        .task-6 { background-color: #f9c74f; }
+        .task-7 { background-color: #90be6d; }
+        .task-8 { background-color: #577590; }
+        .task-9 { background-color: #f94144; }
+        .task-10 { background-color: #43aa8b; }
+        .buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .buttons button {
+            padding: 10px 20px;
+            background-color: #f9744b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-        @media (max-width: 480px) {
-            h2 {
-                font-size: 18px;
-            }
-
-            .progress-card {
-                padding: 10px;
-            }
-
-            .legend {
-                font-size: 9px;
-            }
-
-            .checkbox {
-                width: 18px;
-                height: 18px;
-            }
-
-            .stage-label {
-                font-size: 10px;
-                min-width: 50px;
-            }
-
-            .progress-bar {
-                height: 15px;
-            }
-
-            .progress-axis {
-                font-size: 12px;
-            }
+        .projectSelector {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
         }
     </style>
+
 </head>
 
 <body>
-    <!-- Header -->
-    <header>
-        <div class="smarts-logo">
-            <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
-        </div>
-        <div>
-            <p>ROLE: <span>GENERAL CONTRACTOR</span></p>
-            <i class='bx bxs-user-circle'></i>
-        </div>
-    </header>
+<!-- Header -->
+<header>
+    <div class="smarts-logo">
+        <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
+    </div>
+    <div>
+        <p>ROLE: <span>GENERAL CONTRACTOR</span></p>
+        <i class='bx bxs-user-circle'></i>
+    </div>
+</header>
 
-    <!-- Home Section -->
-    <div class="home-section">
-        <div class="container">
-            <div class="left-container">
-                <div class="project-details">
-                    <div>
-                        <label for="projectSelector" style="font-weight: bold;">Select Project:</label>
-                        <select id="projectSelector" style="padding: 5px; border-radius: 5px; margin-bottom: 10px;">
-                            <option disabled selected>Select a project</option>
-                        </select>
+<!-- Home Section -->
+<div class="home-section">
+    <div class="container">
+        <div class="left-container">
+            <div class="projectSelector">
+                <label for="projectSelector" style="font-weight: bold; margin-right: 10px; color: black;">Select Project:</label>
+                <select id="projectSelector" style="width: 300px; padding: 5px; border-radius: 5px; margin-bottom: 10px;">
+                    <option disabled selected>Select a project</option>
+                </select>
+            </div>
 
-
-                        <h2><strong>Project:</strong> <span id="projectName">---</span></h2>
-                        <p><strong>Location:</strong> <span id="projectLocation">---</span></p>
-                    </div>
-                    <div class="b">
-                        <h2><strong>Company:</strong> <span id="projectCompany">---</span></h2>
-                        <p><strong>Contact:</strong> <span id="projectContact">---</span></p>
-                    </div>
+            <div class="project-details">
+                <div>
+                    <h2><strong>Project:</strong> <span id="projectName">---</span></h2>
+                    <p><strong>Location:</strong> <span id="projectLocation">---</span></p>
                 </div>
-
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>MATERIAL</th>
-                                <th>UNITS USED</th>
-                                <th>COST PER UNIT (PHP)</th>
-                                <th>TOTAL COST (PHP)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+                <div class="b">
+                    <h2><strong>Company:</strong> <span id="projectCompany">---</span></h2>
+                    <p><strong>Contact:</strong> <span id="projectContact">---</span></p>
                 </div>
             </div>
 
-            <div class="right-container">
-                <h2 class="progress-report">PROGRESS REPORT</h2>
-                <div class="progress-card">
-                    <div class="legend">
+            <div class="table-container">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>MATERIAL</th>
+                        <th>UNITS USED</th>
+                        <th>COST PER UNIT (PHP)</th>
+                        <th>TOTAL COST (PHP)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="right-container">
+            <h2 class="progress-report">PROGRESS REPORT</h2>
+            <div class="progress-card">
+                <div class="legend">
+                    <!-- TASK 1-5 -->
+                    <div style="display: flex; justify-content: space-around; flex-wrap: wrap; width: 100%; margin-bottom: 10px;">
                         <div class="legend-item"><div class="legend-color task-1-color"></div><span>Task 1</span></div>
                         <div class="legend-item"><div class="legend-color task-2-color"></div><span>Task 2</span></div>
                         <div class="legend-item"><div class="legend-color task-3-color"></div><span>Task 3</span></div>
                         <div class="legend-item"><div class="legend-color task-4-color"></div><span>Task 4</span></div>
                         <div class="legend-item"><div class="legend-color task-5-color"></div><span>Task 5</span></div>
                     </div>
-                    <div class="progress-bar-container">
-                        <!-- dynamically filled -->
+
+                    <!-- TASK 6-10 -->
+                    <div style="display: flex; justify-content: space-around; flex-wrap: wrap; width: 100%;">
+                        <div class="legend-item"><div class="legend-color task-6-color"></div><span>Task 6</span></div>
+                        <div class="legend-item"><div class="legend-color task-7-color"></div><span>Task 7</span></div>
+                        <div class="legend-item"><div class="legend-color task-8-color"></div><span>Task 8</span></div>
+                        <div class="legend-item"><div class="legend-color task-9-color"></div><span>Task 9</span></div>
+                        <div class="legend-item"><div class="legend-color task-10-color"></div><span>Task 10</span></div>
                     </div>
                 </div>
-            </div>
 
+                <div class="progress-bar-container">
+                    <!-- dynamically filled -->
+                </div>
+            </div>
         </div>
 
-        <div class="buttons">
+    </div>
+
+    <div class="buttons">
         <div class="buttons">
             <a href="confirmLogout">
                 <button>LOGOUT</button>
             </a>
         </div>
     </div>
-    </div>
+</div>
 
-    <!-- Footer -->
-    <footer>
-        <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
-    </footer>
+<!-- Footer -->
+<footer>
+    <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
+</footer>
 </body>
 <script>
     document.addEventListener("DOMContentLoaded", async () => {

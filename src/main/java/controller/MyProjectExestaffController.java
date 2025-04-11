@@ -1,26 +1,15 @@
 package controller;
 
-import entity.Project;
-import entity.User;
+import entity.*;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import repository.*;
-import entity.ProjectInventory;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
+import repository.*;
 
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 public class MyProjectExestaffController {
@@ -46,26 +35,21 @@ public class MyProjectExestaffController {
     @GetMapping("/myProjectExestaff")
     public String myProjectExestaff(HttpSession session, Model model) {
         User user = (User) session.getAttribute("authenticatedUser");
-
-        if (user == null) {
-            return "redirect:/";
-        }
+        if (user == null) return "redirect:/";
 
         List<Project> assignedProjects = new ArrayList<>();
 
         if (user.getProject() != null && !user.getProject().isEmpty()) {
             String[] projectNames = user.getProject().split(",\\s*");
-
             for (String name : projectNames) {
                 Project project = projectRepository.findByProjectname(name.trim());
                 if (project != null) {
-                    // ✅ Force load required fields while session is open
                     project.getCompanyname();
                     project.getCompanyLocation();
                     project.getCompanycontact();
 
                     if (project.getProjectInventoryList() != null) {
-                        project.getProjectInventoryList().size(); // preload list
+                        project.getProjectInventoryList().size();
                         for (ProjectInventory pi : project.getProjectInventoryList()) {
                             if (pi.getInventory() != null) {
                                 pi.getInventory().getMaterialName();
@@ -130,16 +114,66 @@ public class MyProjectExestaffController {
 
         if (target == null) return ResponseEntity.badRequest().body("Material not found");
 
-        // Return quantity to main inventory
         target.getInventory().setMaterialStock(target.getInventory().getMaterialStock() + quantity);
         inventoryRepository.save(target.getInventory());
 
-        // Remove from project_inventory and delete it
         project.getProjectInventoryList().remove(target);
-        projectInventoryRepository.delete(target); // ✅ hard-delete
+        projectInventoryRepository.delete(target);
 
         return ResponseEntity.ok("Removed");
     }
 
+    // ✅ NEW: Save project progress by project name
+    @PostMapping("/projectsAdmin/saveStagesByName")
+    @ResponseBody
+    public ResponseEntity<String> saveStagesByName(@RequestParam String projectName,
+                                                   @RequestBody List<Map<String, Object>> stages) {
+        Project project = projectRepository.findByProjectname(projectName);
+        if (project == null) return ResponseEntity.badRequest().body("Project not found.");
 
+        List<ProjectStage> existingStages = stageRepo.findByProject(project);
+        Map<Integer, ProjectStage> stageMap = new HashMap<>();
+        for (ProjectStage s : existingStages) {
+            stageMap.put(s.getStageNumber(), s);
+        }
+
+        for (Map<String, Object> stageData : stages) {
+            Integer stageNumber = (Integer) stageData.get("stageNumber");
+            ProjectStage stage = stageMap.getOrDefault(stageNumber, new ProjectStage());
+            stage.setProject(project);
+            stage.setStageNumber(stageNumber);
+            stage = stageRepo.save(stage);
+
+            List<Map<String, Object>> tasks = (List<Map<String, Object>>) stageData.get("tasks");
+            Set<Integer> taskIdsFromFrontend = new HashSet<>();
+
+            for (Map<String, Object> taskData : tasks) {
+                Integer taskId = taskData.get("taskId") != null ? (Integer) taskData.get("taskId") : null;
+                String taskName = (String) taskData.get("taskName");
+                Boolean completed = (Boolean) taskData.get("completed");
+
+                ProjectTask task;
+                if (taskId != null && taskRepo.existsById(taskId)) {
+                    task = taskRepo.findById(taskId).get();
+                } else {
+                    task = new ProjectTask();
+                    task.setStage(stage);
+                }
+                task.setTaskName(taskName);
+                task.setCompleted(completed);
+                task = taskRepo.save(task);
+                taskIdsFromFrontend.add(task.getTaskId());
+            }
+
+            // Delete removed tasks
+            List<ProjectTask> existingTasks = taskRepo.findByStage(stage);
+            for (ProjectTask existing : existingTasks) {
+                if (!taskIdsFromFrontend.contains(existing.getTaskId())) {
+                    taskRepo.delete(existing);
+                }
+            }
+        }
+
+        return ResponseEntity.ok("Project progress saved successfully.");
+    }
 }

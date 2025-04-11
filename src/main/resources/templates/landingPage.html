@@ -422,17 +422,24 @@
             </form>
         </div>
     </div>
-
     <script>
-        
         const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('inactive') === 'true') {
-                alert("Your account is inactive. Please contact the admin.");
-        
-                // Clean the URL without reloading the page
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
-        
+
+        if (urlParams.get('inactive') === 'true') {
+            alert("Your account is inactive. Please contact the admin.");
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        if (urlParams.get("invalidUsername") === "true") {
+            alert("Username does not exist.");
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        if (urlParams.get("invalidPassword") === "true") {
+            alert("Password is incorrect.");
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
         function openModal() {
             document.getElementById("myModal").style.display = "block";
         }
@@ -442,7 +449,7 @@
         }
 
         document.getElementById("forgotPasswordForm").addEventListener("submit", function (e) {
-            e.preventDefault(); // stop form from reloading the page
+            e.preventDefault();
 
             const email = document.getElementById("email").value;
 
@@ -458,7 +465,6 @@
                         document.getElementById("forgotMessage").textContent = "Successfully sent!";
                         document.getElementById("forgotMessage").style.color = "green";
                     } else {
-                        // ✅ Show actual backend message (e.g. "User not found" or "Failed to send email")
                         document.getElementById("forgotMessage").textContent = text || "Failed to send email.";
                         document.getElementById("forgotMessage").style.color = "red";
                     }
@@ -468,7 +474,6 @@
                     document.getElementById("forgotMessage").style.color = "red";
                 });
         });
-
 
         const loginForm = document.getElementById("loginForm");
         loginForm.addEventListener("submit", function (e) {
@@ -498,14 +503,17 @@
                             alert("Unrecognized role.");
                         }
                     } else if (response === "invalidUsername") {
-                        alert("Username does not exist.");
+                        window.location.href = "/invalidUsername";
                     } else if (response === "invalidPassword") {
-                        alert("Password is incorrect.");
+                        window.location.href = "/invalidPassword";
                     } else {
                         alert("Unexpected error: " + response);
-                    }})})
-
-
+                    }
+                })
+                .catch(() => {
+                    alert("An error occurred during login.");
+                });
+        });
     </script>
 
 </body>
