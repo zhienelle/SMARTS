@@ -63,14 +63,14 @@ public class ProjectsAdminController {
     public String projectAdminPage(Model model, HttpServletRequest request) {
         HttpSession session = request.getSession(false); // don't create if it doesn't exist
 
-        // Check if session is null or user is not logged in
-        if (session == null || session.getAttribute("user") == null) {
-            return "redirect:/"; // or "redirect:/", depending on your login route
+        if (session == null || session.getAttribute("authenticatedUser") == null) {
+            return "redirect:/";
         }
 
         model.addAttribute("projects", projectRepository.findAll());
         return "projectsAdmin";
     }
+
 
     @GetMapping("/projectsAdmin/getStages/{projectId}")
     @ResponseBody
