@@ -697,13 +697,8 @@
         <div class="upper">
             <h1>INVOICE</h1>
             <div class="functionality">
-                <select>
+                <select id="project-select">
                     <option value="" disabled selected>Select Project</option>
-                    <option value="Project 1">Residential Building Construction</option>
-                    <option value="Project 2">Commercial Office Building</option>
-                    <option value="Project 3">Mixed-Use Development</option>
-                    <option value="Project 4">Hotel and Resort Complex</option>
-                    <option value="Project 5">Shopping Mall and Retail Center</option>
                 </select>
                 <button id="selectPeriod">Select Period</button>
             </div>
@@ -716,70 +711,33 @@
         <div class="invoice-container">
             <div class="project-details">
                 <div>
-                    <h2><strong>Project:</strong> Residential Building Construction</h2>
-                    <p><strong>Location:</strong> Mandaluyong, Manila</p>
+                    <h2><strong>Project:</strong> <span id="projectName">---</span></h2>
+                    <p><strong>Location:</strong> <span id="projectLocation">---</span></p>
                 </div>
                 <div class="b">
-                    <h2><strong>Company:</strong> ABC Builders Inc.</h2>
-                    <p><strong>Contact:</strong> 0912 345 6789</p>
+                    <h2><strong>Company:</strong> <span id="projectCompany">---</span></h2>
+                    <p><strong>Contact:</strong> <span id="projectContact">---</span></p>
                 </div>
             </div>
 
-            <table>
+            <table id="invoiceTable">
                 <thead>
-                    <tr>
-                        <th>Item No.</th>
-                        <th>Materials</th>
-                        <th>Quantity</th>
-                        <th>Unit Price</th>
-                        <th>Total</th>
-                    </tr>
+                <tr>
+                    <th>Item No.</th>
+                    <th>Materials</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>001</td>
-                        <td>Steel Beams</td>
-                        <td>50 pcs</td>
-                        <td>PHP 500</td>
-                        <td>PHP 25,000</td>
-                    </tr>
-                    <tr>
-                        <td>002</td>
-                        <td>Steel Rebars (10mm)</td>
-                        <td>200 meters</td>
-                        <td>PHP 75</td>
-                        <td>PHP 15,000</td>
-                    </tr>
-                    <tr>
-                        <td>003</td>
-                        <td>Steel Plates</td>
-                        <td>300 pcs</td>
-                        <td>PHP 250</td>
-                        <td>PHP 75,000</td>
-                    </tr>
-                    <tr>
-                        <td>004</td>
-                        <td>Steel Tubes</td>
-                        <td>100 pcs</td>
-                        <td>PHP 300</td>
-                        <td>PHP 30,000</td>
-                    </tr>
-                    <tr>
-                        <td>005</td>
-                        <td>Steel Wire Mesh</td>
-                        <td>50 rolls</td>
-                        <td>PHP 1,000</td>
-                        <td>PHP 50,000</td>
-                    </tr>
-                </tbody>
+                <tbody id="invoiceBody"></tbody>
                 <tfoot>
-                    <tr>
-                        <td colspan="4">Total:</td>
-                        <td>PHP 195,000</td>
-                    </tr>
+                <tr>
+                    <td colspan="4">Total:</td>
+                    <td id="totalCost">PHP 0</td>
+                </tr>
                 </tfoot>
             </table>
-
         </div>
 
         <div class="buttons">
@@ -805,6 +763,63 @@
     </footer>
 
     <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                const res = await fetch("/exestaff/invoice/projects");
+                if (!res.ok) throw new Error("Failed to fetch projects");
+                const projects = await res.json();
+                const dropdown = document.getElementById("project-select");
+
+                if (projects.length === 0) {
+                    console.warn("No assigned projects returned.");
+                }
+
+                projects.forEach(project => {
+                    const option = document.createElement("option");
+                    option.value = project.projectId;
+                    option.textContent = project.projectname;
+                    dropdown.appendChild(option);
+                });
+
+                dropdown.addEventListener("change", async () => {
+                    const selected = projects.find(p => p.projectId == dropdown.value);
+                    if (!selected) return;
+
+                    document.getElementById("projectName").textContent = selected.projectname;
+                    document.getElementById("projectLocation").textContent = selected.companyLocation;
+                    document.getElementById("projectCompany").textContent = selected.companyname;
+                    document.getElementById("projectContact").textContent = selected.companycontact;
+
+                    const res = await fetch(`/exestaff/invoice/materials?projectId=${selected.projectId}`);
+                    if (!res.ok) throw new Error("Failed to fetch materials");
+
+                    const materials = await res.json();
+                    const tbody = document.getElementById("invoiceBody");
+                    tbody.innerHTML = "";
+                    let total = 0;
+
+                    materials.forEach((item, i) => {
+                        const row = document.createElement("tr");
+                        const totalRow = item.materialPrice * item.quantityAssigned;
+                        total += totalRow;
+
+                        row.innerHTML = `
+                    <td>${String(i + 1).padStart(3, '0')}</td>
+                    <td>${item.inventory.materialName}</td>
+                    <td>${item.quantityAssigned}</td>
+                    <td>PHP ${item.materialPrice.toLocaleString()}</td>
+                    <td>PHP ${totalRow.toLocaleString()}</td>
+                `;
+                        tbody.appendChild(row);
+                    });
+
+                    document.getElementById("totalCost").textContent = `PHP ${total.toLocaleString()}`;
+                });
+            } catch (err) {
+                console.error("Error loading invoice page:", err);
+            }
+        });
+
         const overlay = document.getElementById("overlay");
         const modal = document.getElementById("modal");
         const selectPeriodButton = document.getElementById("selectPeriod");
@@ -850,13 +865,7 @@
         let closeBtn = document.querySelector("#btn");
         let searchBtn = document.querySelector(".bx-search");
 
-        closeBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
-        });
 
-        searchBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
-        });
     </script>
 </body>
 

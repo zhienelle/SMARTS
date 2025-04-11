@@ -10,4 +10,6 @@ import java.util.List;
 public interface ProjectRepository extends JpaRepository<Project, Integer> {
     List<Project> findByProjectstatusIgnoreCaseNot(String status);
     Project findByProjectname(String projectname);
+    List<Project> findByProjectnameInIgnoreCase(List<String> names);
+
 }

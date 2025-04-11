@@ -1082,7 +1082,7 @@
 
                 <div class="button-container">
                     <button class="closeModalBtn" onclick="closeModal('editDetailsModal')">Cancel</button>
-                    <button type="button" onclick="archiveProject()">Archive</button>
+                    <button id="archiveProjectBtn" type="button" onclick="archiveProject()">Archive</button>
                     <button type="submit">Save</button>
                 </div>
             </form>
@@ -1226,8 +1226,20 @@
                 }
 
                 // Populate dropdowns in the edit modals
-                populateProjectDropdown('editProjectNameSelect', filteredProjects);
+// Filter project dropdowns based on archived state
+                const editDropdown = document.getElementById('editProjectNameSelect');
+                editDropdown.innerHTML = '<option value="">Select Project</option>';
+
+                filteredProjects.forEach(project => {
+                    const option = document.createElement('option');
+                    option.value = project.projectId;
+                    option.textContent = project.projectname;
+                    editDropdown.appendChild(option);
+                });
+
+// Still populate projectSelect dropdown normally for progress modal
                 populateProjectDropdown('projectSelect', filteredProjects);
+
             })
             .catch(error => {
                 console.error('Error loading projects:', error);
@@ -1286,6 +1298,8 @@
         const dropdown = document.getElementById(dropdownId);
         if (dropdown && dropdown.options.length <= 1) { // don't repopulate if already filled
             dropdown.innerHTML = '<option value="">Select Project</option>';
+
+
             projects.forEach(project => {
                 const option = document.createElement('option');
                 option.value = project.projectId;
@@ -1332,10 +1346,11 @@
         }
         // Get updated details from the form fields
         const updatedProjectName = document.getElementById('editProjectName').value;
-        const updatedStatus = document.getElementById('editStatus').value;
+        let updatedStatus = document.getElementById('editStatus').value;
         const updatedStartDate = document.getElementById('editStartDate').value;
         const updatedEndDate = document.getElementById('editEndDate').value;
         const updatedClientName = document.getElementById('editClientName').value;
+
 
         if (!updatedProjectName || !updatedStatus || !updatedStartDate || !updatedEndDate || !updatedClientName) {
             alert("Please fill out all fields.");
@@ -1381,6 +1396,7 @@
                 // Reload projects to update table and dropdowns
                 loadProjects();
                 document.getElementById('editProjectDetailsForm').reset();
+                document.getElementById('restoreStatusSelect').value = "";
                 closeModal('editDetailsModal');
             })
             .catch(error => {

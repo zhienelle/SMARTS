@@ -704,93 +704,52 @@
         <div class="upper">
             <h1>INVOICE</h1>
             <div class="functionality">
-                <select>
+                <select id="project-select">
                     <option value="" disabled selected>Select Project</option>
-                    <option value="Project 1">Residential Building Construction</option>
-                    <option value="Project 2">Commercial Office Building</option>
-                    <option value="Project 3">Mixed-Use Development</option>
-                    <option value="Project 4">Hotel and Resort Complex</option>
-                    <option value="Project 5">Shopping Mall and Retail Center</option>
                 </select>
                 <button id="selectPeriod">Select Period</button>
             </div>
         </div>
 
         <div class="overlay" id="overlay"></div>
-        <div class="selected-period" id="selectedPeriod">
-        </div>
+        <div class="selected-period" id="selectedPeriod"></div>
 
         <div class="invoice-container">
             <div class="project-details">
                 <div>
-                    <h2><strong>Project:</strong> Residential Building Construction</h2>
-                    <p><strong>Location:</strong> Mandaluyong, Manila</p>
+                    <h2><strong>Project:</strong> <span id="projectName">---</span></h2>
+                    <p><strong>Location:</strong> <span id="projectLocation">---</span></p>
                 </div>
                 <div class="b">
-                    <h2><strong>Company:</strong> ABC Builders Inc.</h2>
-                    <p><strong>Contact:</strong> 0912 345 6789</p>
+                    <h2><strong>Company:</strong> <span id="projectCompany">---</span></h2>
+                    <p><strong>Contact:</strong> <span id="projectContact">---</span></p>
                 </div>
             </div>
 
-            <table>
+            <table id="invoiceTable">
                 <thead>
-                    <tr>
-                        <th>Item No.</th>
-                        <th>Materials</th>
-                        <th>Quantity</th>
-                        <th>Unit Price</th>
-                        <th>Total</th>
-                    </tr>
+                <tr>
+                    <th>Item No.</th>
+                    <th>Materials</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>001</td>
-                        <td>Steel Beams</td>
-                        <td>50 pcs</td>
-                        <td>PHP 500</td>
-                        <td>PHP 25,000</td>
-                    </tr>
-                    <tr>
-                        <td>002</td>
-                        <td>Steel Rebars (10mm)</td>
-                        <td>200 meters</td>
-                        <td>PHP 75</td>
-                        <td>PHP 15,000</td>
-                    </tr>
-                    <tr>
-                        <td>003</td>
-                        <td>Steel Plates</td>
-                        <td>300 pcs</td>
-                        <td>PHP 250</td>
-                        <td>PHP 75,000</td>
-                    </tr>
-                    <tr>
-                        <td>004</td>
-                        <td>Steel Tubes</td>
-                        <td>100 pcs</td>
-                        <td>PHP 300</td>
-                        <td>PHP 30,000</td>
-                    </tr>
-                    <tr>
-                        <td>005</td>
-                        <td>Steel Wire Mesh</td>
-                        <td>50 rolls</td>
-                        <td>PHP 1,000</td>
-                        <td>PHP 50,000</td>
-                    </tr>
+                <tbody id="invoiceBody">
+                <!-- Dynamically populated -->
                 </tbody>
                 <tfoot>
-                    <tr>
-                        <td colspan="4">Total:</td>
-                        <td>PHP 195,000</td>
-                    </tr>
+                <tr>
+                    <td colspan="4">Total:</td>
+                    <td id="totalCost">PHP 0</td>
+                </tr>
                 </tfoot>
             </table>
-
         </div>
 
         <div class="buttons">
-            <button>Print</button>
+            <button onclick="window.print()">Print</button>
         </div>
 
         <div id="modal" class="modal">
@@ -812,58 +771,121 @@
     </footer>
 
     <script>
-        const overlay = document.getElementById("overlay");
-        const modal = document.getElementById("modal");
-        const selectPeriodButton = document.getElementById("selectPeriod");
-        const cancelModalButton = document.getElementById("cancelModal");
-        const datePeriodDiv = document.getElementById("selectedPeriod");
+        async function fetchProjectsAndPopulateDropdown() {
+            const response = await fetch("/admin/invoice/getProjects");
+            const projects = await response.json();
 
-        selectPeriodButton.addEventListener("click", () => {
-            modal.style.display = "block";
-            overlay.style.display = "block";
+            window.projectList = projects; // ✅ save for lookup
+
+            const dropdown = document.getElementById("project-select");
+            dropdown.innerHTML = `<option value="" disabled selected>Select Project</option>`;
+
+            projects.forEach(p => {
+                dropdown.innerHTML += `<option value="${p.projectId}">${p.projectname}</option>`;
+            });
+        }
+
+        async function loadProjectDetails(projectId, startDate = null, endDate = null) {
+            let url = `/admin/invoice/getProjectDetails?projectId=${projectId}`;
+            if (startDate && endDate) {
+                url += `&startDate=${startDate}&endDate=${endDate}`;
+            }
+            const res = await fetch(url);
+            const data = await res.json();
+
+            document.getElementById('projectName').textContent = data.projectName || '---';
+            document.getElementById('projectLocation').textContent = data.location || '---';
+            document.getElementById('projectCompany').textContent = data.company || '---';
+            document.getElementById('projectContact').textContent = data.contact || '---';
+
+            const tbody = document.getElementById('invoiceBody');
+            tbody.innerHTML = '';
+
+            let total = 0;
+            data.materials.forEach((item, idx) => {
+                const totalPerItem = item.totalPrice || 0;
+                total += totalPerItem;
+
+                tbody.innerHTML += `
+                <tr>
+                    <td>${String(idx + 1).padStart(3, '0')}</td>
+                    <td>${item.materialName}</td>
+                    <td>${item.quantity}</td>
+                    <td>PHP ${Number(item.unitPrice).toLocaleString()}</td>
+                    <td>PHP ${Number(totalPerItem).toLocaleString()}</td>
+                </tr>
+            `;
+            });
+
+            document.getElementById('totalCost').textContent = `PHP ${total.toLocaleString()}`;
+        }
+
+        document.getElementById('project-select').addEventListener('change', async (e) => {
+            const projectName = e.target.options[e.target.selectedIndex].text;
+            const res = await fetch(`/admin/invoice/getInventory?projectName=${projectName}`);
+            const inventory = await res.json();
+
+            document.getElementById('projectName').textContent = projectName;
+
+            const selected = e.target.options[e.target.selectedIndex];
+            const selectedProject = window.projectList.find(p => p.projectname === projectName);
+
+            document.getElementById('projectLocation').textContent = selectedProject.companyLocation || '---';
+            document.getElementById('projectCompany').textContent = selectedProject.companyname || '---';
+            document.getElementById('projectContact').textContent = selectedProject.companycontact || '---';
+
+            const tbody = document.getElementById('invoiceBody');
+            tbody.innerHTML = '';
+
+            let total = 0;
+            inventory.forEach((item, idx) => {
+                total += item.totalPrice;
+                tbody.innerHTML += `
+            <tr>
+                <td>${String(idx + 1).padStart(3, '0')}</td>
+                <td>${item.materialName}</td>
+                <td>${item.quantity}</td>
+                <td>PHP ${item.unitPrice.toLocaleString()}</td>
+                <td>PHP ${item.totalPrice.toLocaleString()}</td>
+            </tr>
+        `;
+            });
+
+            document.getElementById('totalCost').textContent = `PHP ${total.toLocaleString()}`;
         });
 
-        cancelModalButton.addEventListener("click", () => {
-            modal.style.display = "none";
-            overlay.style.display = "none";
-        });
 
         document.getElementById("submitPeriod").addEventListener("click", () => {
-            const startDate = document.getElementById("startDate").value;
-            const endDate = document.getElementById("endDate").value;
+            const start = document.getElementById("startDate").value;
+            const end = document.getElementById("endDate").value;
 
-            if (startDate && endDate) {
-                if (new Date(startDate) > new Date(endDate)) {
-                    alert("Start date cannot be later than end date.");
-                } else {
-                    datePeriodDiv.innerHTML = `Selected Period: ${startDate} to ${endDate}`;
-                    datePeriodDiv.style.display = "block";
-                    modal.style.display = "none";
-                    overlay.style.display = "none";
-                }
-            } else {
-                alert("Please select valid dates.");
+            if (!start || !end) {
+                alert("⚠️ Please select both start and end date.");
+                return;
             }
+
+            const selectedPeriod = document.getElementById("selectedPeriod");
+            selectedPeriod.innerText = `Selected Period: ${start} to ${end}`;
+            selectedPeriod.style.display = "block";
+
+            const projectId = document.getElementById("projectDropdown").value;
+            if (projectId) loadProjectDetails(projectId, start, end);
         });
 
-        window.onclick = (event) => {
-            if (event.target === overlay) {
-                modal.style.display = "none";
-                overlay.style.display = "none";
-            }
-        };
-
-        let sidebar = document.querySelector(".sidebar");
-        let closeBtn = document.querySelector("#btn");
-        let searchBtn = document.querySelector(".bx-search");
-
-        closeBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
+        document.getElementById("cancelModal").addEventListener("click", () => {
+            document.getElementById("startDate").value = "";
+            document.getElementById("endDate").value = "";
+            document.getElementById("overlay").style.display = "none";
+            document.getElementById("modal").style.display = "none";
         });
 
-        searchBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
+        document.getElementById("selectPeriod").addEventListener("click", () => {
+            document.getElementById("overlay").style.display = "block";
+            document.getElementById("modal").style.display = "block";
         });
+
+        fetchProjectsAndPopulateDropdown();
+
     </script>
 </body>
 
