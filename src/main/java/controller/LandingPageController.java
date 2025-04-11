@@ -1,6 +1,7 @@
 package controller;
 
 import entity.User;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -83,8 +84,6 @@ public class LandingPageController {
         return "redirect:/captcha";
     }
 
-
-
     @GetMapping("/invalidUsername")
     public String showInvalidUsernamePage() {
         return "invalidUsername"; // redirection
@@ -96,7 +95,21 @@ public class LandingPageController {
     }
 
     @GetMapping("/confirmLogout")
-    public String ConfirmLogout(){
-            return "confirmLogout";
+    public String confirmLogout(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("authenticatedUser");
+        if (user == null) {
+            return "redirect:/"; // Redirect to login if session expired
         }
+        model.addAttribute("username", user.getUsername());
+        return "confirmLogout";
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false); // don't create if it doesn't exist
+        if (session != null) {
+            session.invalidate(); // properly invalidate the session
+        }
+        return "redirect:/";
+    }
 }
