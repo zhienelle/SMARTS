@@ -3,6 +3,7 @@ package controller;
 import entity.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 import repository.*;
@@ -20,13 +21,26 @@ public class HomepageGenconController {
     @Autowired private ProjectTaskRepository projectTaskRepository;
 
     @GetMapping("/homepageGencon")
-    public String homepageGencon() {
+    public String homepageGencon(HttpSession session, Model model) {
+
+        User currentUser = (User) session.getAttribute("authenticatedUser"); // ✅ CHANGED: get user from session
+
+        if (currentUser == null) {
+            return "redirect:/"; // or "error"
+        }
+
+        String role = (String) session.getAttribute("role");
+        if (!"MAIN CONTRACTOR".equalsIgnoreCase(role)) {
+            return "error/error403";
+        }
+
         return "homepageGencon";
     }
     @GetMapping("/gencon/projects")
     @ResponseBody
     public List<Project> getAssignedProjects(HttpSession session) {
         User user = (User) session.getAttribute("authenticatedUser");
+
         if (user == null || !"MAIN CONTRACTOR".equalsIgnoreCase(user.getRole())) {
             return Collections.emptyList();
         }

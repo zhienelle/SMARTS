@@ -2,6 +2,7 @@ package controller;
 
 import entity.User;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,10 @@ public class LandingPageController {
     private JavaMailSender mailSender; // ✅ Inject mail sender
 
     @GetMapping("/")
-    public String showLoginPage() {
+    public String showLoginPage(HttpSession session) {
+        // Do NOT redirect to session-destroyed here
+        // Allow everyone to see the landing page, whether logged in or not
+
         return "landingPage";
     }
 
@@ -95,21 +99,45 @@ public class LandingPageController {
     }
 
     @GetMapping("/confirmLogout")
-    public String confirmLogout(HttpSession session, Model model) {
+    public String confirmLogout(HttpSession session, HttpServletResponse response, Model model) {
+        // Force browser to not cache this page
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+
         User user = (User) session.getAttribute("authenticatedUser");
         if (user == null) {
-            return "redirect:/"; // Redirect to login if session expired
+            // If no session, do NOT show confirm — go to session destroyed
+            return "redirect:/session-destroyed";
         }
-        model.addAttribute("username", user.getUsername());
-        return "confirmLogout";
+
+        model.addAttribute("userAuthenticated", true);
+        return "confirmLogout"; // Show confirmation screen
     }
 
+
     @GetMapping("/logout")
-    public String logout(HttpServletRequest request) {
-        HttpSession session = request.getSession(false); // don't create if it doesn't exist
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
+        HttpSession session = request.getSession(false);
         if (session != null) {
-            session.invalidate(); // properly invalidate the session
+            session.invalidate(); // end session
         }
-        return "redirect:/";
+
+        // prevent back button from restoring pages
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+
+        return "redirect:/"; // this must not be changed
     }
+
+
+    @GetMapping("/session-destroyed")
+    public String sessionDestroyed(HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+        return "error/errorSessionDestroyed"; // View name of your custom HTML (sessionDestroyed.html)
+    }
+
 }

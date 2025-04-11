@@ -2,6 +2,9 @@
 <html lang="en">
 
 <head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirm Logout</title>
@@ -126,23 +129,30 @@
     </main>
 
     <script src="https://unpkg.com/@lottiefiles/lottie-player@1.0.4/dist/lottie-player.js"></script>
-    <script>
+    <script th:inline="javascript">
+        const userAuthenticated = /*[[${userAuthenticated}]]*/ false;
+
+        history.pushState(null, "", location.href);
+        window.onpopstate = function () {
+            // Force full reload so controller can check session
+            window.location.href = location.href;
+        };
+
         function redirectToLogout() {
-            history.pushState(null, null, location.href);
-            window.onpopstate = function () {
-                history.go(1);
-            };
-            window.location.href = "/";
+            window.location.href = "/logout";
         }
 
         function goBack() {
+            // ✅ This goes back to the page before /confirmLogout
             if (document.referrer) {
                 window.location.href = document.referrer;
             } else {
+                // fallback if no referrer is available
                 window.history.back();
             }
         }
-
     </script>
+
 </body>
+
 </html>

@@ -33,9 +33,15 @@ public class ReportsAdminController {
     @GetMapping("/reportsAdmin")
     public String loadReportsPage(HttpSession session, Model model) {
         User user = (User) session.getAttribute("authenticatedUser");
-        if (user == null || !"ADMIN".equalsIgnoreCase(user.getRole())) {
+        if (user == null) {
             return "redirect:/";
         }
+
+        String role = (String) session.getAttribute("role");
+        if (!"admin".equalsIgnoreCase(role)) {
+            return "error/error403";
+        }
+
 
         List<Project> allProjects = projectRepository.findAll();
         model.addAttribute("projects", allProjects);

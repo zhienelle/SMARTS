@@ -3,6 +3,8 @@ package controller;
 import entity.Project;
 import entity.ProjectStage;
 import entity.ProjectTask;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -57,11 +59,23 @@ public class ProjectsAdminController {
         return null;
     }
 
-    @GetMapping("projectsAdmin")
-    public String projectAdminPage(Model model) {
+    @GetMapping("/projectsAdmin")
+    public String projectAdminPage(Model model, HttpServletRequest request) {
+        HttpSession session = request.getSession(false); // don't create if it doesn't exist
+
+        if (session == null || session.getAttribute("authenticatedUser") == null) {
+            return "redirect:/";
+        }
+
+        String role = (String) session.getAttribute("role");
+        if (!"admin".equalsIgnoreCase(role)) {
+            return "error/error403";
+        }
+
         model.addAttribute("projects", projectRepository.findAll());
         return "projectsAdmin";
     }
+
 
     @GetMapping("/projectsAdmin/getStages/{projectId}")
     @ResponseBody

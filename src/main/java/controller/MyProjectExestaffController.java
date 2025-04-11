@@ -37,6 +37,11 @@ public class MyProjectExestaffController {
         User user = (User) session.getAttribute("authenticatedUser");
         if (user == null) return "redirect:/";
 
+        String role = (String) session.getAttribute("role");
+        if (!"staff".equalsIgnoreCase(role)) {
+            return "error/error403";
+        }
+
         List<Project> assignedProjects = new ArrayList<>();
 
         if (user.getProject() != null && !user.getProject().isEmpty()) {

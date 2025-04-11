@@ -3,6 +3,7 @@ package controller;
 import entity.Project;
 import entity.ProjectInventory;
 import entity.User;
+import org.springframework.ui.Model;
 import repository.ProjectInventoryRepository;
 import repository.ProjectRepository;
 import repository.ProjectStageRepository;
@@ -28,7 +29,16 @@ public class InvoiceExestaffController {
     private UserRepository userRepository;
 
     @GetMapping("/invoiceExestaff")
-    public String invoiceExestaff() {
+    public String invoiceExestaff(HttpSession session, Model model) {
+            User user = (User) session.getAttribute("authenticatedUser");
+            if (user == null) {
+                return "redirect:/";
+            }
+
+            String role = (String) session.getAttribute("role");
+            if (!"admin".equalsIgnoreCase(role)) {
+                return "error/error403";
+            }
         return "invoiceExestaff";
     }
 

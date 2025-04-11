@@ -44,6 +44,11 @@ public class InventoryExestaffController {
             return "redirect:/"; // or "error"
         }
 
+        String role = (String) session.getAttribute("role");
+        if (!"staff".equalsIgnoreCase(role)) {
+            return "error/error403";
+        }
+
         String username = currentUser.getUsername(); // ✅ CHANGED: retrieve username from User object
         System.out.println("this is the username:" + username);
 
