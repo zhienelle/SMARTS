@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -43,11 +45,10 @@ public class RequestsAdminController {
     public List<MaterialRequest> getAllRequests() {
         List<MaterialRequest> pending = materialRequestRepository.findByMaterialRequestStatus("PENDING");
 
-        // Trigger lazy-loaded fields
         pending.forEach(req -> {
             if (req.getInventory() != null) {
-                req.getInventory().getMaterialName();
-                req.getInventory().getMaterialCategory();
+                req.setMaterialName(req.getInventory().getMaterialName());
+                req.setMaterialCategory(req.getInventory().getMaterialCategory());
             }
             if (req.getProject() != null) {
                 req.getProject().getProjectname();
@@ -56,6 +57,26 @@ public class RequestsAdminController {
 
         return pending;
     }
+//        pending.forEach(req -> {
+//            Inventory inv = req.getInventory();
+//            if (inv != null) {
+//                req.setMaterialName(inv.getMaterialName());
+//                req.setMaterialCategory(inv.getMaterialCategory());
+//            }
+//
+//            Project project = req.getProject();
+//            if (project != null) {
+//                project.getProjectname(); // Optional: force load
+//            }
+//
+//            if (req.getUser() != null) {
+//                req.getUser().getUsername(); // Optional: force load
+//            }
+//        });
+//
+//
+//        return pending;
+//    }
 
     @PostMapping("/admin/requests/approve/{id}")
     @ResponseBody
@@ -83,25 +104,16 @@ public class RequestsAdminController {
             int quantity = request.getMaterialStock();
 
             if (inventory.getMaterialStock() < quantity) {
-                return "❌ Not enough stock to approve.";
+                return "❌ Cannot approve request: Requested quantity (" + quantity + ") exceeds current stock (" + inventory.getMaterialStock() + ") of " + inventory.getMaterialName() + ".";
             }
 
-            // Deduct and update stock
             inventory.setMaterialStock(inventory.getMaterialStock() - quantity);
 
-            // ✅ Update stock status
             int newStock = inventory.getMaterialStock();
-            if (newStock <= 30) {
-                inventory.setMaterialStockStatus("LOW");
-            } else if (newStock <= 100) {
-                inventory.setMaterialStockStatus("MODERATE");
-            } else {
-                inventory.setMaterialStockStatus("HIGH");
-            }
+            inventory.setMaterialStockStatus(newStock <= 30 ? "LOW" : newStock <= 100 ? "MODERATE" : "HIGH");
 
             inventoryRepository.save(inventory);
 
-            // ✅ Insert/update project_inventory
             ProjectInventory existing = projectInventoryRepository.findByProjectAndInventory(project, inventory);
             if (existing != null) {
                 existing.setQuantityAssigned(existing.getQuantityAssigned() + quantity);
@@ -123,60 +135,65 @@ public class RequestsAdminController {
         return "✅ Request status updated.";
     }
 
+
     @PostMapping("/admin/requests/bulkUpdate")
     @ResponseBody
     public String bulkUpdateRequestStatus(@RequestParam List<Long> requestIds,
                                           @RequestParam String action) {
-        for (Long requestId : requestIds) {
-            Optional<MaterialRequest> optional = materialRequestRepository.findById(requestId);
-            if (optional.isEmpty()) continue;
-
-            MaterialRequest request = optional.get();
-            request.setMaterialRequestStatus(action);
-
-            if ("APPROVED".equalsIgnoreCase(action)) {
-                Inventory inventory = request.getInventory();
-                Project project = request.getProject();
-                int quantity = request.getMaterialStock();
-
-                if (inventory.getMaterialStock() < quantity) continue;
-
-                inventory.setMaterialStock(inventory.getMaterialStock() - quantity);
-
-                // ✅ Update stock status
-                int newStock = inventory.getMaterialStock();
-                if (newStock <= 30) {
-                    inventory.setMaterialStockStatus("LOW");
-                } else if (newStock <= 100) {
-                    inventory.setMaterialStockStatus("MODERATE");
-                } else {
-                    inventory.setMaterialStockStatus("HIGH");
-                }
-
-                inventoryRepository.save(inventory);
-
-                ProjectInventory existing = projectInventoryRepository.findByProjectAndInventory(project, inventory);
-                if (existing != null) {
-                    existing.setQuantityAssigned(existing.getQuantityAssigned() + quantity);
-                    existing.setTotalPrice(existing.getMaterialPrice() * existing.getQuantityAssigned());
-                    projectInventoryRepository.save(existing);
-                } else {
-                    ProjectInventory newEntry = new ProjectInventory();
-                    newEntry.setProject(project);
-                    newEntry.setInventory(inventory);
-                    newEntry.setQuantityAssigned(quantity);
-                    newEntry.setQuantityUsed(0);
-                    newEntry.setMaterialPrice(inventory.getMaterialPrice());
-                    newEntry.setTotalPrice(inventory.getMaterialPrice() * quantity);
-                    projectInventoryRepository.save(newEntry);
-                }
+        if (!"APPROVED".equalsIgnoreCase(action)) {
+            for (Long id : requestIds) {
+                updateRequestStatus(id, action);
             }
-
-            materialRequestRepository.save(request);
+            return "✅ Bulk request status updated.";
         }
 
-        return "✅ Bulk request update complete.";
+        // Step 1: Collect and aggregate request quantities per inventory item
+        Map<Long, Integer> inventoryRequestSums = new HashMap<>();
+        Map<Long, String> inventoryNames = new HashMap<>();
+
+        for (Long id : requestIds) {
+            Optional<MaterialRequest> optional = materialRequestRepository.findById(id);
+            if (optional.isEmpty()) continue;
+
+            MaterialRequest req = optional.get();
+            Inventory inv = req.getInventory();
+
+            if (inv != null) {
+                long invId = inv.getMaterialId();
+                inventoryRequestSums.put(invId, inventoryRequestSums.getOrDefault(invId, 0) + req.getMaterialStock());
+                inventoryNames.put(invId, inv.getMaterialName());
+            }
+        }
+
+        // Step 2: Validate total quantity per inventory item
+        for (Map.Entry<Long, Integer> entry : inventoryRequestSums.entrySet()) {
+            Long invId = entry.getKey();
+            int requestedQty = entry.getValue();
+
+            Optional<Inventory> invOpt = inventoryRepository.findById(Math.toIntExact(invId));
+            if (invOpt.isEmpty()) continue;
+
+            Inventory inv = invOpt.get();
+            if (inv.getMaterialStock() < requestedQty) {
+                return "❌ Total requested quantity for '" + inventoryNames.get(invId) + "' (" + requestedQty + ") exceeds available stock (" + inv.getMaterialStock() + ").";
+            }
+        }
+
+        // Step 3: Proceed with approvals if all validations passed
+        for (Long id : requestIds) {
+            updateRequestStatus(id, "APPROVED");
+        }
+
+        return "✅ Bulk request approval successful.";
     }
+
+    @GetMapping("/admin/inventory/getAll")
+    @ResponseBody
+    public List<Inventory> getAllInventory() {
+        return inventoryRepository.findAll();
+    }
+
+
 
     @PostMapping("/admin/requests/updateMultipleStatus")
     @ResponseBody

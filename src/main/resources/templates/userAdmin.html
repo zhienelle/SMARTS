@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
+//THIS IS FIXED BY JED 12/04
 <head>
     <meta charset="UTF-8">
     <title>Admin User Management</title>
@@ -853,17 +853,16 @@
 
         function getSelectedProjects() {
             if (projectCheckboxesDiv.style.display === 'block') {
-                const radios = projectCheckboxesDiv.querySelectorAll('input[name="projectRadio"]:checked');
-                if (radios.length > 0) {
-                    return [radios[0].value];
-                }
                 const selectedOptions = Array.from(projectCheckboxesDiv.selectedOptions);
-                return selectedOptions.map(option => option.value);
-                return Array.from(checkboxes).map(cb => cb.value);
+                return selectedOptions
+                    .map(option => option.value.trim())
+                    .filter(value => value); // remove empty strings
             } else {
-                return [projectSelect.value];
+                const selected = projectSelect.value;
+                return selected ? [selected.trim()] : [];
             }
         }
+
 
 
         function saveUserDetails() {
@@ -884,6 +883,29 @@
             const url = userId ? `/userAdmin/updateUser/${userId}` : '/userAdmin/addUser';
             const method = userId ? 'PUT' : 'POST';
 
+            // Client-side validation: prevent duplicate STAFF assignments
+            if (userData.role === 'STAFF' && userData.project) {
+                const existingRows = document.querySelectorAll('#userTable tbody tr');
+                const selectedProjects = userData.project.split(',').map(p => p.trim());
+
+                for (const row of existingRows) {
+                    const rowRole = row.cells[2].innerText.trim();
+                    const rowProject = row.cells[4].innerText.trim();
+                    const rowUserId = row.getAttribute('data-user-id');
+
+                    if (rowRole === 'STAFF' && rowUserId !== (userId || '')) {
+                        const rowProjects = rowProject.split(',').map(p => p.trim());
+
+                        // Check if there's overlap
+                        const conflict = selectedProjects.some(proj => rowProjects.includes(proj));
+                        if (conflict) {
+                            alert(`❌ Project already assigned to another STAFF. Please choose a different project.`);
+                            return; // Abort save
+                        }
+                    }
+                }
+            }
+
             fetch(url, {
                 method: method,
                 headers: { 'Content-Type': 'application/json' },
@@ -895,7 +917,11 @@
                     else updateRowInTable(savedUser);
                     closeModal();
                 })
-                .catch(error => console.error('Error saving user:', error));
+                .catch(error => {
+                    console.error('Error saving user:', error);
+                    alert("❌ Could not save user: " + error.message);
+                });
+
         }
 
         function showAddUserModal() {
@@ -932,6 +958,9 @@
                 document.getElementById('phone').value = selectedRow.dataset.phone || '';
                 document.getElementById('email').value = selectedRow.dataset.email || '';
 
+                // Ensure dropdowns and checkboxes are reset
+                projectSelect.value = '';
+                projectCheckboxesDiv.querySelectorAll('option').forEach(opt => opt.selected = false);
 
                 // Trigger change manually to update UI visibility
                 roleSelect.dispatchEvent(new Event('change'));
@@ -940,17 +969,32 @@
                     permissionsSelect.value = selectedRow.cells[3].innerText;
                     permissionsSelect.dispatchEvent(new Event('change'));
 
-                    const selectedProjects = selectedRow.cells[4].innerText.split(', ').map(p => p.trim());
-                    document.querySelectorAll('input[name="projectCheckbox"]').forEach(cb => {
-                        cb.checked = selectedProjects.includes(cb.value);
-                    });
-                    document.getElementById('project').value = selectedRow.cells[4].innerText;
+                    const selectedProjects = selectedRow.cells[4].innerText.split(',').map(p => p.trim());
+
+                    // Populate dropdown if single project mode is active
+                    if (projectSelect.style.display === 'block') {
+                        const firstProject = selectedProjects[0] || '';
+                        const matchingOption = Array.from(projectSelect.options).find(opt => opt.value === firstProject);
+                        if (matchingOption) {
+                            matchingOption.selected = true;
+                        }
+                    }
+
+                    // Populate multi-select if active
+                    if (projectCheckboxesDiv.style.display === 'block') {
+                        projectCheckboxesDiv.querySelectorAll('option').forEach(opt => {
+                            if (selectedProjects.includes(opt.value)) {
+                                opt.selected = true;
+                            }
+                        });
+                    }
                 }, 200);
 
                 document.getElementById('archiveBtn').style.display = 'inline-block';
                 showModal();
             }
         }
+
 
         function showModal() {
             document.getElementById('overlay').style.display = 'block';

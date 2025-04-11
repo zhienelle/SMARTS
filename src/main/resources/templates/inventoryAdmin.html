@@ -1251,6 +1251,19 @@
                             return;
                         }
 
+                        if (stock < 0 || price < 0) {
+                            alert("❌ Value must be non-negative.");
+                            return;
+                        }
+
+                        const invalidChars = /[^a-zA-Z0-9\s]/;
+                        if (invalidChars.test(category) || invalidChars.test(name)) {
+                            alert("❌ Input must not contain special characters.");
+                            return;
+                        }
+
+
+
                         const payload = {
                             material_category: category,
                             material_name: name,

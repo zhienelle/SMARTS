@@ -1,5 +1,5 @@
 package controller;
-
+//FIXED BY JED
 import entity.Inventory;
 import entity.MaterialRequest;
 import entity.Project;
@@ -96,7 +96,10 @@ public class InventoryExestaffController {
             return "❌ Not authenticated.";
         }
 
-        // ✅ Case-insensitive and trimmed matching
+        if (quantity == null || quantity <= 0) {
+            return "❌ Quantity must be atleast 1.";
+        }
+
         Inventory inventory = inventoryRepository.findByMaterialCategoryIgnoreCaseAndMaterialNameIgnoreCase(
                 category.trim(), material.trim());
 
@@ -104,6 +107,10 @@ public class InventoryExestaffController {
 
         if (inventory == null || project == null) {
             return "❌ Invalid material or project.";
+        }
+
+        if (quantity > inventory.getMaterialStock()) {
+            return "❌ Not enough stock available.";
         }
 
         MaterialRequest request = new MaterialRequest();
@@ -118,6 +125,7 @@ public class InventoryExestaffController {
         materialRequestRepository.save(request);
         return "✅ Request submitted successfully!";
     }
+
 
 
 

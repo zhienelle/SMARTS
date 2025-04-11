@@ -765,17 +765,26 @@
                             <td><input type="checkbox" class="row-checkbox" data-id="${req.materialRequestId}"> ${req.user?.username || 'N/A'}</td>
                             <td>${req.user?.role || 'N/A'}</td>
                             <td>${req.materialName || '-'}</td>
-                            <td>${req.materialStock}</td>
+                            <td>${req.materialStock || 0}</td>
                             <td>${projName}</td>
                             <td>
                                 <div class="approval-buttons">
-                                    <button onclick="handleApproval(${req.materialRequestId}, true)">YES</button>
-                                    <button onclick="handleApproval(${req.materialRequestId}, false)">NO</button>
+                                    <button class="approve-btn">YES</button>
+                                    <button class="deny-btn">NO</button>
                                 </div>
                             </td>
                         `;
 
+
                             tbody.appendChild(row);
+                            row.querySelector(".approve-btn").addEventListener("click", () => {
+                                handleApproval(req.materialRequestId, true);
+                            });
+
+                            row.querySelector(".deny-btn").addEventListener("click", () => {
+                                handleApproval(req.materialRequestId, false);
+                            });
+
                         });
 
                         // Populate the filter dropdown
@@ -805,16 +814,41 @@
             // Handle approve/deny click
             window.handleApproval = (requestId, approved) => {
                 const url = approved ? "/admin/requests/approve/" : "/admin/requests/deny/";
+
+                // If approving, check inventory
+                if (approved) {
+                    const row = document.querySelector(`tr[data-id="${requestId}"]`);
+                    if (!row) return;
+
+                    const material = row.cells[2].innerText.trim();
+                    const qtyRequested = parseInt(row.cells[3].innerText.trim());
+
+                    const inv = inventoryCache.find(i => i.materialName.toLowerCase() === material.toLowerCase());
+                    if (!inv) {
+                        alert(`❌ Material "${material}" not found in inventory.`);
+                        return;
+                    }
+
+                    if (qtyRequested > inv.materialStock) {
+                        alert(`❌ Cannot approve ${material}: only ${inv.materialStock} in stock, requested ${qtyRequested}.`);
+                        return;
+                    }
+                }
+
                 fetch(url + requestId, { method: "POST" })
-                    .then(res => {
-                        if (res.ok) {
-                            const row = document.querySelector(`tr[data-id="${requestId}"]`);
-                            if (row) row.style.display = "none";
-                        } else {
-                            alert("❌ Failed to update request.");
+                    .then(async res => {
+                        const msg = await res.text();
+
+                        if (!res.ok) {
+                            alert("❌ " + msg);
+                            return;
                         }
+
+                        const row = document.querySelector(`tr[data-id="${requestId}"]`);
+                        if (row) row.remove();
                     });
             };
+
 
 
             // Filter by project dropdown
@@ -822,11 +856,23 @@
                 loadRequests(projectFilter.value);
             });
 
-            // Initial load
-            loadRequests();
+            fetch("/admin/inventory/getAll")
+                .then(res => res.json())
+                .then(data => {
+                    inventoryCache = data;
+                    loadRequests(); // ✅ safe to load requests now
+                })
+                .catch(err => {
+                    console.error("❌ Failed to fetch inventory data:", err);
+                });
+
+
+
         });
 
         let selectedAction = null;
+        let inventoryCache = [];
+
 
         function getSelectedRequestIds() {
             return [...document.querySelectorAll(".row-checkbox:checked")].map(cb => parseInt(cb.dataset.id));
@@ -874,20 +920,54 @@
                 return;
             }
 
+            // ✅ Validation: Check total quantity per material
+            const materialTotals = {};
+            requestIds.forEach(id => {
+                const row = document.querySelector(`tr[data-id="${id}"]`);
+                if (!row) return;
+                const material = row.cells[2].innerText.trim();
+                const qty = parseInt(row.cells[3].innerText.trim());
+
+                materialTotals[material] = (materialTotals[material] || 0) + qty;
+            });
+
+            for (const [material, totalRequested] of Object.entries(materialTotals)) {
+                console.log("✅ Inventory Cache:", inventoryCache);
+
+                const inv = inventoryCache.find(i => i.materialName === material);
+                if (!inv) {
+                    alert(`❌ Material "${material}" not found in inventory.`);
+                    toggleModal(false);
+                    return;
+                }
+
+                if (totalRequested > inv.materialStock) {
+                    alert(`❌ Cannot approve requests. Total requested for ${material} (${totalRequested}) exceeds stock (${inv.materialStock}).`);
+                    toggleModal(false);
+                    return;
+                }
+            }
+
+            // ✅ If all validations passed
             fetch("/admin/requests/updateMultipleStatus", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ requestIds, action: selectedAction })
             })
-                .then(res => res.text())
-                .then(msg => {
-                    // Fully remove affected rows instead of just hiding
+                .then(async res => {
+                    const msg = await res.text();
+
+                    if (!res.ok) {
+                        alert("❌ " + msg);
+                        toggleModal(false);
+                        return;
+                    }
+
                     requestIds.forEach(id => {
                         const row = document.querySelector(`tr[data-id="${id}"]`);
                         if (row) row.remove();
                     });
 
-                    // ✅ Deselect any lingering checkboxes, reset action and close modal
                     document.querySelectorAll(".row-checkbox").forEach(cb => cb.checked = false);
                     selectedAction = null;
                     toggleModal(false);
@@ -899,6 +979,7 @@
                     toggleModal(false);
                 });
         });
+
 
 
     </script>
