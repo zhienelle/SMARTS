@@ -23,26 +23,27 @@ public class HomepageGenconController {
     public String homepageGencon() {
         return "homepageGencon";
     }
-
     @GetMapping("/gencon/projects")
     @ResponseBody
     public List<Project> getAssignedProjects(HttpSession session) {
         User user = (User) session.getAttribute("authenticatedUser");
-        if (user == null || !"GENERAL CONTRACTOR".equalsIgnoreCase(user.getRole())) return List.of();
+        if (user == null || !"MAIN CONTRACTOR".equalsIgnoreCase(user.getRole())) {
+            return Collections.emptyList();
+        }
 
-        List<String> assignedNames = Arrays.stream(user.getProject().split(","))
+        String assigned = user.getProject();
+        if (assigned == null || assigned.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<String> names = Arrays.stream(assigned.split(","))
                 .map(String::trim)
+                .map(String::toLowerCase)
                 .collect(Collectors.toList());
 
         return projectRepository.findAll().stream()
-                .filter(p -> assignedNames.contains(p.getProjectname()))
+                .filter(p -> names.contains(p.getProjectname().toLowerCase()))
                 .collect(Collectors.toList());
-    }
-
-    @GetMapping("/gencon/inventory")
-    @ResponseBody
-    public List<ProjectInventory> getProjectInventory(@RequestParam("projectId") int projectId) {
-        return projectInventoryRepository.findByProject_ProjectIdIn(List.of(projectId));
     }
 
     @GetMapping("/gencon/progress")
@@ -56,7 +57,7 @@ public class HomepageGenconController {
 
         for (ProjectStage stage : stages) {
             List<ProjectTask> tasks = projectTaskRepository.findByStage(stage);
-            long completed = tasks.stream().filter(t -> t.getStatus().equalsIgnoreCase("completed")).count();
+            long completed = tasks.stream().filter(ProjectTask::isCompleted).count();
 
             Map<String, Object> stageMap = new HashMap<>();
             stageMap.put("stageNumber", stage.getStageNumber());
@@ -67,4 +68,28 @@ public class HomepageGenconController {
 
         return response;
     }
+
+
+    @GetMapping("/gencon/inventory")
+    @ResponseBody
+    public List<Map<String, Object>> getProjectInventory(@RequestParam("projectId") int projectId) {
+        List<ProjectInventory> records = projectInventoryRepository.findByProject_ProjectIdIn(List.of(projectId));
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        for (ProjectInventory pi : records) {
+            Map<String, Object> item = new HashMap<>();
+            Inventory inv = pi.getInventory();
+
+            item.put("materialName", inv != null ? inv.getMaterialName() : "N/A");
+            item.put("materialPrice", inv != null ? inv.getMaterialPrice() : 0.0);
+            item.put("quantityAssigned", pi.getQuantityAssigned());
+            item.put("totalPrice", pi.getTotalPrice());
+
+            result.add(item);
+        }
+
+        return result;
+    }
+
+
 }

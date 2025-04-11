@@ -867,7 +867,7 @@
             if (projectCheckboxesDiv.style.display === 'block') {
                 const radios = projectCheckboxesDiv.querySelectorAll('input[name="projectRadio"]:checked');
                 if (radios.length > 0) {
-                    return [radios[0].value];
+                    return Array.from(radios).map(r => r.value); // ✅ supports multiple selected projects
                 }
                 const checkboxes = projectCheckboxesDiv.querySelectorAll('input[name="projectCheckbox"]:checked');
                 return Array.from(checkboxes).map(cb => cb.value);
@@ -975,9 +975,10 @@
                     permissionsSelect.dispatchEvent(new Event('change'));
 
                     const selectedProjects = selectedRow.cells[4].innerText.split(', ').map(p => p.trim());
-                    document.querySelectorAll('input[name="projectCheckbox"]').forEach(cb => {
-                        cb.checked = selectedProjects.includes(cb.value);
+                    document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => {
+                        input.checked = selectedProjects.includes(input.value);
                     });
+
                     document.getElementById('project').value = selectedRow.cells[4].innerText;
                 }, 200);
 

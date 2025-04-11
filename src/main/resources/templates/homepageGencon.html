@@ -456,6 +456,35 @@
                 font-size: 14px;
             }
         }
+        .progress-segment {
+            height: 10px;
+            width: 20px;
+            margin: 2px;
+            display: inline-block;
+            background-color: #ccc;
+            border-radius: 4px;
+        }
+        .task-1 { background-color: #F9744B; }
+        .task-2 { background-color: #FFC107; }
+        .task-3 { background-color: #4CAF50; }
+        .task-4 { background-color: #2196F3; }
+        .task-5 { background-color: #9C27B0; }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            background-color: #eee;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .checkbox.checked {
+            background-color: #4CAF50;
+            color: white;
+        }
 
         @media (max-width: 480px) {
             h2 {
@@ -509,14 +538,21 @@
             <div class="left-container">
                 <div class="project-details">
                     <div>
-                        <h2><strong>Project:</strong> Steel Structure Project</h2>
-                        <p><strong>Location:</strong> Makati, Manila</p>
+                        <label for="projectSelector" style="font-weight: bold;">Select Project:</label>
+                        <select id="projectSelector" style="padding: 5px; border-radius: 5px; margin-bottom: 10px;">
+                            <option disabled selected>Select a project</option>
+                        </select>
+
+
+                        <h2><strong>Project:</strong> <span id="projectName">---</span></h2>
+                        <p><strong>Location:</strong> <span id="projectLocation">---</span></p>
                     </div>
                     <div class="b">
-                        <h2><strong>Company:</strong> XYZ Metals Ltd.</h2>
-                        <p><strong>Contact:</strong> 0923 456 7890</p>
+                        <h2><strong>Company:</strong> <span id="projectCompany">---</span></h2>
+                        <p><strong>Contact:</strong> <span id="projectContact">---</span></p>
                     </div>
                 </div>
+
                 <div class="table-container">
                     <table>
                         <thead>
@@ -528,66 +564,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Steel Beams</td>
-                                <td>150</td>
-                                <td>3,500.00</td>
-                                <td>525,000.00</td>
-                            </tr>
-                            <tr>
-                                <td>Steel Plates</td>
-                                <td>200</td>
-                                <td>1,200.00</td>
-                                <td>240,000.00</td>
-                            </tr>
-                            <tr>
-                                <td>Metal Rods</td>
-                                <td>100</td>
-                                <td>800.00</td>
-                                <td>80,000.00</td>
-                            </tr>
-                            <tr>
-                                <td>Aluminum Sheets</td>
-                                <td>50</td>
-                                <td>2,000.00</td>
-                                <td>100,000.00</td>
-                            </tr>
-                            <tr>
-                                <td>Steel Cables</td>
-                                <td>300 METERS</td>
-                                <td>150.00</td>
-                                <td>45,000.00</td>
-                            </tr>
-                            <tr>
-                                <td>Iron Pipes</td>
-                                <td>200 METERS</td>
-                                <td>180.00</td>
-                                <td>36,000.00</td>
-                            </tr>
-                            <tr>
-                                <td>Brass Fittings</td>
-                                <td>80</td>
-                                <td>500.00</td>
-                                <td>40,000.00</td>
-                            </tr>
-                            <tr>
-                                <td>Steel Angles</td>
-                                <td>120</td>
-                                <td>1,000.00</td>
-                                <td>120,000.00</td>
-                            </tr>
-                            <tr>
-                                <td>Welding Rods</td>
-                                <td>500</td>
-                                <td>50.00</td>
-                                <td>25,000.00</td>
-                            </tr>
-                            <tr>
-                                <td>Galvanized Sheets</td>
-                                <td>100</td>
-                                <td>1,500.00</td>
-                                <td>150,000.00</td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -597,81 +573,27 @@
                 <h2 class="progress-report">PROGRESS REPORT</h2>
                 <div class="progress-card">
                     <div class="legend">
-                        <div class="legend-item">
-                            <div class="legend-color task-1-color"></div>
-                            <span>Task 1</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color task-2-color"></div>
-                            <span>Task 2</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color task-3-color"></div>
-                            <span>Task 3</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color task-4-color"></div>
-                            <span>Task 4</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color task-5-color"></div>
-                            <span>Task 5</span>
-                        </div>
+                        <div class="legend-item"><div class="legend-color task-1-color"></div><span>Task 1</span></div>
+                        <div class="legend-item"><div class="legend-color task-2-color"></div><span>Task 2</span></div>
+                        <div class="legend-item"><div class="legend-color task-3-color"></div><span>Task 3</span></div>
+                        <div class="legend-item"><div class="legend-color task-4-color"></div><span>Task 4</span></div>
+                        <div class="legend-item"><div class="legend-color task-5-color"></div><span>Task 5</span></div>
                     </div>
                     <div class="progress-bar-container">
-                        <div class="stage">
-                            <div class="checkbox checked">✔</div>
-                            <div class="stage-label">STAGE 1</div>
-                            <div class="progress-bar">
-                                <div class="progress-segment task-1"></div>
-                                <div class="progress-segment task-2"></div>
-                                <div class="progress-segment task-3"></div>
-                                <div class="progress-segment task-4"></div>
-                                <div class="progress-segment task-5"></div>
-                            </div>
-                        </div>
-                        <div class="stage">
-                            <div class="checkbox checked">✔</div>
-                            <div class="stage-label">STAGE 2</div>
-                            <div class="progress-bar">
-                                <div class="progress-segment task-1"></div>
-                                <div class="progress-segment task-2"></div>
-                                <div class="progress-segment task-3"></div>
-                                <div class="progress-segment task-4"></div>
-                                <div class="progress-segment task-5"></div>
-                            </div>
-                        </div>
-                        <div class="stage">
-                            <div class="checkbox"></div>
-                            <div class="stage-label">STAGE 3</div>
-                            <div class="progress-bar">
-                                <div class="progress-segment task-1"></div>
-                                <div class="progress-segment task-2"></div>
-                            </div>
-                        </div>
-                        <div class="stage">
-                            <div class="checkbox"></div>
-                            <div class="stage-label">STAGE 4</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                        <div class="stage">
-                            <div class="checkbox"></div>
-                            <div class="stage-label">STAGE 5</div>
-                            <div class="progress-bar"></div>
-                        </div>
-                    </div>
-                    <div class="progress-axis">
-                        <span>Progress (%)</span>
+                        <!-- dynamically filled -->
                     </div>
                 </div>
             </div>
+
         </div>
 
+        <div class="buttons">
         <div class="buttons">
             <a href="confirmLogout">
                 <button>LOGOUT</button>
             </a>
         </div>
+    </div>
     </div>
 
     <!-- Footer -->
@@ -679,5 +601,98 @@
         <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
     </footer>
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        const selector = document.getElementById("projectSelector");
+        const nameEl = document.getElementById("projectName");
+        const locEl = document.getElementById("projectLocation");
+        const compEl = document.getElementById("projectCompany");
+        const contEl = document.getElementById("projectContact");
+        const tbody = document.querySelector(".table-container tbody");
 
+        let projects = [];
+
+        try {
+            const response = await fetch("/gencon/projects");
+            projects = await response.json();
+
+            if (!projects.length) {
+                selector.innerHTML = `<option disabled selected>No Assigned Projects</option>`;
+                return;
+            }
+
+            projects.forEach(project => {
+                const option = document.createElement("option");
+                option.value = project.projectId;
+                option.textContent = project.projectname;
+                selector.appendChild(option);
+            });
+
+            // Select the first project and load its data
+            selector.value = projects[0].projectId;
+            loadProjectData(projects[0].projectId);
+        } catch (error) {
+            console.error("Failed to load assigned projects:", error);
+        }
+
+        selector.addEventListener("change", () => {
+            const projectId = selector.value;
+            loadProjectData(projectId);
+        });
+
+        async function loadProjectData(projectId) {
+            const selected = projects.find(p => p.projectId == projectId);
+            if (!selected) return;
+
+            // Project Info
+            nameEl.textContent = selected.projectname || "---";
+            locEl.textContent = selected.companyLocation || "---";
+            compEl.textContent = selected.companyname || "---";
+            contEl.textContent = selected.companycontact || "---";
+
+            // Inventory Table
+            const inventory = await fetch(`/gencon/inventory?projectId=${projectId}`).then(r => r.json());
+            tbody.innerHTML = "";
+
+            inventory.forEach(item => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+            <td>${item.materialName || "—"}</td>
+            <td>${item.quantityAssigned ?? 0}</td>
+            <td>₱${item.materialPrice ?? 0}</td>
+            <td>₱${item.totalPrice ?? 0}</td>
+        `;
+                tbody.appendChild(row);
+            });
+
+            // Progress Report
+            const progressContainer = document.querySelector(".progress-bar-container");
+            progressContainer.innerHTML = "";
+
+            const progress = await fetch(`/gencon/progress?projectId=${projectId}`).then(r => r.json());
+            progress.forEach(stage => {
+                const percent = stage.totalTasks === 0 ? 0 : Math.round((stage.completedTasks / stage.totalTasks) * 100);
+                const isComplete = percent === 100;
+
+                const stageDiv = document.createElement("div");
+                stageDiv.className = "stage";
+
+                stageDiv.innerHTML = `
+            <div class="checkbox ${isComplete ? "checked" : ""}">${isComplete ? "✔" : ""}</div>
+            <div class="stage-label">STAGE ${stage.stageNumber}</div>
+            <div class="progress-bar">
+                ${[...Array(stage.totalTasks)].map((_, i) => {
+                    const done = i < stage.completedTasks;
+                    return `<div class="progress-segment ${done ? `task-${(i % 5) + 1}` : ""}"></div>`;
+                }).join("")}
+            </div>
+        `;
+
+                progressContainer.appendChild(stageDiv);
+            });
+        }
+
+
+    });
+</script>
 </html>
