@@ -788,42 +788,8 @@
                         <th>Client</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>Residential Building Construction</td>
-                        <td>In Progress</td>
-                        <td>January 15, 2024</td>
-                        <td>December 20, 2025</td>
-                        <td>ABC Builders Inc.</td>
-                    </tr>
-                    <tr>
-                        <td>Commercial Office Building</td>
-                        <td>Completed</td>
-                        <td>March 1, 2023</td>
-                        <td>September 15, 2023</td>
-                        <td>XYZ Corporation</td>
-                    </tr>
-                    <tr>
-                        <td>Mixed-Use Development</td>
-                        <td>In Progress</td>
-                        <td>May 10, 2024</td>
-                        <td>May 10, 2026</td>
-                        <td>Global Developers</td>
-                    </tr>
-                    <tr>
-                        <td>Hotel and Resort Complex</td>
-                        <td>Not Started</td>
-                        <td>August 1, 2025</td>
-                        <td>August 1, 2027</td>
-                        <td>Luxury Ventures</td>
-                    </tr>
-                    <tr>
-                        <td>Shopping Mall and Retail Center</td>
-                        <td>In Progress</td>
-                        <td>July 10, 2024</td>
-                        <td>July 10, 2026</td>
-                        <td>RetailCorp Ltd.</td>
-                    </tr>
+                <tbody id="projectsTableBody">
+                <!-- Injected via JS -->
                 </tbody>
             </table>
         </div>
@@ -835,27 +801,27 @@
                     <table id="keymetrics1-table">
                         <tr>
                             <th>Total Projects</th>
-                            <td>5</td>
+                            <td id="totalProjects">0</td>
                         </tr>
                         <tr>
                             <th>Ongoing Projects</th>
-                            <td>3</td>
+                            <td id="ongoingProjects">0</td>
                         </tr>
                         <tr>
                             <th>Projects Completed</th>
-                            <td>0</td>
+                            <td id="completedProjects">0</td>
                         </tr>
                         <tr>
                             <th>Total Revenue</th>
-                            <td>PHP 1,500,000</td>
+                            <td id="totalRevenue">PHP 0</td>
                         </tr>
                         <tr>
                             <th>Total Expense</th>
-                            <td>PHP 1,200,000</td>
+                            <td id="totalExpense">PHP 0</td>
                         </tr>
                         <tr>
                             <th>Net Profit</th>
-                            <td>PHP 300,000</td>
+                            <td id="netProfit">PHP 0</td>
                         </tr>
                     </table>
                 </div>
@@ -863,87 +829,13 @@
                 <!-- Key Metrics 2 Dropdown & Materials -->
                 <div id="keymetrics2">
                     <select id="project-select">
-                        <option value="project1">Residential Building Construction</option>
-                        <option value="project2">Commercial Office Building</option>
-                        <option value="project3">Mixed-Use Development</option>
-                        <option value="project4">Hotel and Resort Complex</option>
-                        <option value="project5">Shopping Mall and Retail Center</option>
+                        <option value="All Projects">All Projects</option>
                     </select>
 
-                    <div class="materials-container">
-                        <div class="material-item">
-                            <span>Steel Beams</span>
-                            <span>50 pcs</span>
-                        </div>
-                        <div class="material-item">
-                            <span>Concrete Mix</span>
-                            <span>200 bags</span>
-                        </div>
-                        <div class="material-item">
-                            <span>Wood Planks</span>
-                            <span>150 pcs</span>
-                        </div>
-                        <div class="material-item">
-                            <span>Plumbing Pipes</span>
-                            <span>100 meters</span>
-                        </div>
-                        <div class="material-item">
-                            <span>Electrical Cables</span>
-                            <span>300 meters</span>
-                        </div>
-                        <div class="material-item">
-                            <span>Roofing Sheets</span>
-                            <span>120 sheets</span>
-                        </div>
-                        <div class="material-item">
-                            <span>Steel Beams</span>
-                            <span>50 pcs</span>
-                        </div>
-                        <div class="material-item">
-                            <span>Concrete Mix</span>
-                            <span>200 bags</span>
-                        </div>
-                        <div class="material-item">
-                            <span>Wood Planks</span>
-                            <span>150 pcs</span>
-                        </div>
-                        <div class="material-item">
-                            <span>Plumbing Pipes</span>
-                            <span>100 meters</span>
-                        </div>
-                        <div class="material-item">
-                            <span>Electrical Cables</span>
-                            <span>300 meters</span>
-                        </div>
-                        <div class="material-item">
-                            <span>Roofing Sheets</span>
-                            <span>120 sheets</span>
-                        </div>
-                        <div class="material-item">
-                            <span>Steel Beams</span>
-                            <span>50 pcs</span>
-                        </div>
-                        <div class="material-item">
-                            <span>Concrete Mix</span>
-                            <span>200 bags</span>
-                        </div>
-                        <div class="material-item">
-                            <span>Wood Planks</span>
-                            <span>150 pcs</span>
-                        </div>
-                        <div class="material-item">
-                            <span>Plumbing Pipes</span>
-                            <span>100 meters</span>
-                        </div>
-                        <div class="material-item">
-                            <span>Electrical Cables</span>
-                            <span>300 meters</span>
-                        </div>
-                        <div class="material-item">
-                            <span>Roofing Sheets</span>
-                            <span>120 sheets</span>
-                        </div>
+                    <div class="materials-container" id="materialsPreview">
+                        <!-- Materials dynamically injected here -->
                     </div>
+
                 </div>
             </div>
         </div>
@@ -967,62 +859,152 @@
     </footer>
 
     <script>
-        const overlay = document.getElementById("overlay");
-        const modal = document.getElementById("modal");
-        const selectPeriodButton = document.getElementById("selectPeriod");
-        const cancelModalButton = document.getElementById("cancelModal");
-        const datePeriodDiv = document.getElementById("selectedPeriod");
+        async function fetchAndRenderAdminReports(projectName = "All Projects", startDate = null, endDate = null) {
+            const dropdown = document.getElementById("project-select");
+            const selectedPeriod = document.getElementById("selectedPeriod");
+            const matContainer = document.getElementById("materialsPreview");
 
-        selectPeriodButton.addEventListener("click", () => {
-            modal.style.display = "block";
-            overlay.style.display = "block";
-        });
+            // Fetch all projects
+            const projectsRes = await fetch("/admin/reports/getProjects");
+            const projects = await projectsRes.json();
 
-        cancelModalButton.addEventListener("click", () => {
-            modal.style.display = "none";
-            overlay.style.display = "none";
-        });
-
-        document.getElementById("submitPeriod").addEventListener("click", () => {
-            const startDate = document.getElementById("startDate").value;
-            const endDate = document.getElementById("endDate").value;
-            const currentDate = new Date().toISOString().split('T')[0];
-
+            // Filter by date
+            let filteredProjects = [...projects];
             if (startDate && endDate) {
-                if (new Date(startDate) > new Date(endDate)) {
-                    alert("Start date cannot be later than end date.");
-                } else if (startDate > currentDate || endDate > currentDate) {
-                    alert("Dates cannot be in the future.");
-                } else {
-                    datePeriodDiv.innerHTML = `Selected Period: ${startDate} to ${endDate}`;
-                    datePeriodDiv.style.display = "block";
-                    modal.style.display = "none";
-                    overlay.style.display = "none";
-                }
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                filteredProjects = projects.filter(p => {
+                    const projStart = new Date(p.projectstart);
+                    const projEnd = new Date(p.projectend);
+                    return projStart >= start && projEnd <= end;
+                });
+            }
+
+            // Update dropdown
+            dropdown.innerHTML = `<option value="All Projects">All Projects</option>`;
+            filteredProjects.forEach(p => {
+                const name = p.projectname || p.projectName;
+                dropdown.innerHTML += `<option value="${name}">${name}</option>`;
+            });
+
+            // Set dropdown to selected project if it still exists, else fallback
+            if (filteredProjects.find(p => p.projectname === projectName)) {
+                dropdown.value = projectName;
             } else {
-                alert("Please select valid dates.");
+                dropdown.value = "All Projects";
+                projectName = "All Projects";
             }
+
+            // Show/hide dropdown and materials if projects exist
+            if (filteredProjects.length === 0) {
+                dropdown.style.display = "none";
+                matContainer.style.display = "none";
+            } else {
+                dropdown.style.display = "block";
+                matContainer.style.display = "grid";
+            }
+
+            // Fetch and render key metrics
+            let metricsUrl = `/admin/reports/metrics?projectName=${encodeURIComponent(projectName)}`;
+            if (startDate && endDate) {
+                metricsUrl += `&startDate=${startDate}&endDate=${endDate}`;
+            }
+
+            const metricsRes = await fetch(metricsUrl);
+            const metrics = await metricsRes.json();
+
+            document.getElementById("totalProjects").innerText = metrics.totalProjects || 0;
+            document.getElementById("ongoingProjects").innerText = metrics.ongoingProjects || 0;
+            document.getElementById("completedProjects").innerText = metrics.completedProjects || 0;
+            document.getElementById("totalRevenue").innerText = `PHP ${metrics.totalRevenue?.toLocaleString() || 0}`;
+            document.getElementById("totalExpense").innerText = `PHP ${metrics.totalExpense?.toLocaleString() || 0}`;
+            document.getElementById("netProfit").innerText = `PHP ${metrics.netProfit?.toLocaleString() || 0}`;
+
+            // Fetch and render materials (if projects exist)
+            matContainer.innerHTML = "";
+            if (filteredProjects.length > 0) {
+                const materialsRes = await fetch(`/admin/reports/materialPreview?projectName=${encodeURIComponent(projectName)}`);
+                const materials = await materialsRes.json();
+
+                materials.forEach(mat => {
+                    matContainer.innerHTML += `
+                    <div class="material-item">
+                        <span>${mat.materialName}</span>
+                        <span>${mat.quantity}</span>
+                    </div>`;
+                });
+            }
+
+            // Render project table
+            const tableBody = document.getElementById("projectsTableBody");
+            tableBody.innerHTML = "";
+
+            filteredProjects
+                .filter(p => projectName === "All Projects" || p.projectname === projectName)
+                .forEach(p => {
+                    tableBody.innerHTML += `
+                    <tr>
+                        <td>${p.projectname}</td>
+                        <td>${p.projectstatus}</td>
+                        <td>${new Date(p.projectstart).toLocaleDateString()}</td>
+                        <td>${new Date(p.projectend).toLocaleDateString()}</td>
+                        <td>${p.clientname}</td>
+                    </tr>`;
+                });
+        }
+
+        // Initial load
+        fetchAndRenderAdminReports();
+
+        // Dropdown change
+        document.getElementById("project-select").addEventListener("change", e => {
+            const selectedProject = e.target.value;
+            fetchAndRenderAdminReports(selectedProject);
         });
 
-        window.onclick = (event) => {
-            if (event.target === overlay) {
-                modal.style.display = "none";
-                overlay.style.display = "none";
+        // Submit period
+        document.getElementById("submitPeriod").addEventListener("click", () => {
+            const start = document.getElementById("startDate").value;
+            const end = document.getElementById("endDate").value;
+
+            if (!start || !end) {
+                alert("⚠️ Please select both start and end date.");
+                return;
             }
-        };
 
-        let sidebar = document.querySelector(".sidebar");
-        let closeBtn = document.querySelector("#btn");
-        let searchBtn = document.querySelector(".bx-search");
+            if (new Date(start) > new Date(end)) {
+                alert("⚠️ Start date cannot be after end date.");
+                return;
+            }
 
-        closeBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
+            const selectedText = `Showing results from ${start} to ${end}`;
+            const selectedPeriod = document.getElementById("selectedPeriod");
+            selectedPeriod.innerText = selectedText;
+            selectedPeriod.style.display = "block";
+
+            const selectedProject = document.getElementById("project-select").value;
+            fetchAndRenderAdminReports(selectedProject, start, end);
+
+            document.getElementById("modal").style.display = "none";
+            document.getElementById("overlay").style.display = "none";
         });
 
-        searchBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
+        // Cancel modal and clear inputs
+        function closeModalAndReset() {
+            document.getElementById("startDate").value = "";
+            document.getElementById("endDate").value = "";
+            document.getElementById("modal").style.display = "none";
+            document.getElementById("overlay").style.display = "none";
+        }
+
+        document.getElementById("cancelModal").addEventListener("click", closeModalAndReset);
+        document.getElementById("overlay").addEventListener("click", closeModalAndReset);
+        document.getElementById("selectPeriod").addEventListener("click", () => {
+            document.getElementById("modal").style.display = "block";
+            document.getElementById("overlay").style.display = "block";
         });
     </script>
+
 </body>
 
 </html>
