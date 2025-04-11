@@ -983,7 +983,6 @@
                    <button id="toggleArchiveBtn">Show Archived Rows</button> -->
             </div>
             <div class="buttons">
-                <button id="backBtn" class="hidden">Back</button>
           <!-- <button id="editBtn">Edit</button> -->
                 <button id="editProgressBtn">Edit Project Progress</button>
             </div>
@@ -1003,7 +1002,6 @@
                             </div>
                             <button type="button" class="add-task-btn" onclick="addTask('stage1')">Add Task</button>
                             <button type="button" class="edit-task-btn" onclick="toggleEditIcons('stage1')" style="display:none;">Edit Tasks</button>
-                                style="display:none;">Edit Tasks</button>
                             <div class="progress-bar">
                                 <p>Progress: <span id="stage1Progress"></span></p>
 
@@ -1018,7 +1016,6 @@
                             </div>
                             <button type="button" class="add-task-btn" onclick="addTask('stage2')">Add Task</button>
                             <button type="button" class="edit-task-btn" onclick="toggleEditIcons('stage2')" style="display:none;">Edit Tasks</button>
-                                style="display:none;">Edit Tasks</button>
                             <div class="progress-bar">
                                 <p>Progress: <span id="stage2Progress"></span></p>
                                 <progress id="progress2" value="0"></progress>
@@ -1032,8 +1029,6 @@
                             </div>
                             <button type="button" class="add-task-btn" onclick="addTask('stage3')">Add Task</button>
                             <button type="button" class="edit-task-btn" onclick="toggleEditIcons('stage3')" style="display:none;">Edit Tasks</button>
-
-                            style="display:none;">Edit Tasks</button>
                             <div class="progress-bar">
                                 <p>Progress: <span id="stage3Progress"></span></p>
                                 <progress id="progress3" value="0"></progress>
@@ -1069,6 +1064,20 @@
                 const materialsTable = document.getElementById("materialsTable");
                // const toggleArchiveBtn = document.getElementById("toggleArchiveBtn");
                 const projectSelect = document.getElementById("projectSelect");
+
+                // Show the Edit Progress Modal
+                editProgressBtn.addEventListener("click", () => {
+                    editProgressModal.style.display = "block";
+                    overlay.style.display = "block";
+                });
+
+// Close modal when clicking outside
+                window.addEventListener("click", (e) => {
+                    if (e.target === editProgressModal || e.target === overlay) {
+                        editProgressModal.style.display = "none";
+                        overlay.style.display = "none";
+                    }
+                });
 
                 // Helper function: Display project info
                 function displayProjectInfo(project) {
@@ -1235,10 +1244,7 @@
                     materialsTable.querySelector("tbody").appendChild(newRow);
                 }); */
 
-                // Back
-                document.getElementById("backBtn").addEventListener("click", () => {
-                    window.location.href = "homepageExestaff";
-                });
+
 
                 // Sidebar
                 const sidebar = document.querySelector(".sidebar");
@@ -1247,6 +1253,119 @@
 
                 toggleBtn.addEventListener("click", () => sidebar.classList.toggle("open"));
                 if (searchBtn) searchBtn.addEventListener("click", () => sidebar.classList.toggle("open"));
+            });
+
+            function closeModal(modalId) {
+                document.getElementById(modalId).style.display = "none";
+                document.getElementById("overlay").style.display = "none";
+            }
+
+            document.getElementById('editProgressBtn').addEventListener('click', () => {
+                document.getElementById('editProgressModal').style.display = 'block';
+                document.getElementById('overlay').style.display = 'block';
+            });
+
+            window.addEventListener('click', function (event) {
+                const overlay = document.getElementById('overlay');
+                const modals = document.querySelectorAll('.modal');
+
+                modals.forEach(modal => {
+                    if (event.target === modal || event.target === overlay) {
+                        modal.style.display = 'none';
+                        overlay.style.display = 'none';
+                    }
+                });
+            });
+
+            function addTask(stage) {
+                const stageElement = document.getElementById(stage);
+                const taskList = stageElement.querySelector('.task-list');
+
+                const taskItem = document.createElement('div');
+                taskItem.classList.add('task-item');
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.addEventListener('change', () => updateProgress(stage));
+
+                const taskInput = document.createElement('input');
+                taskInput.type = 'text';
+                taskInput.classList.add('task-name');
+                taskInput.placeholder = 'New Task';
+                taskInput.setAttribute('readonly', true);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.innerHTML = '<i class="bx bx-trash"></i>';
+                deleteButton.addEventListener('click', () => deleteTask(taskItem, stage));
+
+                const editButton = document.createElement('button');
+                editButton.innerHTML = '<i class="bx bx-edit"></i>';
+                editButton.addEventListener('click', () => toggleEditTask(taskInput, editButton));
+
+                taskItem.appendChild(checkbox);
+                taskItem.appendChild(taskInput);
+                taskItem.appendChild(editButton);
+                taskItem.appendChild(deleteButton);
+
+                taskList.appendChild(taskItem);
+                updateProgress(stage);
+            }
+
+            function deleteTask(taskItem, stage) {
+                taskItem.remove();
+                updateProgress(stage);
+            }
+
+            function toggleEditTask(taskInput, editButton) {
+                if (taskInput.hasAttribute('readonly')) {
+                    taskInput.removeAttribute('readonly');
+                    taskInput.focus();
+                    editButton.innerHTML = '<i class="bx bx-save"></i>';
+                } else {
+                    taskInput.setAttribute('readonly', true);
+                    editButton.innerHTML = '<i class="bx bx-edit"></i>';
+                }
+            }
+
+            function updateProgress(stage) {
+                const stageElement = document.getElementById(stage);
+                const tasks = stageElement.querySelectorAll('.task-item');
+                const totalTasks = tasks.length;
+                let completed = 0;
+
+                tasks.forEach(task => {
+                    const checkbox = task.querySelector('input[type="checkbox"]');
+                    if (checkbox.checked) completed++;
+                });
+
+                const percent = totalTasks > 0 ? Math.round((completed / totalTasks) * 100) : 0;
+                stageElement.querySelector('progress').value = percent;
+                stageElement.querySelector('.progress-bar span').textContent = `${completed}/${totalTasks} - ${percent}%`;
+            }
+
+            let stageCount = 3;
+            function addStage() {
+                stageCount++;
+                const container = document.querySelector('.stage-container');
+
+                const stage = document.createElement('div');
+                stage.id = `stage${stageCount}`;
+                stage.classList.add('stage');
+
+                stage.innerHTML = `
+        <h4>Stage ${stageCount}</h4>
+        <div class="task-list"></div>
+        <button type="button" class="add-task-btn" onclick="addTask('stage${stageCount}')">Add Task</button>
+        <div class="progress-bar">
+            <p>Progress: <span id="stage${stageCount}Progress">0/0 - 0%</span></p>
+            <progress id="progress${stageCount}" value="0" max="100"></progress>
+        </div>
+    `;
+                container.appendChild(stage);
+            }
+
+            document.querySelector('.submit-btn').addEventListener('click', () => {
+                closeModal('editProgressModal');
             });
         </script>
 

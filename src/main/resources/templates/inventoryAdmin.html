@@ -440,7 +440,8 @@
                 max-width: 300px;
             }
 
-            .category-list label, #toggleArchiveBtn {
+            .category-list label,
+            #toggleArchiveBtn {
                 display: flex;
                 align-items: center;
                 background-color: #FF6F61;
@@ -760,7 +761,7 @@
                 height: 40px;
                 text-align: center;
                 font-family: 'Numans', sans-serif;
-                box-shadow: 0px 2px 4px rgba(0,0,0,0.2);
+                box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
                 transition: all 0.3s ease;
             }
 
@@ -792,9 +793,9 @@
                     font-weight: bold;
                 }
             }
-
         </style>
     </head>
+    <!-- okay pa to -->
 
     <body>
         <!-- Header -->
@@ -803,13 +804,12 @@
                 <img src="https://i.ibb.co/pKSRPK3/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
             </div>
 
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <!-- 🔔 Notification Bell Icon -->
+            <div class="header-right" style="display: flex; align-items: center; gap: 25px; margin-left: auto;">
                 <div id="notificationWrapper" style="position: relative;">
                     <i class='bx bx-bell' id="notificationBell" style="font-size: 24px; cursor: pointer;"></i>
                     <span id="notificationDot"
                           style="position: absolute; top: -5px; right: -5px; width: 10px; height: 10px; background-color: red; border-radius: 50%; display: none;">
-    </span>
+                </span>
                     <div id="notificationDropdown"
                          style="display: none; position: absolute; right: 0; top: 30px; background: white; border: 1px solid #ccc; width: 250px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 999; border-radius: 8px; padding: 10px;">
                         <p style="font-weight: bold;">Notifications</p>
@@ -817,13 +817,10 @@
                     </div>
                 </div>
 
-            </div>
-
-                <!-- 👤 User Role Display -->
-                <div>
+                <div style="display: flex; align-items: center; gap: 10px;">
                     <p>ROLE: <span>ADMIN</span></p>
+                    <i class='bx bxs-user-circle' style="font-size: 28px;"></i>
                 </div>
-                <i class='bx bxs-user-circle'></i>
             </div>
         </header>
         <div class="modal" id="lowStockModal" style="display: none;">
@@ -954,20 +951,17 @@
                     </div>
                 </div>
             </div> <!-- ✅ this closes after BOTH panels -->
-
+<!--
             <div class="overlay" id="overlay"></div>
             <div class="out-of-stock">
                 <button id="out-of-stock">!</button>
-            </div>
-
-            <!-- Modal Notification -->
             <div id="modal" class="modal">
                 <div class="modal-content">
                     <img src="https://cdn.staticcrate.com/stock-hd/effects/footagecrate-red-error-icon@3X.png" class="close" alt="Error">
                     <h3>NEEDS RESTOCK!</h3>
                     <p>LOW STOCK OF STEEL BAR (12MM!)</p>
                 </div>
-            </div>
+            </div>-->
         </section>
 
         <!-- Footer -->
@@ -1029,12 +1023,19 @@
                     toggleAllLabel.innerHTML = `<input type="checkbox" id="selectAllCategories"> Select All`;
                     container.appendChild(toggleAllLabel);
 
+                    // categories.sort().forEach(cat => {
+                    //     const normalized = cat.toLowerCase();
+                    //     const displayName = normalized.charAt(0).toUpperCase() + normalized.slice(1);
+                    //     const idValue = normalized.replace(/\s+/g, '-');
+                    //     const label = document.createElement("label");
+                    //     label.innerHTML = `<input type="checkbox" class="category-checkbox" value="${idValue}"> ${displayName}`;
+                    //     container.appendChild(label);
+                    // });
+
                     categories.sort().forEach(cat => {
-                        const normalized = cat.toLowerCase();
-                        const displayName = normalized.charAt(0).toUpperCase() + normalized.slice(1);
-                        const idValue = normalized.replace(/\s+/g, '-');
+                        const idValue = cat.toLowerCase().replace(/\s+/g, '-');
                         const label = document.createElement("label");
-                        label.innerHTML = `<input type="checkbox" class="category-checkbox" value="${idValue}"> ${displayName}`;
+                        label.innerHTML = `<input type="checkbox" class="category-checkbox" value="${idValue}"> ${cat}`;
                         container.appendChild(label);
                     });
 

@@ -694,25 +694,27 @@
         </select>
 
         <!-- Project dropdown -->
-        <!-- Project Selection Container
+        <!-- Project Selection Container -->
         <div id="projectSelectionContainer">
             <select id="project" style="width: 100%; padding: 10px;">
-                <option value="" disabled selected>Project</option>-->
-                <!-- Dynamically populated
+                <option value="" disabled selected>Project</option>
+                <!-- Dynamically populated -->
             </select>
-        </div>-->
+        </div>
 
-        <!-- Placeholder for dynamically inserted checkboxes -->
-        <div id="projectCheckboxes" style="display: none; padding: 10px 0;"></div>
+        <!-- Placeholder for dynamically inserted checkboxes
+        <div id="projectCheckboxes" style="display: none; padding: 10px 0;"></div> -->
+        <select id="projectCheckboxes" multiple style="display: none; width: 100%; padding: 10px; border-radius: 8px; font-family: 'Fredoka', sans-serif;">
+            <!-- options will be added dynamically -->
+        </select>
+
 
         <!-- Account Status dropdown -->
-        <div id="statusContainer">
             <select id="status" style="width: 100%; padding: 10px;">
                 <option value="" disabled selected>Status</option>
                 <option value="ACTIVE">ACTIVE</option>
                 <option value="INACTIVE">INACTIVE</option>
             </select>
-        </div>
 
 
         <div class="popup-btn-container">
@@ -731,15 +733,14 @@
         </p>
     </footer>
     <script>
-        let originalPassword = '';
         let selectedRow = null;
         let allProjects = [];
 
         const roleSelect = document.getElementById('role');
         const permissionsSelect = document.getElementById('permissions');
-        //const projectSelect = document.getElementById('project');
+        const projectSelect = document.getElementById('project');
         const projectCheckboxesDiv = document.getElementById('projectCheckboxes');
-        //const projectContainer = document.getElementById('projectSelectionContainer');
+        const projectContainer = document.getElementById('projectSelectionContainer');
 
         document.addEventListener("DOMContentLoaded", function () {
             fetchUsersFromDatabase();
@@ -769,49 +770,34 @@
         }
 
         function refreshProjectDropdown() {
-        //    projectSelect.innerHTML = '<option value="" disabled selected>Project</option>';
+            projectSelect.innerHTML = '<option value="" disabled selected>Project</option>';
             allProjects.forEach(project => {
                 const option = document.createElement('option');
                 option.value = project.projectname;
                 option.textContent = project.projectname;
-             //   projectSelect.appendChild(option);
+                projectSelect.appendChild(option);
             });
         }
 
-        function renderProjectCheckboxes(projects, shouldCheck = false) {
+        function renderProjectCheckboxes(projects) {
             projectCheckboxesDiv.innerHTML = '';
             projects.forEach(project => {
-                const label = document.createElement('label');
-                label.style.display = 'block';
-                const input = document.createElement('input');
-
-                if (roleSelect.value === 'MAIN CONTRACTOR' && permissionsSelect.value === 'VIEWING MODE OF THEIR PROJECT') {
-                    input.type = 'checkbox';
-                    input.name = 'projectRadio';
-                } else {
-                    input.type = 'checkbox';
-                    input.name = 'projectCheckbox';
-                }
-
-                input.value = project.projectname;
-                input.checked = shouldCheck;
-                label.appendChild(input);
-                label.appendChild(document.createTextNode(` ${project.projectname}`));
-                projectCheckboxesDiv.appendChild(label);
+                const option = document.createElement('option');
+                option.value = project.projectname;
+                option.textContent = project.projectname;
+                projectCheckboxesDiv.appendChild(option);
             });
         }
 
-
         roleSelect.addEventListener('change', function () {
-            if (!selectedRow) {
+            if (!selectedRow) { // Only reset fields in Add User mode
                 permissionsSelect.value = '';
                 document.getElementById('status').value = '';
+                projectSelect.value = '';
                 projectCheckboxesDiv.innerHTML = '';
             }
-
             const selectedRole = roleSelect.value;
 
-            // Hide all permissions first
             Array.from(permissionsSelect.options).forEach(opt => {
                 opt.style.display = 'none';
             });
@@ -831,7 +817,6 @@
                 projectCheckboxesDiv.style.display = 'block';
                 renderProjectCheckboxes(allProjects, false); // ✅ also no pre-check
             }
-
         });
 
         permissionsSelect.addEventListener('change', function () {
@@ -839,26 +824,29 @@
             const permission = permissionsSelect.value;
 
             if (role === 'ADMIN') {
-
+                projectSelect.style.display = 'none';
                 projectCheckboxesDiv.style.display = 'none';
                 return;
             }
 
             if (role === 'MAIN CONTRACTOR' && permission === 'VIEWING MODE OF THEIR PROJECT') {
+                projectSelect.style.display = 'none';
                 projectCheckboxesDiv.style.display = 'block';
                 renderProjectCheckboxes(allProjects); // will render as radio buttons
                 projectCheckboxesDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
 
             } else if (permission === 'MANAGE EVERYTHING') {
+                projectSelect.style.display = 'none';
                 projectCheckboxesDiv.style.display = 'block';
                 renderProjectCheckboxes(allProjects);
                 projectCheckboxesDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
             } else if (permission === 'MANAGE CERTAIN PROJECT') {
+                projectSelect.style.display = 'none';
                 projectCheckboxesDiv.style.display = 'block';
                 renderProjectCheckboxes(allProjects);
-                // DO NOT pre-check anything
-            }
-            else {
+                projectCheckboxesDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            } else {
+                projectSelect.style.display = 'block';
                 projectCheckboxesDiv.style.display = 'none';
             }
         });
@@ -869,47 +857,28 @@
                 if (radios.length > 0) {
                     return [radios[0].value];
                 }
-                const checkboxes = projectCheckboxesDiv.querySelectorAll('input[name="projectCheckbox"]:checked');
+                const selectedOptions = Array.from(projectCheckboxesDiv.selectedOptions);
+                return selectedOptions.map(option => option.value);
                 return Array.from(checkboxes).map(cb => cb.value);
             } else {
-                return [];
+                return [projectSelect.value];
             }
         }
 
 
         function saveUserDetails() {
             const userId = selectedRow ? selectedRow.getAttribute('data-user-id') : null;
-
-            const username = document.getElementById('username').value.trim();
-            const passwordInput = document.getElementById('password').value.trim();
-            const password = passwordInput === '********' ? originalPassword : passwordInput;
-            const firstName = document.getElementById('firstName').value.trim();
-            const lastName = document.getElementById('lastName').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const role = document.getElementById('role').value;
-            const permissions = document.getElementById('permissions').value;
-            const selectedProjects = getSelectedProjects();
-            const isAdmin = role === 'ADMIN';
-            const status = userId ? document.getElementById('status').value : 'ACTIVE';  // ← NEW USERS default to ACTIVE
-
-            // 🚨 Validate all fields
-            if (!username || !password || !firstName || !lastName || !phone || !email || !role || !permissions || (!isAdmin && (!selectedProjects || selectedProjects.length === 0))) {
-                alert("Please fill out all required fields.");
-                return;
-            }
-
             const userData = {
-                username,
-                password,
-                role,
-                permissions,
-                project: isAdmin ? 'All Projects' : selectedProjects.join(', '),
-                status,
-                firstName,
-                lastName,
-                phone,
-                email
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                role: document.getElementById('role').value,
+                permissions: document.getElementById('permissions').value,
+                project: getSelectedProjects().join(', '),
+                status: document.getElementById('status').value,
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value
             };
 
             const url = userId ? `/userAdmin/updateUser/${userId}` : '/userAdmin/addUser';
@@ -929,7 +898,6 @@
                 .catch(error => console.error('Error saving user:', error));
         }
 
-
         function showAddUserModal() {
             selectedRow = null;
             document.getElementById('modalTitle').innerText = 'ADD NEW USER';
@@ -944,8 +912,7 @@
             document.getElementById('status').value = '';
             refreshProjectDropdown();
             renderProjectCheckboxes(allProjects);
-
-       //     projectSelect.style.display = 'block';
+            projectSelect.style.display = 'block';
             projectCheckboxesDiv.style.display = 'none';
             document.getElementById('archiveBtn').style.display = 'none';
             showModal();
@@ -956,8 +923,7 @@
                 const username = selectedRow.cells[0].innerText;
                 document.getElementById('modalTitle').innerText = `Edit  ${username}`;
                 document.getElementById('username').value = selectedRow.cells[0].innerText;
-                originalPassword = selectedRow.dataset.password || '';
-                document.getElementById('password').value = '********';
+                document.getElementById('password').value = selectedRow.cells[1].innerText;
                 document.getElementById('role').value = selectedRow.cells[2].innerText;
                 document.getElementById('permissions').value = selectedRow.cells[3].innerText;
                 document.getElementById('status').value = selectedRow.cells[5].innerText;
@@ -981,14 +947,7 @@
                     document.getElementById('project').value = selectedRow.cells[4].innerText;
                 }, 200);
 
-                if (showingArchived) {
-                    document.getElementById('archiveBtn').style.display = 'none';
-                    document.getElementById('statusContainer').style.display = 'block';
-                } else {
-                    document.getElementById('archiveBtn').style.display = 'inline-block';
-                    document.getElementById('statusContainer').style.display = 'none';
-                }
-
+                document.getElementById('archiveBtn').style.display = 'inline-block';
                 showModal();
             }
         }
@@ -1008,7 +967,6 @@
             const newRow = table.insertRow();
             const projectDisplay = userData.role === 'ADMIN' ? 'All Projects' : userData.project;
 
-            newRow.setAttribute('data-password', userData.password || '');
             newRow.setAttribute('data-user-id', userData.userId);
             newRow.setAttribute('data-first-name', userData.firstName || '');
             newRow.setAttribute('data-last-name', userData.lastName || '');
@@ -1042,7 +1000,7 @@
                 selectedRow.cells[1].innerText = '********';
                 selectedRow.cells[2].innerText = updatedUser.role;
                 selectedRow.cells[3].innerText = updatedUser.permissions;
-                selectedRow.cells[4].innerText = updatedUser.role === 'ADMIN' ? 'All Projects' : updatedUser.project;
+                selectedRow.cells[4].innerText = updatedUser.project;
                 selectedRow.cells[5].innerText = updatedUser.status;
             }
         }
@@ -1061,21 +1019,18 @@
                             .filter(user => user.status !== "INACTIVE")
                             .forEach(user => addRowToTable(user));
                         document.getElementById('toggleArchiveBtn').innerText = "ARCHIVED USERS";
-                        document.querySelector('button[onclick="showAddUserModal()"]').style.display = "inline-block";
                     } else {
                         // Show INACTIVE users
                         users
                             .filter(user => user.status === "INACTIVE")
                             .forEach(user => addRowToTable(user));
                         document.getElementById('toggleArchiveBtn').innerText = "ACTIVE USERS";
-                        document.querySelector('button[onclick="showAddUserModal()"]').style.display = "none";
                     }
                     showingArchived = !showingArchived;
                 })
                 .catch(error => console.error('Error toggling users:', error));
         }
 
-        
         function archiveUser() {
             if (selectedRow) {
                 const userId = selectedRow.getAttribute('data-user-id');
