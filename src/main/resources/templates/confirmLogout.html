@@ -126,7 +126,13 @@
     </main>
 
     <script src="https://unpkg.com/@lottiefiles/lottie-player@1.0.4/dist/lottie-player.js"></script>
-    <script>
+    <script th:inline="javascript">
+
+        const userAuthenticated = /*[[${userAuthenticated}]]*/ false;
+        if (typeof userAuthenticated !== 'undefined' && !userAuthenticated) {
+            window.location.href = "/";
+        }
+
         function redirectToLogout() {
             history.pushState(null, null, location.href);
             window.onpopstate = function () {
@@ -136,13 +142,20 @@
         }
 
         function goBack() {
-            if (document.referrer) {
-                window.location.href = document.referrer;
-            } else {
-                window.history.back();
+            if (!userAuthenticated) {
+                // If session is gone, redirect to login
+                window.location.href = "/";
+            }
+
+            else {
+                // If session is valid, go back
+                if (document.referrer) {
+                    window.location.href = document.referrer;
+                } else {
+                    window.history.back();
+                }
             }
         }
-
     </script>
 
 </body>

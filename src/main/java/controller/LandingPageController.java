@@ -2,6 +2,7 @@ package controller;
 
 import entity.User;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -95,12 +96,19 @@ public class LandingPageController {
     }
 
     @GetMapping("/confirmLogout")
-    public String confirmLogout(HttpSession session, Model model) {
+    public String confirmLogout(HttpSession session, HttpServletResponse response, Model model) {
         User user = (User) session.getAttribute("authenticatedUser");
+
+        // Prevent browser from caching this page
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+
         if (user == null) {
-            return "redirect:/"; // Redirect to login if session expired
+            return "redirect:/"; // Redirect to login
         }
-        model.addAttribute("username", user.getUsername());
+
+        model.addAttribute("userAuthenticated", true);
         return "confirmLogout";
     }
 
