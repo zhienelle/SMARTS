@@ -14,10 +14,9 @@ import org.springframework.ui.Model;
 
 import java.util.List;
 import java.util.Optional;
-
-
+//FIXED BY JED
 @Controller
-public class  UserAdminController {
+public class UserAdminController {
 
     @Autowired
     private UserRepository userRepository;
@@ -27,6 +26,12 @@ public class  UserAdminController {
 
     @Autowired
     private ProjectRepository projectRepository;
+
+    // ✅ Utility method: check if project already assigned to another STAFF
+    private boolean isProjectAlreadyAssignedToOtherStaff(String projectName, Integer currentUserId) {
+        List<User> assignedStaffs = userRepository.findByRoleAndProjectContainingIgnoreCase("STAFF", projectName);
+        return assignedStaffs.stream().anyMatch(user -> currentUserId == null || user.getUserId() != currentUserId);
+    }
 
     @GetMapping("/userAdmin/getUsers")
     @ResponseBody
@@ -39,6 +44,11 @@ public class  UserAdminController {
     public User addUser(@RequestBody User user) {
         String rawPassword = user.getPassword();
         user.setPassword(passwordEncoder.encode(rawPassword)); // Encrypt password
+        if ("STAFF".equalsIgnoreCase(user.getRole()) && user.getProject() != null) {
+            if (isProjectAlreadyAssignedToOtherStaff(user.getProject(), null)) {
+                throw new RuntimeException("❌ This project is already assigned to another executive staff.");
+            }
+        }
         return userRepository.save(user);
     }
 
@@ -47,6 +57,13 @@ public class  UserAdminController {
     public User updateUser(@PathVariable int user_id, @RequestBody User updatedUser) {
         Optional<User> existingUser = userRepository.findById(user_id);
         if (existingUser.isPresent()) {
+
+            if ("STAFF".equalsIgnoreCase(updatedUser.getRole()) && updatedUser.getProject() != null) {
+                if (isProjectAlreadyAssignedToOtherStaff(updatedUser.getProject(), user_id)) {
+                    throw new RuntimeException("❌ This project is already assigned to another executive staff.");
+                }
+            }
+
             User user = existingUser.get();
             user.setUsername(updatedUser.getUsername());
 
@@ -76,11 +93,10 @@ public class  UserAdminController {
         return userRepository.findByUsername(username).orElse(null);
     }
 
-
     @GetMapping("/userAdmin")
     public String userAdminPage(Model model) {
         model.addAttribute("users", userRepository.findAll());
-        return "userAdmin"; // sure "userAdmin.html" exists
+        return "userAdmin";
     }
 
     @PutMapping("/userAdmin/archiveUser/{user_id}")
@@ -89,7 +105,7 @@ public class  UserAdminController {
         Optional<User> userOptional = userRepository.findById(user_id);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            user.setStatus("INACTIVE"); // Mark as archived
+            user.setStatus("INACTIVE");
             return userRepository.save(user);
         }
         return null;

@@ -964,6 +964,12 @@
             const material = document.getElementById("material").value;
             const quantity = parseInt(document.getElementById("quantity").value);
 
+            if (isNaN(quantity) || quantity <= 0) {
+                alert("❌ Quantity must be atleast 1.");
+                return;
+            }
+
+
             const matched = globalInventory.find(item =>
                 item.material_category.trim().toLowerCase() === category.trim().toLowerCase() &&
                 item.material_name === material

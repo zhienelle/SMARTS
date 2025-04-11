@@ -842,216 +842,207 @@
             height: auto;
         }
 
-        .actions {
-            border-top: none;
-            border-left: none;
-            height: auto;
-        }
-    </style>
-</head>
-<body>
-<!-- Header -->
-<header>
-    <div class="smarts-logo">
-        <img alt="SMARTS Logo" src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png"/>
-    </div>
-    <div>
-        <p>ROLE: <span>EXECUTIVE STAFF</span></p>
-        <i class="bx bxs-user-circle"></i>
-    </div>
-</header>
-<!-- Sidebar -->
-<div class="sidebar">
-    <div class="logo-details">
-        <div class="logo_name">ACCE Construction</div>
-        <i class="bx bx-menu" id="btn"></i>
-    </div>
-    <ul class="nav-list">
-        <li>
-            <a href="homepageExestaff">
-                <i class="bx bx-home"></i>
-                <span class="links_name">Homepage</span>
-            </a>
-            <span class="tooltip">Homepage</span>
-        </li>
-        <li>
-            <a href="myProjectExestaff">
-                <i class="bx bx-task"></i>
-                <span class="links_name">My Project</span>
-            </a>
-            <span class="tooltip">My Project</span>
-        </li>
-        <li>
-            <a href="inventoryExestaff">
-                <i class="bx bx-store-alt"></i>
-                <span class="links_name">Inventory</span>
-            </a>
-            <span class="tooltip">Inventory</span>
-        </li>
-        <li>
-            <a href="invoiceExestaff">
-                <i class="bx bx-receipt"></i>
-                <span class="links_name">Invoice</span>
-            </a>
-            <span class="tooltip">Invoice</span>
-        </li>
-        <li>
-            <a href="reportsExestaff">
-                <i class="bx bx-bar-chart"></i>
-                <span class="links_name">Reports &amp; Analytics</span>
-            </a>
-            <span class="tooltip">Reports &amp; Analytics</span>
-        </li>
-        <li>
-            <a href="requestsStatusExestaff">
-                <i class="bx bx-comment-dots"></i>
-                <span class="links_name">Requests Status</span>
-            </a>
-            <span class="tooltip">Requests Status</span>
-        </li>
-        <li>
-            <a href="settingsExestaff">
-                <i class="bx bx-cog"></i>
-                <span class="links_name">Settings</span>
-            </a>
-            <span class="tooltip">Settings</span>
-        </li>
-        <li>
-            <a href="confirmLogout">
-                <i class="bx bx-log-out"></i>
-                <span class="links_name">Logout</span>
-            </a>
-            <span class="tooltip">Logout</span>
-        </li>
-    </ul>
-</div>
-<!-- Main Section -->
-<section class="home-section">
-    <div class="upper">
-        <h1>MY PROJECTS</h1>
-        <div class="functionality" id="dropdown">
-            <select id="projectSelect">
-                <option disabled selected value="">Choose a project</option>
-                <option th:each="project : ${projects}"
-                        th:value="${project.projectname}"
-                        th:text="${project.projectname}">
-                </option>
-            </select>
-        </div>
+            .actions {
+                border-top: none;
+                border-left: none;
+                height: auto;
+            }
+        </style>
+    </head>
 
-    </div>
-    <div class="materials-container">
-        <div class="project-details">
+    <body>
+        <!-- Header -->
+        <header>
+            <div class="smarts-logo">
+                <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
+            </div>
             <div>
-                <h2><strong>Project:</strong> <span id="projectName">---</span></h2>
-                <p><strong>Location:</strong> <span id="projectLocation">---</span></p>
+                <p>ROLE: <span>EXECUTIVE STAFF</span></p>
+                <i class='bx bxs-user-circle'></i>
             </div>
-            <div class="b">
-                <h2><strong>Company:</strong> <span id="projectCompany">---</span></h2>
-                <p><strong>Contact:</strong> <span id="projectContact">---</span></p>
+        </header>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-details">
+                <div class="logo_name">ACCE Construction</div>
+                <i class='bx bx-menu' id="btn"></i>
             </div>
+            <ul class="nav-list">
+                <li>
+                    <a href="homepageExestaff">
+                        <i class='bx bx-home'></i>
+                        <span class="links_name">Homepage</span>
+                    </a>
+                    <span class="tooltip">Homepage</span>
+                </li>
+                <li>
+                    <a href="myProjectExestaff">
+                        <i class='bx bx-task'></i>
+                        <span class="links_name">My Project</span>
+                    </a>
+                    <span class="tooltip">My Project</span>
+                </li>
+                <li>
+                    <a href="inventoryExestaff">
+                        <i class='bx bx-store-alt'></i>
+                        <span class="links_name">Inventory</span>
+                    </a>
+                    <span class="tooltip">Inventory</span>
+                </li>
+                <li>
+                    <a href="invoiceExestaff">
+                        <i class='bx bx-receipt'></i>
+                        <span class="links_name">Invoice</span>
+                    </a>
+                    <span class="tooltip">Invoice</span>
+                </li>
+                <li>
+                    <a href="reportsExestaff">
+                        <i class='bx bx-bar-chart'></i>
+                        <span class="links_name">Reports & Analytics</span>
+                    </a>
+                    <span class="tooltip">Reports & Analytics</span>
+                </li>
+                <li>
+                    <a href="requestsStatusExestaff">
+                        <i class='bx bx-comment-dots'></i>
+                        <span class="links_name">Requests Status</span>
+                    </a>
+                    <span class="tooltip">Requests Status</span>
+                </li>
+                <li>
+                    <a href="settingsExestaff">
+                        <i class='bx bx-cog'></i>
+                        <span class="links_name">Settings</span>
+                    </a>
+                    <span class="tooltip">Settings</span>
+                </li>
+                <li>
+                    <a href="confirmLogout">
+                        <i class='bx bx-log-out'></i>
+                        <span class="links_name">Logout</span>
+                    </a>
+                    <span class="tooltip">Logout</span>
+                </li>
+            </ul>
         </div>
-        <h2 style="text-align: center; color: #F9744B; font-weight: bold; font-family: 'Fredoka';">PROJECT
-            MATERIALS OVERVIEW</h2>
-        <div class="materials-table">
-            <table id="materialsTable">
-                <thead>
-                <tr>
-                    <th>Item No.</th>
-                    <th>Materials</th>
-                    <th>Quantity</th>
-                    <th>Unit Price</th>
-                    <th>Total</th>
-                    <th class="actions">Actions</th>
-                </tr>
-                </thead>
-                <tbody id="materialsBody">
-                <!-- Dynamic rows will be inserted here -->
-                </tbody>
-            </table>
-        </div>
-        <!--    <button id="addRowBtn" style="display:none;">Add Row</button>
-                           <button id="toggleArchiveBtn">Show Archived Rows</button> -->
-    </div>
-    <div class="buttons">
-       <!-- <button class="hidden" id="backBtn">Back</button> -->
-        <!-- <button id="editBtn">Edit</button> -->
-        <button id="editProgressBtn">Edit Project Progress</button>
-    </div>
-    <div class="overlay" id="overlay"></div>
-    <!-- Modal for Edit Project Progress -->
-    <div class="modal" id="editProgressModal">
-        <div class="modal-content">
-            <h3>Edit Project Progress</h3>
-            <div class="stage-container">
-                <!-- Stage 1 -->
-                <div class="stage" id="stage1">
-                    <h4>Stage 1</h4>
-                    <div class="task-list">
-                        <!-- Task List for Stage 1 -->
-                    </div>
-                    <button class="add-task-btn" onclick="addTask('stage1')" type="button">Add Task</button>
-                    <button class="edit-task-btn" id="editTaskBtn" onclick="toggleEditIcons('stage1')" style="display:none;" type="button">Edit Tasks</button>
-                    <div class="progress-bar">
-                        <p>Progress: <span id="stage1Progress"></span></p>
-                        <progress id="progress1" max="100" value="0"></progress>
-                    </div>
-                </div>
-                <!-- Stage 2 -->
-                <div class="stage" id="stage2">
-                    <h4>Stage 2</h4>
-                    <div class="task-list">
-                        <!-- Task List for Stage 2 -->
-                    </div>
-                    <button class="add-task-btn" onclick="addTask('stage2')" type="button">Add Task</button>
-                    <button class="edit-task-btn" id="editTaskBtn" onclick="toggleEditIcons('stage2')" style="display:none;" type="button">Edit Tasks</button>
-                    <div class="progress-bar">
-                        <p>Progress: <span id="stage2Progress"></span></p>
-                        <progress id="progress2" max="100" value="0"></progress>
-                    </div>
-                </div>
-                <!-- Stage 3 -->
-                <div class="stage" id="stage3">
-                    <h4>Stage 3</h4>
-                    <div class="task-list">
-                        <!-- Task List for Stage 3 -->
-                    </div>
-                    <button class="add-task-btn" onclick="addTask('stage3')" type="button">Add Task</button>
-                    <button class="edit-task-btn" id="editTaskBtn" onclick="toggleEditIcons('stage3')" style="display:none;" type="button">Edit Tasks</button>
-                    <div class="progress-bar">
-                        <p>Progress: <span id="stage3Progress"></span></p>
-                        <progress id="progress3" max="100" value="0"></progress>
-                    </div>
+        <!-- Main Section -->
+        <section class="home-section">
+            <div class="upper">
+                <h1>MY PROJECTS</h1>
+                <div id="dropdown" class="functionality">
+                    <select id="projectSelect">
+                        <option value="" disabled selected>Choose a project</option>
+                        <option th:each="project : ${projects}"
+                                th:value="${project.projectname}"
+                                th:text="${project.projectname}">
+                        </option>
+                    </select>
                 </div>
             </div>
-            <div class="button-container">
-                <button class="cancel-btn" onclick="closeModal('editProgressModal')" type="button">Cancel</button>
-                <button class="add-stage-btn" onclick="addStage()" type="button">Add Stage</button>
-                <button class="submit-btn" type="submit">Submit</button>
-            </div>
-        </div>
-    </div>
-    <div class="modal" id="editDetailsModal">
-        <div class="modal-content">
-            <h3>Edit Project Details</h3>
-            <form id="editProjectDetailsForm">
-                <label for="editProjectNameSelect">Select Project to Edit</label>
-                <select id="editProjectNameSelect" name="projectSelect" required="">
-                    <!-- Options will be populated dynamically -->
-                </select>
-                <label for="editProjectName">Project Name</label>
-                <input id="editProjectName" name="projectName" placeholder="Enter project name" required="" type="text"/>
-                <label for="editStatus">Status</label>
-                <select id="editStatus" name="status" required="">
-                    <option value="">Select Status</option>
-                    <option value="NOT STARTED">Not Started</option>
-                    <option value="IN PROGRESS">In Progress</option>
-                    <option value="COMPLETED">Completed</option>
-                </select>
-                <div class="form-row">
+
+            <div class="materials-container">
+                <div class="project-details">
                     <div>
-                        <label for="editStartDate">Start Date</label>
-                        <input id="editStartDate" name="startDate" required="" type="date"/>
+                        <h2><strong>Project:</strong> <span id="projectName">---</span></h2>
+                        <p><strong>Location:</strong> <span id="projectLocation">---</span></p>
+                    </div>
+                    <div class="b">
+                        <h2><strong>Company:</strong> <span id="projectCompany">---</span></h2>
+                        <p><strong>Contact:</strong> <span id="projectContact">---</span></p>
+                    </div>
+                </div>
+
+
+                <h2 style="text-align: center; color: #F9744B; font-weight: bold; font-family: 'Fredoka';">PROJECT
+                    MATERIALS OVERVIEW</h2>
+                <div class="materials-table">
+
+
+                    <table id="materialsTable">
+                        <thead>
+                            <tr>
+                                <th>Item No.</th>
+                                <th>Materials</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                                <th class="actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="materialsBody">
+                        <!-- Dynamic rows will be inserted here -->
+                        </tbody>
+
+                    </table>
+                </div>
+                <!--    <button id="addRowBtn" style="display:none;">Add Row</button>
+                   <button id="toggleArchiveBtn">Show Archived Rows</button> -->
+            </div>
+            <div class="buttons">
+                <button id="backBtn" class="hidden">Back</button>
+          <!-- <button id="editBtn">Edit</button> -->
+                <button id="editProgressBtn">Edit Project Progress</button>
+            </div>
+            <div class="overlay" id="overlay"></div>
+
+            <div id="editProgressModal" class="modal">
+                <div class="modal-content">
+                    <h3>Edit Project Progress</h3>
+
+
+                    <div class="stage-container">
+                        <!-- Stage 1 -->
+                        <div id="stage1" class="stage">
+                            <h4>Stage 1</h4>
+                            <div class="task-list">
+                                <!-- Task List for Stage 1 -->
+                            </div>
+                            <button type="button" class="add-task-btn" onclick="addTask('stage1')">Add Task</button>
+                            <button type="button" class="edit-task-btn" onclick="toggleEditIcons('stage1')" style="display:none;">Edit Tasks</button>
+                                style="display:none;">Edit Tasks</button>
+                            <div class="progress-bar">
+                                <p>Progress: <span id="stage1Progress"></span></p>
+
+                                <progress id="progress1" value="0"></progress>
+                            </div>
+                        </div>
+                        <!-- Stage 2 -->
+                        <div id="stage2" class="stage">
+                            <h4>Stage 2</h4>
+                            <div class="task-list">
+                                <!-- Task List for Stage 2 -->
+                            </div>
+                            <button type="button" class="add-task-btn" onclick="addTask('stage2')">Add Task</button>
+                            <button type="button" class="edit-task-btn" onclick="toggleEditIcons('stage2')" style="display:none;">Edit Tasks</button>
+                                style="display:none;">Edit Tasks</button>
+                            <div class="progress-bar">
+                                <p>Progress: <span id="stage2Progress"></span></p>
+                                <progress id="progress2" value="0"></progress>
+                            </div>
+                        </div>
+                        <!-- Stage 3 -->
+                        <div id="stage3" class="stage">
+                            <h4>Stage 3</h4>
+                            <div class="task-list">
+                                <!-- Task List for Stage 3 -->
+                            </div>
+                            <button type="button" class="add-task-btn" onclick="addTask('stage3')">Add Task</button>
+                            <button type="button" class="edit-task-btn" onclick="toggleEditIcons('stage3')" style="display:none;">Edit Tasks</button>
+
+                            style="display:none;">Edit Tasks</button>
+                            <div class="progress-bar">
+                                <p>Progress: <span id="stage3Progress"></span></p>
+                                <progress id="progress3" value="0"></progress>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="button-container">
+                        <button type="button" class="cancel-btn" onclick="closeModal('editProgressModal')">Cancel</button>
+                        <button type="button" class="add-stage-btn" onclick="addStage()">Add Stage</button>
+                        <button type="submit" class="submit-btn">Submit</button>
                     </div>
                     <div>
                         <label for="editEndDate">End Date</label>
@@ -1087,7 +1078,21 @@
         // const toggleArchiveBtn = document.getElementById("toggleArchiveBtn");
         const projectSelect = document.getElementById("projectSelect");
 
-        // Helper function: Display project info
+        // Show the Edit Progress Modal
+                editProgressBtn.addEventListener("click", () => {
+                    editProgressModal.style.display = "block";
+                    overlay.style.display = "block";
+                });
+
+// Close modal when clicking outside
+                window.addEventListener("click", (e) => {
+                    if (e.target === editProgressModal || e.target === overlay) {
+                        editProgressModal.style.display = "none";
+                        overlay.style.display = "none";
+                    }
+                });
+
+                // Helper function: Display project info
         function displayProjectInfo(project) {
             document.getElementById("projectName").textContent = project.projectname || "---";
             document.getElementById("projectLocation").textContent = project.companyLocation || "---";
@@ -1223,29 +1228,10 @@
                     </div>
                 `;
 
-                        const taskList = stageDiv.querySelector('.task-list');
-                        stage.tasks.forEach(task => {
-                            const taskItem = document.createElement('div');
-                            taskItem.classList.add('task-item');
-                            taskItem.setAttribute('data-task-id', task.taskId);
-
-                            taskItem.innerHTML = `
-                        <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="updateProgress(this)">
-                        <input type="text" class="task-name" value="${task.taskName}" readonly>
-                        <button onclick="toggleEditTask(this)"><i class="bx bx-edit"></i></button>
-                        <button onclick="deleteTask(this)"><i class="bx bx-trash"></i></button>
-                    `;
-                            taskList.appendChild(taskItem);
-                        });
-
-                        stageContainer.appendChild(stageDiv);
-                        updateProgress(stageDiv);
-                    });
+                // Back
+                document.getElementById("backBtn").addEventListener("click", () => {
+                    window.location.href = "homepageExestaff";
                 });
-        });
-
-
-
 
         // Sidebar
         const sidebar = document.querySelector(".sidebar");
@@ -1284,118 +1270,8 @@
                     tasks: tasks
                 });
             });
+        </script>
 
-            fetch(`/projectsAdmin/saveStagesByName?projectName=${encodeURIComponent(projectName)}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(stages)
-            })
-                .then(res => res.text())
-                .then(msg => {
-                    alert(msg);
-                    closeModal('editProgressModal');
-                });
+    </body>
 
-        });
-    }); //DOMCONTENTLOADED
-    function addStage() {
-        const stageContainer = document.querySelector('.stage-container');
-        const existingStages = stageContainer.querySelectorAll('.stage');
-
-        if (existingStages.length >= 20) {
-            alert("Maximum of 20 stages reached.");
-            return;
-        }
-
-        let maxStage = 0;
-        existingStages.forEach(stage => {
-            const num = parseInt(stage.dataset.stageNumber);
-            if (!isNaN(num) && num > maxStage) {
-                maxStage = num;
-            }
-        });
-
-        const nextStageNumber = maxStage + 1;
-
-        const stageDiv = document.createElement('div');
-        stageDiv.classList.add('stage');
-        stageDiv.dataset.stageNumber = nextStageNumber;
-
-        stageDiv.innerHTML = `
-        <h4>STAGE ${nextStageNumber}</h4>
-        <div class="task-list"></div>
-        <button type="button" class="add-task-btn" onclick="addTaskToStage(this)">ADD TASK</button>
-        <div class="progress-bar">
-            <p>PROGRESS: <span class="progress-label">0%</span></p>
-            <progress value="0" max="100"></progress>
-        </div>
-    `;
-
-        stageContainer.appendChild(stageDiv);
-    }
-
-
-    function addTaskToStage(button) {
-        const taskList = button.parentElement.querySelector('.task-list');
-        const existingTasks = taskList.querySelectorAll('.task-item');
-
-        if (existingTasks.length >= 10) {
-            alert("Maximum of 10 tasks per stage reached.");
-            return;
-        }
-
-        const taskItem = document.createElement('div');
-        taskItem.classList.add('task-item');
-        taskItem.innerHTML = `
-        <input type="checkbox" onchange="updateProgress(this)">
-        <input type="text" class="task-name" placeholder="New Task">
-        <button onclick="toggleEditTask(this)"><i class="bx bx-edit"></i></button>
-        <button onclick="deleteTask(this)"><i class="bx bx-trash"></i></button>
-    `;
-        taskList.appendChild(taskItem);
-        updateProgress(taskList.parentElement);
-    }
-
-
-    function toggleEditTask(btn) {
-        const input = btn.parentElement.querySelector('.task-name');
-        input.readOnly = !input.readOnly;
-        if (!input.readOnly) input.focus();
-    }
-
-    function deleteTask(btn) {
-        btn.parentElement.remove();
-    }
-
-    function updateProgress(el) {
-        const stageEl = el.closest('.stage');
-        if (!stageEl) return;
-
-        const checkboxes = stageEl.querySelectorAll('.task-item input[type="checkbox"]');
-        const completed = Array.from(checkboxes).filter(cb => cb.checked).length;
-        const total = checkboxes.length;
-
-        const progress = stageEl.querySelector('progress');
-        const label = stageEl.querySelector('.progress-label');
-
-        if (progress && label) {
-            const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
-            progress.value = percent;
-            label.textContent = percent + '%';
-        }
-    }
-
-
-
-    function openModal(modalId) {
-        document.getElementById(modalId).style.display = 'block';
-        document.getElementById('overlay').style.display = 'block';
-    }
-
-    function closeModal(modalId) {
-        document.getElementById(modalId).style.display = 'none';
-        document.getElementById('overlay').style.display = 'none';
-    }
-</script>
-</body>
-</html>
+    </html>
