@@ -13,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -166,6 +163,8 @@ public class RequestsAdminController {
         }
 
         // Step 2: Validate total quantity per inventory item
+        List<String> errors = new ArrayList<>();
+
         for (Map.Entry<Long, Integer> entry : inventoryRequestSums.entrySet()) {
             Long invId = entry.getKey();
             int requestedQty = entry.getValue();
@@ -174,10 +173,20 @@ public class RequestsAdminController {
             if (invOpt.isEmpty()) continue;
 
             Inventory inv = invOpt.get();
+
             if (inv.getMaterialStock() < requestedQty) {
-                return "❌ Total requested quantity for '" + inventoryNames.get(invId) + "' (" + requestedQty + ") exceeds available stock (" + inv.getMaterialStock() + ").";
+                String materialName = inventoryNames.get(invId);
+                errors.add("❌ Total requested quantity for '" + materialName + "' (" + requestedQty +
+                        ") exceeds available stock (" + inv.getMaterialStock() + ").");
             }
         }
+
+// If there were any errors, return them all
+        if (!errors.isEmpty()) {
+            return String.join("\n", errors); // returns all error messages as a single string separated by newlines
+        }
+
+
 
         // Step 3: Proceed with approvals if all validations passed
         for (Long id : requestIds) {

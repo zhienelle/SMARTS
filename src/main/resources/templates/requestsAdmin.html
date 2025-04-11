@@ -461,7 +461,8 @@
             opacity: 0.9;
         }
 
-        #bulkConfirmModal.modal {
+        #approveConfirmModal.modal,
+        #denyConfirmModal.modal {
             display: none;
             position: fixed;
             z-index: 1000;
@@ -475,7 +476,8 @@
             justify-content: center;
         }
 
-        #bulkConfirmModal .modal-content {
+        #approveConfirmModal .modal-content,
+        #denyConfirmModal .modal-content{
             background: radial-gradient(50% 50% at 50% 50%, #ee9b7b 0%, #FFFFFF 100%);
             box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.25);
             margin: 20vh auto;
@@ -490,13 +492,15 @@
             text-transform: uppercase;
         }
 
-        #bulkConfirmModal .modal-content h3 {
+        #approveConfirmModal .modal-content h3,
+        #denyConfirmModal .modal-content h3 {
             font-size: 26px;
             font-weight: 700;
             margin-bottom: 30px;
         }
 
-        #bulkConfirmModal .buttons {
+        #approveConfirmModal .buttons,
+        #denyConfirmModal .buttons {
             display: flex;
             flex-direction: row;
             gap: 15px;
@@ -504,15 +508,16 @@
             justify-content: center;
         }
 
-        #confirmBulkNo {
+        #confirmApprove,
+        #confirmDeny,
+        #cancelApprove,
+        #cancelDeny {
             background: linear-gradient(180deg, #124d54 0%, rgb(16, 41, 55) 100%);
         }
 
-        #confirmBulkYes {
-            background: linear-gradient(180deg, #124d54 0%, rgb(16, 41, 55) 100%);
-        }
 
-        #bulkConfirmModal .buttons button {
+        #approveConfirmModal .buttons button,
+        #denyConfirmModal .buttons button {
             box-sizing: border-box;
             width: 250px;
             height: 50px;
@@ -649,71 +654,7 @@
                 </tr>
             </thead>
             <tbody id="requestsTableBody">
-            <tr>
-                    <td>Staff1</td>
-                    <td>Staff</td>
-                    <td>Steel Rods</td>
-                    <td>50</td>
-                    <td>Project #1</td>
-                    <td>
-                        <div class="approval-buttons">
-                            <button onclick="hideRow(this)">Yes</button>
-                            <button onclick="hideRow(this)">No</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Staff2</td>
-                    <td>Staff</td>
-                    <td>Aluminum Sheets</td>
-                    <td>30</td>
-                    <td>Project #2</td>
-                    <td>
-                        <div class="approval-buttons">
-                            <button onclick="hideRow(this)">Yes</button>
-                            <button onclick="hideRow(this)">No</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Staff3</td>
-                    <td>Staff</td>
-                    <td>Copper Wires</td>
-                    <td>100</td>
-                    <td>Project #3</td>
-                    <td>
-                        <div class="approval-buttons">
-                            <button onclick="hideRow(this)">Yes</button>
-                            <button onclick="hideRow(this)">No</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Staff4</td>
-                    <td>Staff</td>
-                    <td>Iron Beams</td>
-                    <td>40</td>
-                    <td>Project #4</td>
-                    <td>
-                        <div class="approval-buttons">
-                            <button onclick="hideRow(this)">Yes</button>
-                            <button onclick="hideRow(this)">No</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Staff5</td>
-                    <td>Staff</td>
-                    <td>Brass Plates</td>
-                    <td>20</td>
-                    <td>Project #5</td>
-                    <td>
-                        <div class="approval-buttons">
-                            <button onclick="hideRow(this)">Yes</button>
-                            <button onclick="hideRow(this)">No</button>
-                        </div>
-                    </td>
-                </tr>
+
             </tbody>
         </table>
         <div class="approval-buttons" style="justify-content: center; margin-top: 20px;">
@@ -728,16 +669,28 @@
     <footer>
         <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
     </footer>
-    <div id="bulkConfirmModal" class="modal">
+    <!-- APPROVE Modal -->
+    <div id="approveConfirmModal" class="modal">
         <div class="modal-content">
-            <h3>Are you sure?</h3>
+            <h3>Approve selected requests?</h3>
             <div class="buttons">
-                <button id="confirmBulkNo">NO</button>
-                <button id="confirmBulkYes">YES</button>
-
+                <button id="cancelApprove">No</button>
+                <button id="confirmApprove">Yes</button>
             </div>
         </div>
     </div>
+
+    <!-- DENY Modal -->
+    <div id="denyConfirmModal" class="modal">
+        <div class="modal-content">
+            <h3>Deny selected requests?</h3>
+            <div class="buttons">
+                <button id="cancelDeny">No</button>
+                <button id="confirmDeny">Yes</button>
+            </div>
+        </div>
+    </div>
+
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -821,16 +774,18 @@
                     if (!row) return;
 
                     const material = row.cells[2].innerText.trim();
+                    console.log(row.cells[2]);
+                    console.log(row.cells[2].innerText.trim());
                     const qtyRequested = parseInt(row.cells[3].innerText.trim());
-
-                    const inv = inventoryCache.find(i => i.materialName.toLowerCase() === material.toLowerCase());
+                    console.log(inventoryCache);
+                    const inv = inventoryCache.find(i => i.material_name.toLowerCase() === material.toLowerCase());
                     if (!inv) {
                         alert(`❌ Material "${material}" not found in inventory.`);
                         return;
                     }
 
-                    if (qtyRequested > inv.materialStock) {
-                        alert(`❌ Cannot approve ${material}: only ${inv.materialStock} in stock, requested ${qtyRequested}.`);
+                    if (qtyRequested > inv.material_stock) {
+                        alert(`❌ Cannot approve ${material}: only ${inv.material_stock} in stock, requested ${qtyRequested}.`);
                         return;
                     }
                 }
@@ -878,50 +833,70 @@
             return [...document.querySelectorAll(".row-checkbox:checked")].map(cb => parseInt(cb.dataset.id));
         }
 
-        function toggleModal(show) {
-            const modal = document.getElementById("bulkConfirmModal");
-            modal.style.display = show ? "block" : "none";
+        // function toggleModal(show) {
+        //     const modal = document.getElementById("bulkConfirmModal");
+        //     modal.style.display = show ? "block" : "none";
+        // }
+        function showModal(id) {
+            console.log("showmodal", id);
+            document.getElementById(id).style.display = "block";
         }
 
+        function hideModal(id) {
+            document.getElementById(id).style.display = "none";
+        }
+
+
         document.getElementById("approveSelectedBtn").addEventListener("click", () => {
+            console.log("i click approve");
             const selected = getSelectedRequestIds();
             if (selected.length === 0) {
                 alert("⚠️ No requests selected.");
                 return;
             }
             selectedAction = "APPROVED";
-            toggleModal(true);
+            showModal("approveConfirmModal");
         });
 
         document.getElementById("denySelectedBtn").addEventListener("click", () => {
+            console.log("i click deny");
             const selected = getSelectedRequestIds();
             if (selected.length === 0) {
                 alert("⚠️ No requests selected.");
                 return;
             }
             selectedAction = "DENIED";
-            toggleModal(true);
+            showModal("denyConfirmModal");
         });
 
-
-
-        document.getElementById("confirmBulkNo").addEventListener("click", () => {
-            // Deselect checkboxes and reset state
-            document.querySelectorAll(".row-checkbox").forEach(cb => cb.checked = false);
+        document.getElementById("cancelApprove").addEventListener("click", () => {
             selectedAction = null;
-            toggleModal(false);
+            hideModal("approveConfirmModal");
         });
 
-        document.getElementById("confirmBulkYes").addEventListener("click", () => {
-            const requestIds = getSelectedRequestIds();
-            if (requestIds.length === 0) {
-                alert("⚠️ Please select at least one request.");
-                toggleModal(false);
-                return;
-            }
+        document.getElementById("cancelDeny").addEventListener("click", () => {
+            selectedAction = null;
+            hideModal("denyConfirmModal");
+        });
 
-            // ✅ Validation: Check total quantity per material
+        document.getElementById("confirmApprove").addEventListener("click", () => {
+            handleBulkApproval();
+            hideModal("approveConfirmModal");
+        });
+
+        document.getElementById("confirmDeny").addEventListener("click", () => {
+            handleBulkDenial();
+            hideModal("denyConfirmModal");
+        });
+
+
+
+
+        function handleBulkApproval() {
+            const requestIds = getSelectedRequestIds();
             const materialTotals = {};
+            const errors = [];
+
             requestIds.forEach(id => {
                 const row = document.querySelector(`tr[data-id="${id}"]`);
                 if (!row) return;
@@ -932,53 +907,59 @@
             });
 
             for (const [material, totalRequested] of Object.entries(materialTotals)) {
-                console.log("✅ Inventory Cache:", inventoryCache);
-
-                const inv = inventoryCache.find(i => i.materialName === material);
+                const inv = inventoryCache.find(i => i.material_name.toLowerCase() === material.toLowerCase());
                 if (!inv) {
-                    alert(`❌ Material "${material}" not found in inventory.`);
-                    toggleModal(false);
-                    return;
+                    errors.push(`❌ Material "${material}" not found in inventory.`);
+                    continue;
                 }
 
-                if (totalRequested > inv.materialStock) {
-                    alert(`❌ Cannot approve requests. Total requested for ${material} (${totalRequested}) exceeds stock (${inv.materialStock}).`);
-                    toggleModal(false);
-                    return;
+                if (totalRequested > inv.material_stock) {
+                    errors.push(`❌ Cannot approve ${material}: requested ${totalRequested}, only ${inv.material_stock} in stock.`);
+                    continue;
                 }
+
+                inv.material_stock -= totalRequested; // simulate
             }
 
-            // ✅ If all validations passed
+            if (errors.length > 0) {
+                alert(errors.join("\n"));
+                return;
+            }
+
+            // Proceed with backend update
             fetch("/admin/requests/updateMultipleStatus", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ requestIds, action: selectedAction })
+                body: JSON.stringify({ requestIds, action: "APPROVED" })
             })
-                .then(async res => {
-                    const msg = await res.text();
-
-                    if (!res.ok) {
-                        alert("❌ " + msg);
-                        toggleModal(false);
-                        return;
-                    }
-
+                .then(res => res.text())
+                .then(msg => {
                     requestIds.forEach(id => {
                         const row = document.querySelector(`tr[data-id="${id}"]`);
                         if (row) row.remove();
                     });
-
-                    document.querySelectorAll(".row-checkbox").forEach(cb => cb.checked = false);
-                    selectedAction = null;
-                    toggleModal(false);
                     alert(msg);
-                })
-                .catch(err => {
-                    console.error("❌ Bulk update failed", err);
-                    alert("❌ Something went wrong.");
-                    toggleModal(false);
                 });
-        });
+        }
+
+        function handleBulkDenial() {
+            const requestIds = getSelectedRequestIds();
+
+            fetch("/admin/requests/updateMultipleStatus", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ requestIds, action: "DENIED" })
+            })
+                .then(res => res.text())
+                .then(msg => {
+                    requestIds.forEach(id => {
+                        const row = document.querySelector(`tr[data-id="${id}"]`);
+                        if (row) row.remove();
+                    });
+                    alert(msg);
+                });
+        }
+
 
 
 

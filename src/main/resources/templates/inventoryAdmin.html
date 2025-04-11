@@ -1144,11 +1144,12 @@
                                 // ✅ Collect low stock entries (only material names)
                                 console.log(item);
                                 if (item.materialStockStatus === "LOW") {
-                                    lowStockMaterials.push(item.material_name);
+                                    const category = item.material_category.toUpperCase();
+                                    const name = item.material_name.toUpperCase();
+                                    lowStockMaterials.push(`${name} (${category})`);
                                     row.classList.add("low-stock-row");
-
-
                                 }
+
 
 
                                 row.innerHTML = `
@@ -1183,18 +1184,19 @@
                             console.log(lowStockMaterials.length);
                             if (lowStockMaterials.length > 0) {
                                 dot.style.display = "block";
-                                lowStockMaterials.forEach(material => {
+                                lowStockMaterials.forEach(info => {
                                     const li = document.createElement("li");
-                                    li.textContent = `Low quantity of ${material}`;
+                                    li.textContent = `Low quantity of ${info}`;
                                     li.style.cursor = "pointer";
                                     li.style.padding = "5px 0";
                                     li.onclick = () => {
-                                        message.textContent = `Low quantity of ${material}`;
+                                        message.textContent = `Low quantity of ${info}`;
                                         modal.style.display = "block";
                                         dropdown.style.display = "none";
                                     };
                                     list.appendChild(li);
                                 });
+
                             } else {
                                 dot.style.display = "none";
                                 const li = document.createElement("li");
@@ -1236,13 +1238,15 @@
                     const rows = inventoryData.querySelectorAll("tr");
                     const updatePromises = [];
 
+                    const existingEntries = new Set();
+
                     rows.forEach(row => {
                         const id = row.getAttribute("data-id");
                         const archived = row.getAttribute("data-archived") === "true";
                         const cells = row.querySelectorAll("td");
 
-                        const category = cells[0].textContent.trim();
-                        const name = cells[1].textContent.trim();
+                        const category = cells[0].textContent.trim().toLowerCase();
+                        const name = cells[1].textContent.trim().toLowerCase();
                         const stock = parseInt(cells[2].textContent.trim());
                         const price = parseFloat(cells[3].textContent.trim());
 
@@ -1262,7 +1266,14 @@
                             return;
                         }
 
+                        const key = `${category}::${name}`;
+                        if (existingEntries.has(key)) {
+                            alert(`❌ Duplicate material '${name.toUpperCase()}' already exists in category '${category.toUpperCase()}'.\nThat row will now be removed.`);
+                            row.remove(); // 🔥 Remove the offending row
+                            return;
+                        }
 
+                        existingEntries.add(key);
 
                         const payload = {
                             material_category: category,
@@ -1270,7 +1281,6 @@
                             material_stock: stock,
                             material_price: price,
                             material_archived: archived
-
                         };
 
                         console.log("Saving row:", payload);
@@ -1292,6 +1302,8 @@
 
                     return Promise.all(updatePromises);
                 }
+
+
 
                 editBtn.addEventListener("click", () => {
                     if (isEditMode) {
