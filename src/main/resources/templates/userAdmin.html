@@ -899,6 +899,14 @@
                 return;
             }
 
+            // Password strength enforcement
+            const passwordPattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+            if (!passwordPattern.test(password)) {
+                alert("Password must be at least 8 characters long, contain at least one uppercase letter, and one number.");
+                return;
+            }
+
+
             const userData = {
                 username,
                 password,

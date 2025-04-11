@@ -392,8 +392,8 @@
                 <div class="lottie-container" id="lottie-animation"></div>
 
                 <div class="login-container">
-                    <form action="login" method="post">
-                        <h2>Login</h2>
+                    <form id="loginForm">
+                    <h2>Login</h2>
                         <label for="username">USERNAME</label>
                         <input type="text" id="username" name="username" required>
                         <label for="password">PASSWORD</label>
@@ -468,6 +468,44 @@
                     document.getElementById("forgotMessage").style.color = "red";
                 });
         });
+
+
+        const loginForm = document.getElementById("loginForm");
+        loginForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            fetch("/loginCustom", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+            })
+                .then(res => res.text())
+                .then(response => {
+                    if (response.startsWith("ROLE:")) {
+                        const role = response.split(":")[1].trim().toUpperCase();
+
+                        if (role === "ADMIN") {
+                            window.location.href = "/homepageAdmin";
+                        } else if (role === "STAFF") {
+                            window.location.href = "/myProjectExestaff";
+                        } else if (role === "MAIN CONTRACTOR") {
+                            window.location.href = "/homepageGencon";
+                        } else {
+                            alert("Unrecognized role.");
+                        }
+                    } else if (response === "invalidUsername") {
+                        alert("Username does not exist.");
+                    } else if (response === "invalidPassword") {
+                        alert("Password is incorrect.");
+                    } else {
+                        alert("Unexpected error: " + response);
+                    }})})
+
+
     </script>
 
 </body>

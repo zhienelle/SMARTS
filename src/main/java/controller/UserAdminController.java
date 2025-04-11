@@ -3,6 +3,7 @@ package controller;
 import entity.Project;
 import entity.User;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import repository.ProjectRepository;
 import repository.UserRepository;
@@ -22,6 +23,9 @@ public class  UserAdminController {
     private UserRepository userRepository;
 
     @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
     private ProjectRepository projectRepository;
 
     @GetMapping("/userAdmin/getUsers")
@@ -33,6 +37,8 @@ public class  UserAdminController {
     @PostMapping("/userAdmin/addUser")
     @ResponseBody
     public User addUser(@RequestBody User user) {
+        String rawPassword = user.getPassword();
+        user.setPassword(passwordEncoder.encode(rawPassword)); // Encrypt password
         return userRepository.save(user);
     }
 
@@ -43,7 +49,12 @@ public class  UserAdminController {
         if (existingUser.isPresent()) {
             User user = existingUser.get();
             user.setUsername(updatedUser.getUsername());
-            user.setPassword(updatedUser.getPassword());
+
+            // If password changed, re-encrypt it
+            if (!user.getPassword().equals(updatedUser.getPassword())) {
+                user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+            }
+
             user.setRole(updatedUser.getRole());
             user.setPermissions(updatedUser.getPermissions());
             user.setProject(updatedUser.getProject());
@@ -52,6 +63,7 @@ public class  UserAdminController {
             user.setLastName(updatedUser.getLastName());
             user.setPhone(updatedUser.getPhone());
             user.setEmail(updatedUser.getEmail());
+
             return userRepository.save(user);
         }
         return null;
@@ -82,4 +94,6 @@ public class  UserAdminController {
         }
         return null;
     }
+
+
 }

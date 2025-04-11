@@ -749,7 +749,7 @@
         </div>
 
         <div class="buttons">
-            <button onclick="window.print()">Print</button>
+            <button onclick="generatePDF()">Print</button>
         </div>
 
         <div id="modal" class="modal">
@@ -886,7 +886,39 @@
 
         fetchProjectsAndPopulateDropdown();
 
+        async function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const invoiceContainer = document.querySelector('.invoice-container');
+
+            // Capture the invoice section as image
+            const canvas = await html2canvas(invoiceContainer, {
+                scale: 2,
+                useCORS: true,
+            });
+
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'pt', 'a4');
+
+            // Fit the canvas image into PDF width
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
+
+            // Add date/time at the top
+            const now = new Date();
+            const formattedDate = now.toLocaleString();
+            pdf.setFontSize(10);
+            pdf.text(`Date: ${formattedDate}`, 40, 30);
+
+            // Add image below date
+            pdf.addImage(imgData, 'PNG', 40, 40, pageWidth - 80, pdfHeight);
+
+            // Save as PDF
+            pdf.save('invoice.pdf');
+        }
+
     </script>
 </body>
-
 </html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>

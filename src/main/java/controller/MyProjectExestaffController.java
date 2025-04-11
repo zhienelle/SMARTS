@@ -6,10 +6,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import repository.InventoryRepository;
-import repository.ProjectInventoryRepository;
-import repository.ProjectRepository;
-import repository.UserRepository;
+import repository.*;
 import entity.ProjectInventory;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -40,6 +37,11 @@ public class MyProjectExestaffController {
     @Autowired
     private InventoryRepository inventoryRepository;
 
+    @Autowired
+    private ProjectStageRepository stageRepo;
+
+    @Autowired
+    private ProjectTaskRepository taskRepo;
 
     @GetMapping("/myProjectExestaff")
     public String myProjectExestaff(HttpSession session, Model model) {
@@ -138,5 +140,6 @@ public class MyProjectExestaffController {
 
         return ResponseEntity.ok("Removed");
     }
+
 
 }
