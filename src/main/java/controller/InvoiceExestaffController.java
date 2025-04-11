@@ -36,7 +36,7 @@ public class InvoiceExestaffController {
             }
 
             String role = (String) session.getAttribute("role");
-            if (!"admin".equalsIgnoreCase(role)) {
+            if (!"staff".equalsIgnoreCase(role)) {
                 return "error/error403";
             }
         return "invoiceExestaff";
