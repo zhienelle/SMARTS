@@ -33,8 +33,13 @@ public class InvoiceAdminController {
     @GetMapping("/invoiceAdmin")
     public String loadInvoicePage(HttpSession session, Model model) {
         User user = (User) session.getAttribute("authenticatedUser");
-        if (user == null || !"ADMIN".equalsIgnoreCase(user.getRole())) {
+        if (user == null ) {
             return "redirect:/";
+        }
+
+        String role = (String) session.getAttribute("role");
+        if (!"admin".equalsIgnoreCase(role)) {
+            return "error/error403";
         }
 
         List<Project> allProjects = projectRepository.findAll();

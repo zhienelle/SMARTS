@@ -38,6 +38,11 @@ public class ReportsExestaffController {
             return "redirect:/";
         }
 
+        String role = (String) session.getAttribute("role");
+        if (!"staff".equalsIgnoreCase(role)) {
+            return "error/error403";
+        }
+
         System.out.println("✅ Logged in as: " + user.getUsername());
 
         List<Project> assignedProjects = getAssignedProjects(user);

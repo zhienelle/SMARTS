@@ -197,10 +197,15 @@
 
     <script src="https://unpkg.com/@lottiefiles/lottie-player@1.0.4/dist/lottie-player.js"></script>
     <script>
+        // Prevent navigating back to protected pages after logout
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            location.href = "/session-destroyed"; // Force back to sessionDestroyed again
+        };
+
         function redirectToLogin() {
             window.location.href = "/";
         }
     </script>
 </body>
-
 </html>
