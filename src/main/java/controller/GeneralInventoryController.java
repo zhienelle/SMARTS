@@ -1,5 +1,5 @@
 package controller;
-
+//FIXED BY JED
 import entity.Inventory;
 import entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,6 @@ public class GeneralInventoryController {
     @Autowired
     private UserRepository userRepository;
 
-    // Load page based on user's role
     @GetMapping("/generalInventory")
     public String loadInventoryPage(@RequestParam("username") String username, Model model) {
         Optional<User> optionalUser = userRepository.findByUsername(username);
@@ -39,26 +38,24 @@ public class GeneralInventoryController {
             }
         }
 
-        return "error"; // fallback if user not found or invalid role
+        return "error";
     }
 
     @GetMapping("inventoryAdmin")
     public String AdminInventory() {
         return "inventoryAdmin";
     }
-    // REST: Get inventory as JSON
+
     @GetMapping("/generalInventory/getInventory")
     @ResponseBody
     public List<Inventory> getInventory() {
         return inventoryRepository.findAll();
     }
 
-    // ✅ REST: Add new inventory item
     @PostMapping("/generalInventory/addInventory")
     @ResponseBody
     public Inventory addInventory(@RequestBody Inventory inventory) {
         try {
-            // Log incoming data
             System.out.println("Received new inventory item:");
             System.out.println("ID: " + inventory.getMaterialId());
             System.out.println("Category: " + inventory.getMaterialCategory());
@@ -66,10 +63,17 @@ public class GeneralInventoryController {
             System.out.println("Stock: " + inventory.getMaterialStock());
             System.out.println("Price: " + inventory.getMaterialPrice());
 
-            // Ensure Hibernate treats it as new
+            // ✅ Validate inputs
+            String invalidPattern = ".*[^a-zA-Z0-9\\s].*";
+            if (inventory.getMaterialStock() < 0 || inventory.getMaterialPrice() < 0) {
+                throw new RuntimeException("❌ Stock and price must be non-negative.");
+            }
+            if (inventory.getMaterialCategory().matches(invalidPattern) || inventory.getMaterialName().matches(invalidPattern)) {
+                throw new RuntimeException("❌ Category and Material Name must not contain special characters.");
+            }
+
             inventory.setMaterialId(null);
 
-            // Update stock status BEFORE saving
             int stock = inventory.getMaterialStock();
             if (stock <= 30) {
                 inventory.setMaterialStockStatus("LOW");
@@ -79,11 +83,9 @@ public class GeneralInventoryController {
                 inventory.setMaterialStockStatus("HIGH");
             }
 
-// Save and return the saved item
             Inventory savedInventory = inventoryRepository.save(inventory);
-                System.out.println("✅ Saved item ID: " + savedInventory.getMaterialId());
-                return savedInventory;
-
+            System.out.println("✅ Saved item ID: " + savedInventory.getMaterialId());
+            return savedInventory;
 
         } catch (Exception e) {
             System.err.println("❌ Error saving new inventory item: " + e.getMessage());
@@ -91,7 +93,6 @@ public class GeneralInventoryController {
         }
     }
 
-    // ✅ REST: Update inventory item
     @PutMapping("/generalInventory/updateInventory/{id}")
     @ResponseBody
     public Inventory updateInventory(@PathVariable int id, @RequestBody Inventory updatedInventory) {
@@ -103,6 +104,15 @@ public class GeneralInventoryController {
                 throw new RuntimeException("Material name must not be null or empty.");
             }
 
+            // ✅ Validate inputs
+            String invalidPattern = ".*[^a-zA-Z0-9\\s].*";
+            if (updatedInventory.getMaterialStock() < 0 || updatedInventory.getMaterialPrice() < 0) {
+                throw new RuntimeException("❌ Value must be non-negative.");
+            }
+            if (updatedInventory.getMaterialCategory().matches(invalidPattern) || updatedInventory.getMaterialName().matches(invalidPattern)) {
+                throw new RuntimeException("❌ Input must not contain special characters.");
+            }
+
             Optional<Inventory> optionalInventory = inventoryRepository.findById(id);
             if (optionalInventory.isPresent()) {
                 Inventory inventory = optionalInventory.get();
@@ -110,9 +120,8 @@ public class GeneralInventoryController {
                 inventory.setMaterialName(updatedInventory.getMaterialName());
                 inventory.setMaterialStock(updatedInventory.getMaterialStock());
                 inventory.setMaterialPrice(updatedInventory.getMaterialPrice());
-                inventory.setMaterialArchived(updatedInventory.getMaterialArchived()); // ✅ Apply archive status
+                inventory.setMaterialArchived(updatedInventory.getMaterialArchived());
 
-                // Update stock status based on updated stock
                 int stock = updatedInventory.getMaterialStock();
                 if (stock <= 30) {
                     inventory.setMaterialStockStatus("LOW");
@@ -133,8 +142,6 @@ public class GeneralInventoryController {
         }
     }
 
-
-    // ✅ REST: Archive or Unarchive inventory item
     @PutMapping("/generalInventory/archiveInventory/{id}")
     @ResponseBody
     public String archiveInventory(@PathVariable int id) {
@@ -142,7 +149,7 @@ public class GeneralInventoryController {
         if (optionalInventory.isPresent()) {
             Inventory inventory = optionalInventory.get();
             Boolean currentStatus = inventory.getMaterialArchived() != null ? inventory.getMaterialArchived() : false;
-            inventory.setMaterialArchived(!currentStatus); // Toggle archive status
+            inventory.setMaterialArchived(!currentStatus);
             inventoryRepository.save(inventory);
             System.out.println("✔️ Toggled archive for ID: " + id + " → Now: " + !currentStatus);
             return "Archived toggled for ID: " + id;
@@ -150,5 +157,4 @@ public class GeneralInventoryController {
             throw new RuntimeException("Inventory item not found with ID: " + id);
         }
     }
-//test
 }

@@ -6,8 +6,8 @@
     <title>Staff My Projects</title>
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
     <link
-        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
-        rel="stylesheet">
+            href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
+            rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -68,7 +68,7 @@
             background-color: #F9744B;
         }
 
-        .sidebar.open~header {
+        .sidebar.open ~ header {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -92,7 +92,7 @@
             padding-right: 20px;
         }
 
-        .sidebar.open~footer {
+        .sidebar.open ~ footer {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -302,7 +302,7 @@
             margin-bottom: 45px;
         }
 
-        .sidebar.open~.home-section {
+        .sidebar.open ~ .home-section {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -460,7 +460,7 @@
             align-items: center;
             background-color: darkgray;
             color: #fff;
-            padding: auto;
+            padding: 10px 20px;
             border-radius: 10px;
             font-weight: bold;
             font-size: 12px;
@@ -613,6 +613,21 @@
             text-transform: uppercase;
         }
 
+        .modal-content.small-modal {
+            width: 90%;
+            max-width: 600px;
+            margin: 100px auto;
+            padding: 30px;
+            background: radial-gradient(50% 50% at 50% 50%, #ee9b7b 0%, #FFFFFF 100%);
+            border: 4px solid #102937;
+            border-radius: 30px;
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.25);
+            font-family: 'Fredoka', sans-serif;
+            text-transform: uppercase;
+            text-align: center;
+            color: #F9744B;
+        }
+
         .modal-content h3 {
             font-size: 24px;
             font-weight: 700;
@@ -625,6 +640,18 @@
             font-weight: normal;
             text-align: left;
             display: block;
+        }
+
+        .modal-content select,
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            font-family: 'Fredoka', sans-serif;
+            text-transform: uppercase;
         }
 
         .modal-content input,
@@ -845,294 +872,507 @@
                }
 
 */
-           .actions {
-               border-top: none;
-               border-left: none;
-               height: auto;
-           }
+        .actions {
+            border-top: none;
+            border-left: none;
+            height: auto;
+        }
 
         .actions-col {
             display: none;
+        }
+
+        .checkbox-container {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-container label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            background-color: #fff;
+            transition: background-color 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            gap: 10px;
+        }
+
+        .checkbox-container .checkbox-col {
+            width: 10%;
+            display: flex;
+            justify-content: flex-start; /* align checkbox to the left */
+            align-items: center;
+        }
+
+        .checkbox-container .name-col {
+            width: 60%;
+            text-align: center; /* center the name */
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .checkbox-container .quantity-col {
+            width: 30%;
+            display: flex;
+            justify-content: flex-end; /* align quantity to the right */
+            align-items: center;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .checkbox-container input[type="number"] {
+            width: 70px;
+            padding: 4px 6px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .checkbox-container input[type="number"]:disabled {
+            background-color: #eee;
+            cursor: not-allowed;
         }
 
     </style>
 </head>
 
 <body>
-    <!-- Header -->
-    <header>
-        <div class="smarts-logo">
-            <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
-        </div>
-        <div>
-            <p>ROLE: <span>ADMIN</span></p>
-            <i class='bx bxs-user-circle'></i>
-        </div>
-    </header>
-
-    <div class="sidebar">
-        <div class="logo-details">
-            <div class="logo_name">ACCE Construction</div>
-            <i class='bx bx-menu' id="btn"></i>
-        </div>
-        <ul class="nav-list">
-            <li>
-                <a href="homepageAdmin">
-                    <i class='bx bx-home'></i>
-                    <span class="links_name">Homepage</span>
-                </a>
-                <span class="tooltip">Homepage</span>
-            </li>
-            <li>
-                <a href="projectsAdmin">
-                    <i class='bx bx-task'></i>
-                    <span class="links_name">Projects</span>
-                </a>
-                <span class="tooltip">Projects</span>
-            </li>
-            <li>
-                <a href="inventoryAdmin">
-                    <i class='bx bx-store-alt'></i>
-                    <span class="links_name">Inventory</span>
-                </a>
-                <span class="tooltip">Inventory</span>
-            </li>
-            <li>
-                <a href="invoiceAdmin">
-                    <i class='bx bx-receipt'></i>
-                    <span class="links_name">Invoice</span>
-                </a>
-                <span class="tooltip">Invoice</span>
-            </li>
-            <li>
-                <a href="reportsAdmin">
-                    <i class='bx bx-bar-chart'></i>
-                    <span class="links_name">Reports & Analytics</span>
-                </a>
-                <span class="tooltip">Reports & Analytics</span>
-            </li>
-            <li>
-                <a href="userAdmin">
-                    <i class='bx bx-user'></i>
-                    <span class="links_name">User</span>
-                </a>
-                <span class="tooltip">User</span>
-            </li>
-            <li>
-                <a href="requestsAdmin">
-                    <i class='bx bx-comment-dots'></i>
-                    <span class="links_name">Requests</span>
-                </a>
-                <span class="tooltip">Requests</span>
-            </li>
-            <li>
-                <a href="settingsAdmin">
-                    <i class='bx bx-cog'></i>
-                    <span class="links_name">Settings</span>
-                </a>
-                <span class="tooltip">Settings</span>
-            </li>
-            <li>
-                <a href="confirmLogout">
-                    <i class='bx bx-log-out'></i>
-                    <span class="links_name">Logout</span>
-                </a>
-                <span class="tooltip">Logout</span>
-            </li>
-        </ul>
+<!-- Header -->
+<header>
+    <div class="smarts-logo">
+        <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
     </div>
-    <!-- Main Section -->
-    <section class="home-section">
-        <div class="upper">
-            <h1>PROJECT MANAGEMENT</h1>
-            <div id="dropdown" class="functionality">
-                <select id="projectDropdown">
-                    <option disabled selected hidden>Select a project</option>
+    <div>
+        <p>ROLE: <span>ADMIN</span></p>
+        <i class='bx bxs-user-circle'></i>
+    </div>
+</header>
+
+<div class="sidebar">
+    <div class="logo-details">
+        <div class="logo_name">ACCE Construction</div>
+        <i class='bx bx-menu' id="btn"></i>
+    </div>
+    <ul class="nav-list">
+        <li>
+            <a href="homepageAdmin">
+                <i class='bx bx-home'></i>
+                <span class="links_name">Homepage</span>
+            </a>
+            <span class="tooltip">Homepage</span>
+        </li>
+        <li>
+            <a href="projectsAdmin">
+                <i class='bx bx-task'></i>
+                <span class="links_name">Projects</span>
+            </a>
+            <span class="tooltip">Projects</span>
+        </li>
+        <li>
+            <a href="inventoryAdmin">
+                <i class='bx bx-store-alt'></i>
+                <span class="links_name">Inventory</span>
+            </a>
+            <span class="tooltip">Inventory</span>
+        </li>
+        <li>
+            <a href="invoiceAdmin">
+                <i class='bx bx-receipt'></i>
+                <span class="links_name">Invoice</span>
+            </a>
+            <span class="tooltip">Invoice</span>
+        </li>
+        <li>
+            <a href="reportsAdmin">
+                <i class='bx bx-bar-chart'></i>
+                <span class="links_name">Reports & Analytics</span>
+            </a>
+            <span class="tooltip">Reports & Analytics</span>
+        </li>
+        <li>
+            <a href="userAdmin">
+                <i class='bx bx-user'></i>
+                <span class="links_name">User</span>
+            </a>
+            <span class="tooltip">User</span>
+        </li>
+        <li>
+            <a href="requestsAdmin">
+                <i class='bx bx-comment-dots'></i>
+                <span class="links_name">Requests</span>
+            </a>
+            <span class="tooltip">Requests</span>
+        </li>
+        <li>
+            <a href="settingsAdmin">
+                <i class='bx bx-cog'></i>
+                <span class="links_name">Settings</span>
+            </a>
+            <span class="tooltip">Settings</span>
+        </li>
+        <li>
+            <a href="confirmLogout">
+                <i class='bx bx-log-out'></i>
+                <span class="links_name">Logout</span>
+            </a>
+            <span class="tooltip">Logout</span>
+        </li>
+    </ul>
+</div>
+<!-- Main Section -->
+<section class="home-section">
+    <div class="upper">
+        <h1>PROJECT MANAGEMENT</h1>
+        <div id="dropdown" class="functionality">
+            <select id="projectDropdown">
+                <option disabled selected hidden>Select a project</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="materials-container">
+        <div class="project-details">
+            <div>
+                <h2><strong>Project:</strong> <span id="projectName"></span></h2>
+                <p><strong>Location:</strong> <span id="projectLocation"></span></p>
+            </div>
+            <div class="b">
+                <h2><strong>Company:</strong> <span id="companyName"></span></h2>
+                <p><strong>Contact:</strong> <span id="companyContact"></span></p>
+            </div>
+        </div>
+
+        <h2 style="text-align: center; color: #F9744B; font-weight: bold; font-family: 'Fredoka';">PROJECT MATERIALS
+            OVERVIEW</h2>
+
+        <div class="materials-table">
+            <table id="materialsTable">
+                <thead>
+                <tr>
+                    <th>Item No.</th>
+                    <th>Materials</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                    <th class="actions-col actions-header" style="display: none;">Actions</th>
+
+
+                </tr>
+                </thead>
+                <tbody id="materialsTableBody">
+
+                </tbody>
+
+            </table>
+        </div>
+        <button id="addRowBtn" style="display:none;">Add Row</button>
+    </div>
+
+    <div class="buttons">
+        <button id="backBtn" class="hidden">Back</button>
+        <button id="addBtn" class="hidden">Add</button>
+        <button id="editBtn">Edit</button>
+        <!--<button id="editProgressBtn">Edit Project Progress</button>-->
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Add Material Modal -->
+    <div id="addMaterialModal" class="modal">
+        <div class="modal-content small-modal">
+            <h3>Add Material</h3>
+            <form id="addMaterialForm">
+                <label for="category">Category</label>
+                <select id="category" name="category" required>
+                    <option value="">SELECT CATEGORY</option>
                 </select>
-            </div>
-        </div>
 
-        <div class="materials-container">
-            <div class="project-details">
-                <div>
-                    <h2><strong>Project:</strong> <span id="projectName"></span></h2>
-                    <p><strong>Location:</strong> <span id="projectLocation"></span></p>
+                <label>"material">Material</label>
+                <div id="materialCheckboxes" class="checkbox-container">
+                    <label>
+                        <div class="checkbox-col">
+                            <input type="checkbox">
+                        </div>
+                        <div class="name-col">Sample Item</div>
+                        <div class="quantity-col">
+                            <input type="number" value="1" min="0">
+                        </div>
+                    </label>
                 </div>
-                <div class="b">
-                    <h2><strong>Company:</strong> <span id="companyName"></span></h2>
-                    <p><strong>Contact:</strong> <span id="companyContact"></span></p>
+
+                <div class="button-container">
+                    <button type="button" onclick="closeModal('addMaterialModal')">Cancel</button>
+                    <button type="submit">Save</button>
                 </div>
-            </div>
-
-            <h2 style="text-align: center; color: #F9744B; font-weight: bold; font-family: 'Fredoka';">PROJECT MATERIALS OVERVIEW</h2>
-
-            <div class="materials-table">
-                <table id="materialsTable">
-                    <thead>
-                    <tr>
-                        <th>Item No.</th>
-                        <th>Materials</th>
-                        <th>Quantity</th>
-                        <th>Unit Price</th>
-                        <th>Total</th>
-                        <th class="actions-col actions-header" style="display: none;">Actions</th>
-
-
-                    </tr>
-                    </thead>
-                    <tbody id="materialsTableBody">
-
-                    </tbody>
-
-                </table>
-            </div>
-            <button id="addRowBtn" style="display:none;">Add Row</button>
-            <button id="toggleArchiveBtn">Show Archived Rows</button>
+            </form>
         </div>
+    </div>
 
-        <div class="buttons">
-            <button id="backBtn" class="hidden">Back</button>
-            <button id="addBtn" class="hidden">Add</button>
-            <button id="editBtn">Edit</button>
-            <button id="editProgressBtn">Edit Project Progress</button>
-        </div>
+    <!-- Footer -->
+    <footer>
+        <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
+    </footer>
 
-        <!-- Footer -->
-        <footer>
-            <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
-        </footer>
+    <script>
+        const hardcodedMaterials = {
+            "Wood": [
+                {materialName: "Plywood"},
+                {materialName: "Timber"},
+                {materialName: "Hardwood Plank"}
+            ],
+            "Metal": [
+                {materialName: "Steel Rod"},
+                {materialName: "Aluminum Sheet"}
+            ],
+            "Concrete": [
+                {materialName: "Cement Bag"},
+                {materialName: "Gravel"}
+            ]
+        };
 
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                const dropdown = document.getElementById('projectDropdown');
-                const nameField = document.getElementById('projectName');
-                const locationField = document.getElementById('projectLocation');
-                const companyField = document.getElementById('companyName');
-                const contactField = document.getElementById('companyContact');
-                const tableBody = document.querySelector('#materialsTable tbody');
-                const editBtn = document.getElementById('editBtn');
-                const addBtn = document.getElementById('addBtn');
-                const backBtn = document.getElementById('backBtn');
-                const addRowBtn = document.getElementById('addRowBtn');
-                const toggleArchiveBtn = document.getElementById('toggleArchiveBtn');
+        document.getElementById('category').addEventListener('change', function () {
+            const selectedCategory = this.value;
+            const materialContainer = document.getElementById('materialCheckboxes');
+            materialContainer.innerHTML = '';
 
-                let inEditMode = false;
-                let showArchived = false;
+            const materials = hardcodedMaterials[selectedCategory] || [];
 
-                function toggleEditMode() {
-                    inEditMode = !inEditMode;
-                    editBtn.textContent = inEditMode ? 'Save' : 'Edit';
+            if (materials.length === 0) {
+                materialContainer.innerHTML = '<p>No materials found for this category.</p>';
+                return;
+            }
 
-                    // Show/hide Actions column (header and all .actions cells)
-                    document.querySelectorAll('.actions-header, .actions-col').forEach(el => {
-                        el.style.display = inEditMode ? 'table-cell' : 'none';
-                    });
+            materials.forEach((material, index) => {
+                const label = document.createElement('label');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'materials';
+                checkbox.value = material.materialName;
 
-                    // Re-render the table to show/hide ❌ buttons
-                    renderMaterialsTable(currentMaterials);
-                }
+                const quantityInput = document.createElement('input');
+                quantityInput.type = 'number';
+                quantityInput.name = `quantity_${index}`;
+                quantityInput.placeholder = "Qty";
+                quantityInput.disabled = true;
+                quantityInput.min = 1;
 
-
-
-                function createRow(data = ['', '', '', '', ''], archived = false) {
-                    const row = document.createElement('tr');
-                    if (archived) row.classList.add('archived');
-
-                    data.forEach(text => {
-                        const cell = document.createElement('td');
-                        cell.textContent = text;
-                        row.appendChild(cell);
-                    });
-
-                    const actions = document.createElement('td');
-                    actions.className = 'actions actions-col'; // ✅ includes .actions-col for visibility toggle
-                    if (inEditMode) {
-                        actions.innerHTML = '<span class="delete-icon">❌</span>';
-                    }
-                    row.appendChild(actions);
-
-                    tableBody.appendChild(row);
-                }
-
-                editBtn.addEventListener('click', toggleEditMode);
-                backBtn.addEventListener('click', () => {
-                    window.location.href = 'projectsAdmin';
+                checkbox.addEventListener('change', () => {
+                    quantityInput.disabled = !checkbox.checked;
+                    if (!checkbox.checked) quantityInput.value = ''; // Clear qty if unchecked
                 });
-                addBtn.addEventListener('click', () => createRow());
-                addRowBtn.addEventListener('click', () => createRow());
 
-                const urlProjectId = new URLSearchParams(window.location.search).get("projectId");
+                label.appendChild(checkbox);
+                label.append(` ${material.materialName}`);
+                label.appendChild(quantityInput);
+                materialContainer.appendChild(label);
+            });
+        });
 
-                fetch('/projectsAdmin/getProjects')
-                    .then(res => res.json())
-                    .then(projects => {
-                        dropdown.innerHTML = '<option disabled hidden>Select a project</option>';
-                        projects.forEach(project => {
-                            const option = document.createElement('option');
-                            option.value = project.projectId;
-                            option.textContent = project.projectname;
+        document.getElementById('addMaterialForm').addEventListener('submit', function (e) {
+            e.preventDefault();
 
-                            option.dataset.companyname = project.companyname || 'N/A';
-                            option.dataset.companylocation = project.companyLocation || 'N/A';
-                            option.dataset.companycontact = project.companycontact || 'N/A';
+            const selectedCategory = document.getElementById('category').value;
+            const materialContainer = document.getElementById('materialCheckboxes');
+            const checkboxes = materialContainer.querySelectorAll('input[type="checkbox"][name="materials"]');
 
-                            dropdown.appendChild(option);
+            const selectedMaterials = [];
 
-                            // ✅ If this is the URL-matching project, select it and trigger load
-                            if (urlProjectId && project.projectId == urlProjectId) {
-                                option.selected = true;
-                            }
-                        });
+            checkboxes.forEach((checkbox, index) => {
+                if (checkbox.checked) {
+                    const quantityInput = materialContainer.querySelector(`input[name="quantity_${index}"]`);
+                    const quantity = quantityInput.value.trim();
+                    if (!quantity || isNaN(quantity) || quantity <= 0) {
+                        alert(`Please enter a valid quantity for ${checkbox.value}`);
+                        return;
+                    }
 
-                        // ✅ Force load the selected project's data
-                        if (urlProjectId) {
-                            dropdown.dispatchEvent(new Event('change'));
+                    selectedMaterials.push({
+                        materialName: checkbox.value,
+                        quantity: parseInt(quantity)
+                    });
+                }
+            });
+
+            if (selectedMaterials.length === 0) {
+                alert("Please select at least one material and specify quantity.");
+                return;
+            }
+
+            const payload = {
+                category: selectedCategory,
+                materials: selectedMaterials,
+                projectName: document.getElementById("projectName").textContent.trim()
+            };
+
+            console.log("🧾 Payload to send:", payload); // For checking
+
+            fetch('/projectManagementAdmin/addMaterials', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            })
+                .then(res => {
+                    if (res.ok) {
+                        alert("Materials added successfully!");
+                        closeModal('addMaterialModal');
+                        location.reload(); // or re-render table
+                    } else {
+                        alert("Failed to add materials.");
+                    }
+                });
+        });
+
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const dropdown = document.getElementById('projectDropdown');
+            const nameField = document.getElementById('projectName');
+            const locationField = document.getElementById('projectLocation');
+            const companyField = document.getElementById('companyName');
+            const contactField = document.getElementById('companyContact');
+            const tableBody = document.querySelector('#materialsTable tbody');
+            const editBtn = document.getElementById('editBtn');
+            const addBtn = document.getElementById('addBtn');
+            const backBtn = document.getElementById('backBtn');
+            const addRowBtn = document.getElementById('addRowBtn');
+            const toggleArchiveBtn = document.getElementById('toggleArchiveBtn');
+            const categorySelect = document.getElementById('category');
+            const categories = Object.keys(hardcodedMaterials);
+
+            let inEditMode = false;
+            let showArchived = false;
+
+            function toggleEditMode() {
+                inEditMode = !inEditMode;
+                editBtn.textContent = inEditMode ? 'Save' : 'Edit';
+
+                // Show/hide Actions column (header and all .actions cells)
+                document.querySelectorAll('.actions-header, .actions-col').forEach(el => {
+                    el.style.display = inEditMode ? 'table-cell' : 'none';
+                });
+
+                // Re-render the table to show/hide ❌ buttons
+                renderMaterialsTable(currentMaterials);
+            }
+
+            function createRow(data = ['', '', '', '', ''], archived = false) {
+                const row = document.createElement('tr');
+                if (archived) row.classList.add('archived');
+
+                data.forEach(text => {
+                    const cell = document.createElement('td');
+                    cell.textContent = text;
+                    row.appendChild(cell);
+                });
+
+                const actions = document.createElement('td');
+                actions.className = 'actions actions-col'; // ✅ includes .actions-col for visibility toggle
+                if (inEditMode) {
+                    actions.innerHTML = '<span class="delete-icon">❌</span>';
+                }
+                row.appendChild(actions);
+
+                tableBody.appendChild(row);
+            }
+
+            editBtn.addEventListener('click', toggleEditMode);
+            backBtn.addEventListener('click', () => {
+                window.location.href = 'projectsAdmin';
+            });
+            addBtn.addEventListener('click', () => createRow());
+            addRowBtn.addEventListener('click', () => createRow());
+
+            const urlProjectId = new URLSearchParams(window.location.search).get("projectId");
+
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                categorySelect.appendChild(option);
+            });
+
+            fetch('/projectsAdmin/getProjects')
+                .then(res => res.json())
+                .then(projects => {
+                    dropdown.innerHTML = '<option disabled hidden>Select a project</option>';
+                    projects.forEach(project => {
+                        const option = document.createElement('option');
+                        option.value = project.projectId;
+                        option.textContent = project.projectname;
+
+                        option.dataset.companyname = project.companyname || 'N/A';
+                        option.dataset.companylocation = project.companyLocation || 'N/A';
+                        option.dataset.companycontact = project.companycontact || 'N/A';
+
+                        dropdown.appendChild(option);
+
+                        // ✅ If this is the URL-matching project, select it and trigger load
+                        if (urlProjectId && project.projectId == urlProjectId) {
+                            option.selected = true;
                         }
                     });
 
-                document.querySelector('#materialsTable').addEventListener('click', (e) => {
-                    if (e.target.classList.contains('delete-icon')) {
-                        const row = e.target.closest('tr');
-                        const materialName = row.querySelector("td:nth-child(2)").textContent.trim();
-                        const quantity = parseInt(row.querySelector("td:nth-child(3)").textContent);
-                        const projectName = document.getElementById("projectName").textContent.trim();
-
-                        fetch('/projectManagementAdmin/removeMaterial', {
-                            method: "POST",
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({projectName, materialName, quantity})
-                        }).then(res => {
-                            if (res.ok) {
-                                row.remove();
-
-                                // ✅ remove from currentMaterials to persist deletion across Save toggle
-                                currentMaterials = currentMaterials.filter(m =>
-                                    !(m.materialName === materialName && m.quantityAssigned === quantity)
-                                );
-                            } else {
-                                alert("Failed to remove material.");
-                            }
-                        });
+                    // ✅ Force load the selected project's data
+                    if (urlProjectId) {
+                        dropdown.dispatchEvent(new Event('change'));
                     }
                 });
 
-                dropdown.addEventListener('change', () => {
-                    const selected = dropdown.selectedOptions[0];
-                    const selectedId = selected.value;
+            document.querySelector('#materialsTable').addEventListener('click', (e) => {
+                if (e.target.classList.contains('delete-icon')) {
+                    const row = e.target.closest('tr');
+                    const materialName = row.querySelector("td:nth-child(2)").textContent.trim();
+                    const quantity = parseInt(row.querySelector("td:nth-child(3)").textContent);
+                    const projectName = document.getElementById("projectName").textContent.trim();
 
-                    nameField.textContent = selected.textContent || 'N/A';
-                    companyField.textContent = selected.dataset.companyname || 'N/A';
-                    locationField.textContent = selected.dataset.companylocation || 'N/A';
-                    contactField.textContent = selected.dataset.companycontact || 'N/A';
+                    fetch('/projectManagementAdmin/removeMaterial', {
+                        method: "POST",
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({projectName, materialName, quantity})
+                    }).then(res => {
+                        if (res.ok) {
+                            row.remove();
 
-                    fetch(`/projectManagementAdmin/data?projectId=${selectedId}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            console.log("📦 Materials received:", data.materials);
-                            displayProjectInfo(data.project);
-                            renderMaterialsTable(data.materials);
-                        });
-                });
+                            // ✅ remove from currentMaterials to persist deletion across Save toggle
+                            currentMaterials = currentMaterials.filter(m =>
+                                !(m.materialName === materialName && m.quantityAssigned === quantity)
+                            );
+                        } else {
+                            alert("Failed to remove material.");
+                        }
+                    });
+                }
+            });
+
+            dropdown.addEventListener('change', () => {
+                const selected = dropdown.selectedOptions[0];
+                const selectedId = selected.value;
+
+                nameField.textContent = selected.textContent || 'N/A';
+                companyField.textContent = selected.dataset.companyname || 'N/A';
+                locationField.textContent = selected.dataset.companylocation || 'N/A';
+                contactField.textContent = selected.dataset.companycontact || 'N/A';
+
+                fetch(`/projectManagementAdmin/data?projectId=${selectedId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log("📦 Materials received:", data.materials);
+                        displayProjectInfo(data.project);
+                        renderMaterialsTable(data.materials);
+                    });
+            });
 
 
             const projectId = new URLSearchParams(window.location.search).get("projectId");
@@ -1145,6 +1385,7 @@
                         renderMaterialsTable(data.materials);
                     });
             }
+
             function displayProjectInfo(project) {
                 document.getElementById("projectName").textContent = project.projectname || 'N/A';
                 document.getElementById("projectLocation").textContent = project.companyLocation || 'N/A';
@@ -1152,15 +1393,15 @@
                 document.getElementById("companyContact").textContent = project.companycontact || 'N/A';
             }
 
-                function renderMaterialsTable(materials) {
-                    const tableBody = document.getElementById("materialsTableBody");
-                    tableBody.innerHTML = "";
-                    currentMaterials = materials; // store globally
+            function renderMaterialsTable(materials) {
+                const tableBody = document.getElementById("materialsTableBody");
+                tableBody.innerHTML = "";
+                currentMaterials = materials; // store globally
 
-                    materials.forEach((item, index) => {
-                        const row = document.createElement("tr");
+                materials.forEach((item, index) => {
+                    const row = document.createElement("tr");
 
-                        row.innerHTML = `
+                    row.innerHTML = `
             <td>${String(index + 1).padStart(3, '0')}</td>
             <td>${item.materialName || 'N/A'}</td>
             <td>${item.quantityAssigned} PCS</td>
@@ -1171,14 +1412,44 @@
             </td>
         `;
 
-                        tableBody.appendChild(row);
-                    });
+                    tableBody.appendChild(row);
+                });
+            }
+        });
+        // Open Modal
+        document.getElementById('addBtn').addEventListener('click', function () {
+            openModal('addMaterialModal');
+        });
+
+        // Modal Open/Close Helpers
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const overlay = document.getElementById('overlay');
+            if (modal && overlay) {
+                modal.style.display = "block";
+                overlay.style.display = "block";
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+            document.getElementById('overlay').style.display = "none";
+        }
+
+        window.addEventListener('click', function (event) {
+            const modals = document.querySelectorAll('.modal');
+            const overlay = document.getElementById('overlay');
+            modals.forEach(modal => {
+                if (event.target === modal || event.target === overlay) {
+                    modal.style.display = "none";
+                    overlay.style.display = "none";
                 }
             });
+        });
 
 
-        </script>
-    </section>
+    </script>
+</section>
 </body>
 
 </html>

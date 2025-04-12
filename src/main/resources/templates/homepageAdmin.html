@@ -610,9 +610,12 @@
             sidebar.classList.toggle("open");
         });
 
-        searchBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
-        });
+        if (searchBtn) {
+            searchBtn.addEventListener("click", () => {
+                sidebar.classList.toggle("open");
+            });
+        }
+
     </script>
 </body>
 </html>

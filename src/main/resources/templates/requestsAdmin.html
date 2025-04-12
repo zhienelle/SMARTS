@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
+//FIXED BY JED
 <head>
     <meta charset="UTF-8">
     <title>Admin Requests</title>
@@ -460,6 +460,89 @@
         .approval-buttons button:hover {
             opacity: 0.9;
         }
+
+        #approveConfirmModal.modal,
+        #denyConfirmModal.modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.2);
+            overflow: auto;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #approveConfirmModal .modal-content,
+        #denyConfirmModal .modal-content{
+            background: radial-gradient(50% 50% at 50% 50%, #ee9b7b 0%, #FFFFFF 100%);
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.25);
+            margin: 20vh auto;
+            padding: 40px 30px;
+            border: 4px solid #102937;
+            border-radius: 30px;
+            width: 400px;
+            max-width: 90%;
+            text-align: center;
+            color: #F9744B;
+            font-family: 'Fredoka', sans-serif;
+            text-transform: uppercase;
+        }
+
+        #approveConfirmModal .modal-content h3,
+        #denyConfirmModal .modal-content h3 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        #approveConfirmModal .buttons,
+        #denyConfirmModal .buttons {
+            display: flex;
+            flex-direction: row;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #confirmApprove,
+        #confirmDeny,
+        #cancelApprove,
+        #cancelDeny {
+            background: linear-gradient(180deg, #124d54 0%, rgb(16, 41, 55) 100%);
+        }
+
+
+        #approveConfirmModal .buttons button,
+        #denyConfirmModal .buttons button {
+            box-sizing: border-box;
+            width: 250px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 8px 16px;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            text-transform: uppercase;
+            overflow: hidden;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        #confirmBulkYes:hover {
+            background: linear-gradient(180deg, #16a085 0%, rgb(22, 60, 77) 100%);
+        }
+
+        #confirmBulkNo:hover {
+            background: linear-gradient(180deg, #a93131 0%, rgb(75, 13, 13) 100%);
+        }
     </style>
 </head>
 
@@ -571,71 +654,7 @@
                 </tr>
             </thead>
             <tbody id="requestsTableBody">
-            <tr>
-                    <td>Staff1</td>
-                    <td>Staff</td>
-                    <td>Steel Rods</td>
-                    <td>50</td>
-                    <td>Project #1</td>
-                    <td>
-                        <div class="approval-buttons">
-                            <button onclick="hideRow(this)">Yes</button>
-                            <button onclick="hideRow(this)">No</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Staff2</td>
-                    <td>Staff</td>
-                    <td>Aluminum Sheets</td>
-                    <td>30</td>
-                    <td>Project #2</td>
-                    <td>
-                        <div class="approval-buttons">
-                            <button onclick="hideRow(this)">Yes</button>
-                            <button onclick="hideRow(this)">No</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Staff3</td>
-                    <td>Staff</td>
-                    <td>Copper Wires</td>
-                    <td>100</td>
-                    <td>Project #3</td>
-                    <td>
-                        <div class="approval-buttons">
-                            <button onclick="hideRow(this)">Yes</button>
-                            <button onclick="hideRow(this)">No</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Staff4</td>
-                    <td>Staff</td>
-                    <td>Iron Beams</td>
-                    <td>40</td>
-                    <td>Project #4</td>
-                    <td>
-                        <div class="approval-buttons">
-                            <button onclick="hideRow(this)">Yes</button>
-                            <button onclick="hideRow(this)">No</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Staff5</td>
-                    <td>Staff</td>
-                    <td>Brass Plates</td>
-                    <td>20</td>
-                    <td>Project #5</td>
-                    <td>
-                        <div class="approval-buttons">
-                            <button onclick="hideRow(this)">Yes</button>
-                            <button onclick="hideRow(this)">No</button>
-                        </div>
-                    </td>
-                </tr>
+
             </tbody>
         </table>
         <div class="approval-buttons" style="justify-content: center; margin-top: 20px;">
@@ -650,15 +669,28 @@
     <footer>
         <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
     </footer>
-    <div id="bulkConfirmModal" class="modal" style="display: none;">
-        <div class="modal-content" style="background-color: white; padding: 30px; border-radius: 20px; width: 300px; margin: auto; top: 30%; position: fixed; left: 0; right: 0; box-shadow: 0px 0px 20px rgba(0,0,0,0.3); z-index: 999;">
-            <h3 style="color: #124D54;">Are you sure?</h3>
-            <div style="display: flex; justify-content: space-around; margin-top: 20px;">
-                <button id="confirmBulkYes">YES</button>
-                <button id="confirmBulkNo">NO</button>
+    <!-- APPROVE Modal -->
+    <div id="approveConfirmModal" class="modal">
+        <div class="modal-content">
+            <h3>Approve selected requests?</h3>
+            <div class="buttons">
+                <button id="cancelApprove">No</button>
+                <button id="confirmApprove">Yes</button>
             </div>
         </div>
     </div>
+
+    <!-- DENY Modal -->
+    <div id="denyConfirmModal" class="modal">
+        <div class="modal-content">
+            <h3>Deny selected requests?</h3>
+            <div class="buttons">
+                <button id="cancelDeny">No</button>
+                <button id="confirmDeny">Yes</button>
+            </div>
+        </div>
+    </div>
+
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -686,17 +718,26 @@
                             <td><input type="checkbox" class="row-checkbox" data-id="${req.materialRequestId}"> ${req.user?.username || 'N/A'}</td>
                             <td>${req.user?.role || 'N/A'}</td>
                             <td>${req.materialName || '-'}</td>
-                            <td>${req.materialStock}</td>
+                            <td>${req.materialStock || 0}</td>
                             <td>${projName}</td>
                             <td>
                                 <div class="approval-buttons">
-                                    <button onclick="handleApproval(${req.materialRequestId}, true)">YES</button>
-                                    <button onclick="handleApproval(${req.materialRequestId}, false)">NO</button>
+                                    <button class="approve-btn">YES</button>
+                                    <button class="deny-btn">NO</button>
                                 </div>
                             </td>
                         `;
 
+
                             tbody.appendChild(row);
+                            row.querySelector(".approve-btn").addEventListener("click", () => {
+                                handleApproval(req.materialRequestId, true);
+                            });
+
+                            row.querySelector(".deny-btn").addEventListener("click", () => {
+                                handleApproval(req.materialRequestId, false);
+                            });
+
                         });
 
                         // Populate the filter dropdown
@@ -726,16 +767,43 @@
             // Handle approve/deny click
             window.handleApproval = (requestId, approved) => {
                 const url = approved ? "/admin/requests/approve/" : "/admin/requests/deny/";
+
+                // If approving, check inventory
+                if (approved) {
+                    const row = document.querySelector(`tr[data-id="${requestId}"]`);
+                    if (!row) return;
+
+                    const material = row.cells[2].innerText.trim();
+                    console.log(row.cells[2]);
+                    console.log(row.cells[2].innerText.trim());
+                    const qtyRequested = parseInt(row.cells[3].innerText.trim());
+                    console.log(inventoryCache);
+                    const inv = inventoryCache.find(i => i.material_name.toLowerCase() === material.toLowerCase());
+                    if (!inv) {
+                        alert(`❌ Material "${material}" not found in inventory.`);
+                        return;
+                    }
+
+                    if (qtyRequested > inv.material_stock) {
+                        alert(`❌ Cannot approve ${material}: only ${inv.material_stock} in stock, requested ${qtyRequested}.`);
+                        return;
+                    }
+                }
+
                 fetch(url + requestId, { method: "POST" })
-                    .then(res => {
-                        if (res.ok) {
-                            const row = document.querySelector(`tr[data-id="${requestId}"]`);
-                            if (row) row.style.display = "none";
-                        } else {
-                            alert("❌ Failed to update request.");
+                    .then(async res => {
+                        const msg = await res.text();
+
+                        if (!res.ok) {
+                            alert("❌ " + msg);
+                            return;
                         }
+
+                        const row = document.querySelector(`tr[data-id="${requestId}"]`);
+                        if (row) row.remove();
                     });
             };
+
 
 
             // Filter by project dropdown
@@ -743,83 +811,156 @@
                 loadRequests(projectFilter.value);
             });
 
-            // Initial load
-            loadRequests();
+            fetch("/admin/inventory/getAll")
+                .then(res => res.json())
+                .then(data => {
+                    inventoryCache = data;
+                    loadRequests(); // ✅ safe to load requests now
+                })
+                .catch(err => {
+                    console.error("❌ Failed to fetch inventory data:", err);
+                });
+
+
+
         });
 
         let selectedAction = null;
+        let inventoryCache = [];
+
 
         function getSelectedRequestIds() {
             return [...document.querySelectorAll(".row-checkbox:checked")].map(cb => parseInt(cb.dataset.id));
         }
 
-        function toggleModal(show) {
-            const modal = document.getElementById("bulkConfirmModal");
-            modal.style.display = show ? "block" : "none";
+        // function toggleModal(show) {
+        //     const modal = document.getElementById("bulkConfirmModal");
+        //     modal.style.display = show ? "block" : "none";
+        // }
+        function showModal(id) {
+            console.log("showmodal", id);
+            document.getElementById(id).style.display = "block";
         }
 
+        function hideModal(id) {
+            document.getElementById(id).style.display = "none";
+        }
+
+
         document.getElementById("approveSelectedBtn").addEventListener("click", () => {
+            console.log("i click approve");
             const selected = getSelectedRequestIds();
             if (selected.length === 0) {
                 alert("⚠️ No requests selected.");
                 return;
             }
             selectedAction = "APPROVED";
-            toggleModal(true);
+            showModal("approveConfirmModal");
         });
 
         document.getElementById("denySelectedBtn").addEventListener("click", () => {
+            console.log("i click deny");
             const selected = getSelectedRequestIds();
             if (selected.length === 0) {
                 alert("⚠️ No requests selected.");
                 return;
             }
             selectedAction = "DENIED";
-            toggleModal(true);
+            showModal("denyConfirmModal");
         });
 
-
-
-        document.getElementById("confirmBulkNo").addEventListener("click", () => {
-            // Deselect checkboxes and reset state
-            document.querySelectorAll(".row-checkbox").forEach(cb => cb.checked = false);
+        document.getElementById("cancelApprove").addEventListener("click", () => {
             selectedAction = null;
-            toggleModal(false);
+            hideModal("approveConfirmModal");
         });
 
-        document.getElementById("confirmBulkYes").addEventListener("click", () => {
+        document.getElementById("cancelDeny").addEventListener("click", () => {
+            selectedAction = null;
+            hideModal("denyConfirmModal");
+        });
+
+        document.getElementById("confirmApprove").addEventListener("click", () => {
+            handleBulkApproval();
+            hideModal("approveConfirmModal");
+        });
+
+        document.getElementById("confirmDeny").addEventListener("click", () => {
+            handleBulkDenial();
+            hideModal("denyConfirmModal");
+        });
+
+
+
+
+        function handleBulkApproval() {
             const requestIds = getSelectedRequestIds();
-            if (requestIds.length === 0) {
-                alert("⚠️ Please select at least one request.");
-                toggleModal(false);
+            const materialTotals = {};
+            const errors = [];
+
+            requestIds.forEach(id => {
+                const row = document.querySelector(`tr[data-id="${id}"]`);
+                if (!row) return;
+                const material = row.cells[2].innerText.trim();
+                const qty = parseInt(row.cells[3].innerText.trim());
+
+                materialTotals[material] = (materialTotals[material] || 0) + qty;
+            });
+
+            for (const [material, totalRequested] of Object.entries(materialTotals)) {
+                const inv = inventoryCache.find(i => i.material_name.toLowerCase() === material.toLowerCase());
+                if (!inv) {
+                    errors.push(`❌ Material "${material}" not found in inventory.`);
+                    continue;
+                }
+
+                if (totalRequested > inv.material_stock) {
+                    errors.push(`❌ Cannot approve ${material}: requested ${totalRequested}, only ${inv.material_stock} in stock.`);
+                    continue;
+                }
+
+                inv.material_stock -= totalRequested; // simulate
+            }
+
+            if (errors.length > 0) {
+                alert(errors.join("\n"));
                 return;
             }
 
+            // Proceed with backend update
             fetch("/admin/requests/updateMultipleStatus", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ requestIds, action: selectedAction })
+                body: JSON.stringify({ requestIds, action: "APPROVED" })
             })
                 .then(res => res.text())
                 .then(msg => {
-                    // Fully remove affected rows instead of just hiding
                     requestIds.forEach(id => {
                         const row = document.querySelector(`tr[data-id="${id}"]`);
                         if (row) row.remove();
                     });
-
-                    // ✅ Deselect any lingering checkboxes, reset action and close modal
-                    document.querySelectorAll(".row-checkbox").forEach(cb => cb.checked = false);
-                    selectedAction = null;
-                    toggleModal(false);
                     alert(msg);
-                })
-                .catch(err => {
-                    console.error("❌ Bulk update failed", err);
-                    alert("❌ Something went wrong.");
-                    toggleModal(false);
                 });
-        });
+        }
+
+        function handleBulkDenial() {
+            const requestIds = getSelectedRequestIds();
+
+            fetch("/admin/requests/updateMultipleStatus", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ requestIds, action: "DENIED" })
+            })
+                .then(res => res.text())
+                .then(msg => {
+                    requestIds.forEach(id => {
+                        const row = document.querySelector(`tr[data-id="${id}"]`);
+                        if (row) row.remove();
+                    });
+                    alert(msg);
+                });
+        }
+
+
 
 
     </script>
