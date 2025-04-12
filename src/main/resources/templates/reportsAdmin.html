@@ -861,50 +861,19 @@
     <script>
         async function fetchAndRenderAdminReports(projectName = "All Projects", startDate = null, endDate = null) {
             const dropdown = document.getElementById("project-select");
-            const selectedPeriod = document.getElementById("selectedPeriod");
-            const matContainer = document.getElementById("materialsPreview");
 
             // Fetch all projects
             const projectsRes = await fetch("/admin/reports/getProjects");
             const projects = await projectsRes.json();
 
-            // Filter by date
-            let filteredProjects = [...projects];
-            if (startDate && endDate) {
-                const start = new Date(startDate);
-                const end = new Date(endDate);
-                filteredProjects = projects.filter(p => {
-                    const projStart = new Date(p.projectstart);
-                    const projEnd = new Date(p.projectend);
-                    return projStart >= start && projEnd <= end;
-                });
-            }
-
-            // Update dropdown
             dropdown.innerHTML = `<option value="All Projects">All Projects</option>`;
-            filteredProjects.forEach(p => {
+            projects.forEach(p => {
                 const name = p.projectname || p.projectName;
                 dropdown.innerHTML += `<option value="${name}">${name}</option>`;
             });
+            dropdown.value = projectName;
 
-            // Set dropdown to selected project if it still exists, else fallback
-            if (filteredProjects.find(p => p.projectname === projectName)) {
-                dropdown.value = projectName;
-            } else {
-                dropdown.value = "All Projects";
-                projectName = "All Projects";
-            }
-
-            // Show/hide dropdown and materials if projects exist
-            if (filteredProjects.length === 0) {
-                dropdown.style.display = "none";
-                matContainer.style.display = "none";
-            } else {
-                dropdown.style.display = "block";
-                matContainer.style.display = "grid";
-            }
-
-            // Fetch and render key metrics
+            // Fetch key metrics
             let metricsUrl = `/admin/reports/metrics?projectName=${encodeURIComponent(projectName)}`;
             if (startDate && endDate) {
                 metricsUrl += `&startDate=${startDate}&endDate=${endDate}`;
@@ -920,49 +889,46 @@
             document.getElementById("totalExpense").innerText = `PHP ${metrics.totalExpense?.toLocaleString() || 0}`;
             document.getElementById("netProfit").innerText = `PHP ${metrics.netProfit?.toLocaleString() || 0}`;
 
-            // Fetch and render materials (if projects exist)
+            // Fetch materials
+            const matContainer = document.getElementById("materialsPreview");
+            const materialsRes = await fetch(`/admin/reports/materialPreview?projectName=${encodeURIComponent(projectName)}`);
+            const materials = await materialsRes.json();
             matContainer.innerHTML = "";
-            if (filteredProjects.length > 0) {
-                const materialsRes = await fetch(`/admin/reports/materialPreview?projectName=${encodeURIComponent(projectName)}`);
-                const materials = await materialsRes.json();
 
-                materials.forEach(mat => {
-                    matContainer.innerHTML += `
-                    <div class="material-item">
-                        <span>${mat.materialName}</span>
-                        <span>${mat.quantity}</span>
-                    </div>`;
-                });
-            }
+            materials.forEach(mat => {
+                matContainer.innerHTML += `
+                <div class="material-item">
+                    <span>${mat.materialName}</span>
+                    <span>${mat.quantity}</span>
+                </div>`;
+            });
 
             // Render project table
             const tableBody = document.getElementById("projectsTableBody");
             tableBody.innerHTML = "";
-
-            filteredProjects
+            projects
                 .filter(p => projectName === "All Projects" || p.projectname === projectName)
                 .forEach(p => {
                     tableBody.innerHTML += `
-                    <tr>
-                        <td>${p.projectname}</td>
-                        <td>${p.projectstatus}</td>
-                        <td>${new Date(p.projectstart).toLocaleDateString()}</td>
-                        <td>${new Date(p.projectend).toLocaleDateString()}</td>
-                        <td>${p.clientname}</td>
-                    </tr>`;
+                <tr>
+                    <td>${p.projectname}</td>
+                    <td>${p.projectstatus}</td>
+                    <td>${new Date(p.projectstart).toLocaleDateString()}</td>
+                    <td>${new Date(p.projectend).toLocaleDateString()}</td>
+                    <td>${p.clientname}</td>
+                </tr>`;
                 });
         }
 
         // Initial load
         fetchAndRenderAdminReports();
 
-        // Dropdown change
+        // Dropdown project change
         document.getElementById("project-select").addEventListener("change", e => {
-            const selectedProject = e.target.value;
-            fetchAndRenderAdminReports(selectedProject);
+            fetchAndRenderAdminReports(e.target.value);
         });
 
-        // Submit period
+        // Period modal submit
         document.getElementById("submitPeriod").addEventListener("click", () => {
             const start = document.getElementById("startDate").value;
             const end = document.getElementById("endDate").value;
@@ -972,39 +938,15 @@
                 return;
             }
 
-            if (new Date(start) > new Date(end)) {
-                alert("⚠️ Start date cannot be after end date.");
-                return;
-            }
-
-            const selectedText = `Showing results from ${start} to ${end}`;
+            const selectedText = `Selected Period: ${start} to ${end}`;
             const selectedPeriod = document.getElementById("selectedPeriod");
             selectedPeriod.innerText = selectedText;
             selectedPeriod.style.display = "block";
 
             const selectedProject = document.getElementById("project-select").value;
             fetchAndRenderAdminReports(selectedProject, start, end);
-
-            document.getElementById("modal").style.display = "none";
-            document.getElementById("overlay").style.display = "none";
-        });
-
-        // Cancel modal and clear inputs
-        function closeModalAndReset() {
-            document.getElementById("startDate").value = "";
-            document.getElementById("endDate").value = "";
-            document.getElementById("modal").style.display = "none";
-            document.getElementById("overlay").style.display = "none";
-        }
-
-        document.getElementById("cancelModal").addEventListener("click", closeModalAndReset);
-        document.getElementById("overlay").addEventListener("click", closeModalAndReset);
-        document.getElementById("selectPeriod").addEventListener("click", () => {
-            document.getElementById("modal").style.display = "block";
-            document.getElementById("overlay").style.display = "block";
         });
     </script>
-
 </body>
 
 </html>
