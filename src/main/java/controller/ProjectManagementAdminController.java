@@ -98,6 +98,18 @@ public class ProjectManagementAdminController {
 
             // Deduct stock
             inventory.setMaterialStock(inventory.getMaterialStock() - quantity);
+
+// Update stock status
+            int newStock = inventory.getMaterialStock();
+            if (newStock <= 30) {
+                inventory.setMaterialStockStatus("LOW");
+            } else if (newStock <= 100) {
+                inventory.setMaterialStockStatus("MODERATE");
+            } else {
+                inventory.setMaterialStockStatus("HIGH");
+            }
+
+// Save inventory
             inventoryRepository.save(inventory);
 
             // Create or update ProjectInventory
@@ -131,23 +143,34 @@ public class ProjectManagementAdminController {
         Project project = projectRepository.findByProjectname(projectName);
         if (project == null) return ResponseEntity.badRequest().body("Project not found");
 
-        // Find Inventory
         Inventory inventory = inventoryRepository.findByMaterialName(materialName);
         if (inventory == null) return ResponseEntity.badRequest().body("Inventory item not found");
 
-        // Find ProjectInventory entry
         ProjectInventory projectInventory = projectInventoryRepository.findByProjectAndInventory(project, inventory);
         if (projectInventory == null) return ResponseEntity.badRequest().body("Material not found in this project");
 
-        // 1. Return quantity back to stock
-        inventory.setMaterialStock(inventory.getMaterialStock() + quantity);
+        // ✅ Return quantity to stock
+        int newStock = inventory.getMaterialStock() + quantity;
+        inventory.setMaterialStock(newStock);
+
+        // ✅ Update stock status
+        if (newStock <= 30) {
+            inventory.setMaterialStockStatus("LOW");
+        } else if (newStock <= 100) {
+            inventory.setMaterialStockStatus("MODERATE");
+        } else {
+            inventory.setMaterialStockStatus("HIGH");
+        }
+
+        // ✅ Save inventory changes
         inventoryRepository.save(inventory);
 
-        // 2. Delete project-material link
-        projectInventoryRepository.delete(projectInventory); // ✅ This removes the row from the project only
+        // ✅ Remove material from the project
+        projectInventoryRepository.delete(projectInventory);
 
-        return ResponseEntity.ok("Material unassigned from project and stock updated");
+        return ResponseEntity.ok("Material unassigned from project, stock and status updated.");
     }
+
 
 
 

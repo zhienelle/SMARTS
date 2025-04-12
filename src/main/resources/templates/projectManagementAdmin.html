@@ -460,7 +460,7 @@
             align-items: center;
             background-color: darkgray;
             color: #fff;
-            padding: auto;
+            padding: 0 10px;
             border-radius: 10px;
             font-weight: bold;
             font-size: 12px;
@@ -894,7 +894,7 @@
 
         .checkbox-container label {
             display: flex;
-            align-items: left;
+            align-items: flex-start;
             margin-bottom: 10px;
             padding: 8px 12px;
             border-radius: 5px;
@@ -1103,8 +1103,8 @@
             <button id="editBtn">Edit</button>
           <!--  <button id="editProgressBtn">Edit Project Progress</button> -->
         </div>
-        <!-- Overlay -->
-        <div class="overlay" id="overlay"></div>
+<!--        &lt;!&ndash; Overlay &ndash;&gt;-->
+<!--        <div class="overlay" id="overlay"></div>-->
 
         <!-- Add Material Modal -->
         <div id="addMaterialModal" class="modal">
@@ -1262,7 +1262,7 @@
                         const row = e.target.closest('tr');
                         const materialName = row.querySelector("td:nth-child(2)").textContent.trim();
                         const quantity = parseInt(row.querySelector("td:nth-child(3)").textContent);
-                        // const projectName = document.getElementById("projectName").textContent.trim();
+                        const projectName = document.getElementById("projectName").textContent.trim();
 
                         fetch('/projectManagementAdmin/removeMaterial', {
                             method: "POST",
@@ -1324,7 +1324,7 @@
                     const tableBody = document.getElementById("materialsTableBody");
                     tableBody.innerHTML = "";
                     currentMaterials = materials; // store globally
-
+console.log("📦 Materials to render:", materials);
                     materials.forEach((item, index) => {
                         const row = document.createElement("tr");
 
@@ -1381,6 +1381,7 @@
                 fetch(`/inventory/getByCategory?category=${encodeURIComponent(category)}`)
                     .then(response => response.json())
                     .then(materials => {
+                        console.log("📦 Materials by category:", materials);
                         if (!Array.isArray(materials)) return;
 
                         materials.forEach(material => {
@@ -1393,31 +1394,56 @@
                     </td>
                 `;
                             inventoryTableBody.appendChild(row);
+                            // Fix #2: Prevent "e", "+", and "-" in input
+                            const input = row.querySelector("input.material-quantity");
+                            input.addEventListener("keydown", function (e) {
+                                if (["e", "E", "+", "-"].includes(e.key)) {
+                                    e.preventDefault();
+                                }
+                            });
                         });
-                    });
-            }
+                    })
 
+
+
+            }
             // Save button inside modal
             function saveSelectedMaterials() {
                 const inputs = document.querySelectorAll('.material-quantity');
                 const selectedMaterials = [];
 
+                let valid = true;
                 inputs.forEach(input => {
-                    const quantity = parseInt(input.value);
-                    if (!isNaN(quantity) && quantity > 0) {
-                        selectedMaterials.push({
-                            materialName: input.dataset.materialName,
-                            quantity: quantity
-                        });
+                    if (input.value.trim() === "") {
+                        return; // skip empty inputs
                     }
+
+                    console.log(input.value);
+                    const quantity = Number(input.value);
+                    console.log(quantity);
+
+                    if (!Number.isInteger(quantity) || quantity <= 0) {
+                        valid = false;
+                        alert(`🚫 Invalid quantity for ${input.dataset.materialName}. Please enter a whole number greater than 0.`);
+                        return;
+                    }
+
+                    selectedMaterials.push({
+                        materialName: input.dataset.materialName,
+                        quantity: quantity
+                    });
                 });
+
+
+                if (!valid) return;  // Stop if any input is invalid
+
 
                 const projectName = document.getElementById("projectName").textContent.trim();
                 const selectedCategory = document.getElementById("materialCategorySelect").value;
 
                 fetch('/projectManagementAdmin/addMaterials', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
                         category: selectedCategory,
                         projectName: projectName,
@@ -1439,14 +1465,16 @@
 
                     });
             }
+                document.getElementById('addBtn').addEventListener('click', function () {
+                    openModal('addMaterialModal');
+                });
 
-            document.getElementById('addBtn').addEventListener('click', function () {
-                openModal('addMaterialModal');
-            });
+                document.getElementById('materialCategorySelect').addEventListener('change', function () {
+                    console.log(this.value);
+                    loadMaterialsByCategory(this.value);
+                });
 
-            document.getElementById('materialCategorySelect').addEventListener('change', function () {
-                loadMaterialsByCategory(this.value);
-            });
+
 
         </script>
     </section>

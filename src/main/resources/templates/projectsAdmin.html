@@ -1299,9 +1299,12 @@
         if (dropdown && dropdown.options.length <= 1) { // don't repopulate if already filled
             dropdown.innerHTML = '<option value="">Select Project</option>';
 
+            console.log(projects);
 
             projects.forEach(project => {
+                console.log(project);
                 const option = document.createElement('option');
+                console.log(option);
                 option.value = project.projectId;
                 option.textContent = project.projectname;
                 dropdown.appendChild(option);
@@ -1396,7 +1399,7 @@
                 // Reload projects to update table and dropdowns
                 loadProjects();
                 document.getElementById('editProjectDetailsForm').reset();
-                document.getElementById('restoreStatusSelect').value = "";
+                // document.getElementById('restoreStatusSelect').value = "";
                 closeModal('editDetailsModal');
             })
             .catch(error => {
