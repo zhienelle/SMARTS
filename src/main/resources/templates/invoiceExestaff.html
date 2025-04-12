@@ -6,8 +6,10 @@
     <title>ExeStaff Invoice</title>
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
     <link
-        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
-        rel="stylesheet">
+            href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
+            rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -615,258 +617,411 @@
 </head>
 
 <body>
-    <!-- Header -->
-    <header>
-        <div class="smarts-logo">
-            <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
-        </div>
-        <div>
-            <p>ROLE: <span>EXECUTIVE STAFF</span></p>
-            <i class='bx bxs-user-circle'></i>
-        </div>
-    </header>
+<!-- Header -->
+<header>
+    <div class="smarts-logo">
+        <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
+    </div>
+    <div>
+        <p>ROLE: <span>EXECUTIVE STAFF</span></p>
+        <i class='bx bxs-user-circle'></i>
+    </div>
+</header>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="logo-details">
-            <div class="logo_name">ACCE Construction</div>
-            <i class='bx bx-menu' id="btn"></i>
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="logo-details">
+        <div class="logo_name">ACCE Construction</div>
+        <i class='bx bx-menu' id="btn"></i>
+    </div>
+    <ul class="nav-list">
+        <li>
+            <a href="homepageExestaff">
+                <i class='bx bx-home'></i>
+                <span class="links_name">Homepage</span>
+            </a>
+            <span class="tooltip">Homepage</span>
+        </li>
+        <li>
+            <a href="myProjectExestaff">
+                <i class='bx bx-task'></i>
+                <span class="links_name">My Project</span>
+            </a>
+            <span class="tooltip">My Project</span>
+        </li>
+        <li>
+            <a href="inventoryExestaff">
+                <i class='bx bx-store-alt'></i>
+                <span class="links_name">Inventory</span>
+            </a>
+            <span class="tooltip">Inventory</span>
+        </li>
+        <li>
+            <a href="invoiceExestaff">
+                <i class='bx bx-receipt'></i>
+                <span class="links_name">Invoice</span>
+            </a>
+            <span class="tooltip">Invoice</span>
+        </li>
+        <li>
+            <a href="reportsExestaff">
+                <i class='bx bx-bar-chart'></i>
+                <span class="links_name">Reports & Analytics</span>
+            </a>
+            <span class="tooltip">Reports & Analytics</span>
+        </li>
+        <li>
+            <a href="requestsStatusExestaff">
+                <i class='bx bx-comment-dots'></i>
+                <span class="links_name">Requests</span>
+            </a>
+            <span class="tooltip">Requests</span>
+        </li>
+        <li>
+            <a href="settingsExestaff">
+                <i class='bx bx-cog'></i>
+                <span class="links_name">Settings</span>
+            </a>
+            <span class="tooltip">Settings</span>
+        </li>
+        <li>
+            <a href="confirmLogout">
+                <i class='bx bx-log-out'></i>
+                <span class="links_name">Logout</span>
+            </a>
+            <span class="tooltip">Logout</span>
+        </li>
+    </ul>
+</div>
+
+<!-- Main Section -->
+<section class="home-section">
+    <div class="upper">
+        <h1>INVOICE</h1>
+        <div class="functionality">
+            <select id="project-select">
+                <option value="" disabled selected>Select Project</option>
+            </select>
+            <button id="selectPeriod">Select Period</button>
         </div>
-        <ul class="nav-list">
-            <li>
-                <a href="homepageExestaff">
-                    <i class='bx bx-home'></i>
-                    <span class="links_name">Homepage</span>
-                </a>
-                <span class="tooltip">Homepage</span>
-            </li>
-            <li>
-                <a href="myProjectExestaff">
-                    <i class='bx bx-task'></i>
-                    <span class="links_name">My Project</span>
-                </a>
-                <span class="tooltip">My Project</span>
-            </li>
-            <li>
-                <a href="inventoryExestaff">
-                    <i class='bx bx-store-alt'></i>
-                    <span class="links_name">Inventory</span>
-                </a>
-                <span class="tooltip">Inventory</span>
-            </li>
-            <li>
-                <a href="invoiceExestaff">
-                    <i class='bx bx-receipt'></i>
-                    <span class="links_name">Invoice</span>
-                </a>
-                <span class="tooltip">Invoice</span>
-            </li>
-            <li>
-                <a href="reportsExestaff">
-                    <i class='bx bx-bar-chart'></i>
-                    <span class="links_name">Reports & Analytics</span>
-                </a>
-                <span class="tooltip">Reports & Analytics</span>
-            </li>
-            <li>
-                <a href="requestsStatusExestaff">
-                    <i class='bx bx-comment-dots'></i>
-                    <span class="links_name">Requests</span>
-                </a>
-                <span class="tooltip">Requests</span>
-            </li>
-            <li>
-                <a href="settingsExestaff">
-                    <i class='bx bx-cog'></i>
-                    <span class="links_name">Settings</span>
-                </a>
-                <span class="tooltip">Settings</span>
-            </li>
-            <li>
-                <a href="confirmLogout">
-                    <i class='bx bx-log-out'></i>
-                    <span class="links_name">Logout</span>
-                </a>
-                <span class="tooltip">Logout</span>
-            </li>
-        </ul>
     </div>
 
-    <!-- Main Section -->
-    <section class="home-section">
-        <div class="upper">
-            <h1>INVOICE</h1>
-            <div class="functionality">
-                <select id="project-select">
-                    <option value="" disabled selected>Select Project</option>
-                </select>
-                <button id="selectPeriod">Select Period</button>
+    <div class="overlay" id="overlay"></div>
+    <div class="selected-period" id="selectedPeriod">
+    </div>
+
+    <div class="invoice-container">
+        <div class="project-details">
+            <div>
+                <h2><strong>Project:</strong> <span id="projectName">---</span></h2>
+                <p><strong>Location:</strong> <span id="projectLocation">---</span></p>
+            </div>
+            <div class="b">
+                <h2><strong>Company:</strong> <span id="projectCompany">---</span></h2>
+                <p><strong>Contact:</strong> <span id="projectContact">---</span></p>
             </div>
         </div>
 
-        <div class="overlay" id="overlay"></div>
-        <div class="selected-period" id="selectedPeriod">
-        </div>
+        <table id="invoiceTable">
+            <thead>
+            <tr>
+                <th>Item No.</th>
+                <th>Materials</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+            </tr>
+            </thead>
+            <tbody id="invoiceBody"></tbody>
+            <tfoot>
+            <tr>
+                <td colspan="4">Total:</td>
+                <td id="totalCost">PHP 0</td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
 
-        <div class="invoice-container">
-            <div class="project-details">
-                <div>
-                    <h2><strong>Project:</strong> <span id="projectName">---</span></h2>
-                    <p><strong>Location:</strong> <span id="projectLocation">---</span></p>
-                </div>
-                <div class="b">
-                    <h2><strong>Company:</strong> <span id="projectCompany">---</span></h2>
-                    <p><strong>Contact:</strong> <span id="projectContact">---</span></p>
-                </div>
-            </div>
+    <div class="buttons">
+        <button onclick="generatePDF()">Print</button>
+    </div>
 
-            <table id="invoiceTable">
-                <thead>
-                <tr>
-                    <th>Item No.</th>
-                    <th>Materials</th>
-                    <th>Quantity</th>
-                    <th>Unit Price</th>
-                    <th>Total</th>
-                </tr>
-                </thead>
-                <tbody id="invoiceBody"></tbody>
-                <tfoot>
-                <tr>
-                    <td colspan="4">Total:</td>
-                    <td id="totalCost">PHP 0</td>
-                </tr>
-                </tfoot>
-            </table>
-        </div>
-
-        <div class="buttons">
-            <button>Print</button>
-        </div>
-
-        <div id="modal" class="modal">
-            <div class="modal-content">
-                <h3>Select Period</h3>
-                <input type="date" id="startDate">
-                <input type="date" id="endDate">
-                <div>
-                    <button id="cancelModal">Cancel</button>
-                    <button id="submitPeriod">Submit</button>
-                </div>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h3>Select Period</h3>
+            <input type="date" id="startDate">
+            <input type="date" id="endDate">
+            <div>
+                <button id="cancelModal">Cancel</button>
+                <button id="submitPeriod">Submit</button>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Footer -->
-    <footer>
-        <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
-    </footer>
+<!-- Footer -->
+<footer>
+    <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
+</footer>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", async () => {
-            try {
-                const res = await fetch("/exestaff/invoice/projects");
-                if (!res.ok) throw new Error("Failed to fetch projects");
-                const projects = await res.json();
-                const dropdown = document.getElementById("project-select");
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        try {
+            const res = await fetch("/exestaff/invoice/projects");
+            if (!res.ok) throw new Error("Failed to fetch projects");
+            const projects = await res.json();
+            const dropdown = document.getElementById("project-select");
 
-                if (projects.length === 0) {
-                    console.warn("No assigned projects returned.");
-                }
-
-                projects.forEach(project => {
-                    const option = document.createElement("option");
-                    option.value = project.projectId;
-                    option.textContent = project.projectname;
-                    dropdown.appendChild(option);
-                });
-
-                dropdown.addEventListener("change", async () => {
-                    const selected = projects.find(p => p.projectId == dropdown.value);
-                    if (!selected) return;
-
-                    document.getElementById("projectName").textContent = selected.projectname;
-                    document.getElementById("projectLocation").textContent = selected.companyLocation;
-                    document.getElementById("projectCompany").textContent = selected.companyname;
-                    document.getElementById("projectContact").textContent = selected.companycontact;
-
-                    const res = await fetch(`/exestaff/invoice/materials?projectId=${selected.projectId}`);
-                    if (!res.ok) throw new Error("Failed to fetch materials");
-
-                    const materials = await res.json();
-                    const tbody = document.getElementById("invoiceBody");
-                    tbody.innerHTML = "";
-                    let total = 0;
-
-                    materials.forEach((item, i) => {
-                        const row = document.createElement("tr");
-                        const totalRow = item.materialPrice * item.quantityAssigned;
-                        total += totalRow;
-
-                        row.innerHTML = `
-                    <td>${String(i + 1).padStart(3, '0')}</td>
-                    <td>${item.inventory.materialName}</td>
-                    <td>${item.quantityAssigned}</td>
-                    <td>PHP ${item.materialPrice.toLocaleString()}</td>
-                    <td>PHP ${totalRow.toLocaleString()}</td>
-                `;
-                        tbody.appendChild(row);
-                    });
-
-                    document.getElementById("totalCost").textContent = `PHP ${total.toLocaleString()}`;
-                });
-            } catch (err) {
-                console.error("Error loading invoice page:", err);
+            if (projects.length === 0) {
+                console.warn("No assigned projects returned.");
             }
-        });
 
-        const overlay = document.getElementById("overlay");
-        const modal = document.getElementById("modal");
-        const selectPeriodButton = document.getElementById("selectPeriod");
-        const cancelModalButton = document.getElementById("cancelModal");
-        const datePeriodDiv = document.getElementById("selectedPeriod");
+            projects.forEach(project => {
+                const option = document.createElement("option");
+                option.value = project.projectId;
+                option.textContent = project.projectname;
+                dropdown.appendChild(option);
+            });
 
-        selectPeriodButton.addEventListener("click", () => {
-            modal.style.display = "block";
-            overlay.style.display = "block";
-        });
+            dropdown.addEventListener("change", async () => {
+                const selected = projects.find(p => p.projectId == dropdown.value);
+                if (!selected) return;
 
-        cancelModalButton.addEventListener("click", () => {
-            modal.style.display = "none";
-            overlay.style.display = "none";
-        });
+                document.getElementById("projectName").textContent = selected.projectname;
+                document.getElementById("projectLocation").textContent = selected.companyLocation;
+                document.getElementById("projectCompany").textContent = selected.companyname;
+                document.getElementById("projectContact").textContent = selected.companycontact;
 
-        document.getElementById("submitPeriod").addEventListener("click", () => {
-            const startDate = document.getElementById("startDate").value;
-            const endDate = document.getElementById("endDate").value;
+                const res = await fetch(`/exestaff/invoice/materials?projectId=${selected.projectId}`);
+                if (!res.ok) throw new Error("Failed to fetch materials");
 
-            if (startDate && endDate) {
-                if (new Date(startDate) > new Date(endDate)) {
-                    alert("Start date cannot be later than end date.");
-                } else {
-                    datePeriodDiv.innerHTML = `Selected Period: ${startDate} to ${endDate}`;
-                    datePeriodDiv.style.display = "block";
-                    modal.style.display = "none";
-                    overlay.style.display = "none";
-                }
+                const materials = await res.json();
+                const tbody = document.getElementById("invoiceBody");
+                tbody.innerHTML = "";
+                let total = 0;
+
+                materials.forEach((item, i) => {
+                    const row = document.createElement("tr");
+                    const totalRow = item.materialPrice * item.quantityAssigned;
+                    total += totalRow;
+
+                    row.innerHTML = `
+        <td>${String(i + 1).padStart(3, '0')}</td>
+        <td>${item.materialName || '---'}</td>
+        <td>${item.quantityAssigned}</td>
+        <td>PHP ${item.materialPrice.toLocaleString()}</td>
+        <td>PHP ${totalRow.toLocaleString()}</td>
+    `;
+                    tbody.appendChild(row);
+                });
+
+
+                document.getElementById("totalCost").textContent = `PHP ${total.toLocaleString()}`;
+            });
+        } catch (err) {
+            console.error("Error loading invoice page:", err);
+        }
+    });
+
+    const overlay = document.getElementById("overlay");
+    const modal = document.getElementById("modal");
+    const selectPeriodButton = document.getElementById("selectPeriod");
+    const cancelModalButton = document.getElementById("cancelModal");
+    const datePeriodDiv = document.getElementById("selectedPeriod");
+
+    selectPeriodButton.addEventListener("click", () => {
+        modal.style.display = "block";
+        overlay.style.display = "block";
+    });
+
+    cancelModalButton.addEventListener("click", () => {
+        modal.style.display = "none";
+        overlay.style.display = "none";
+    });
+
+    document.getElementById("submitPeriod").addEventListener("click", () => {
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+
+        if (startDate && endDate) {
+            if (new Date(startDate) > new Date(endDate)) {
+                alert("Start date cannot be later than end date.");
             } else {
-                alert("Please select valid dates.");
-            }
-        });
-
-        window.onclick = (event) => {
-            if (event.target === overlay) {
+                datePeriodDiv.innerHTML = `Selected Period: ${startDate} to ${endDate}`;
+                datePeriodDiv.style.display = "block";
                 modal.style.display = "none";
                 overlay.style.display = "none";
             }
-        };
+        } else {
+            alert("Please select valid dates.");
+        }
+    });
 
-        let sidebar = document.querySelector(".sidebar");
-        let closeBtn = document.querySelector("#btn");
-        let searchBtn = document.querySelector(".bx-search");
+    window.onclick = (event) => {
+        if (event.target === overlay) {
+            modal.style.display = "none";
+            overlay.style.display = "none";
+        }
+    };
 
+    let sidebar = document.querySelector(".sidebar");
+    let closeBtn = document.querySelector("#btn");
+    let searchBtn = document.querySelector(".bx-search");
 
-    </script>
+    let invoiceCounter = 20247182;
+
+    async function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'pt', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const margin = 40;
+
+        const now = new Date();
+        const formattedDate = now.toLocaleDateString('en-GB');
+        const invoiceNo = invoiceCounter++;
+
+        pdf.setFontSize(22);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("INVOICE", margin, 50);
+        pdf.setFontSize(11);
+        pdf.setFont("helvetica", "normal");
+        pdf.text(document.getElementById("selectedPeriod").innerText || "Invoice Period", margin, 65);
+
+        let startY = 75;
+        pdf.setFillColor(0, 0, 0);
+        pdf.rect(margin, startY, pageWidth - margin * 2, 20, 'F');
+        pdf.setFontSize(11);
+        pdf.setTextColor(255, 255, 255);
+        pdf.text(`INVOICE NO: ${invoiceNo}`, margin + 5, startY + 14);
+        pdf.text(`DATE: ${formattedDate}`, pageWidth - margin - 100, startY + 14);
+
+        pdf.setTextColor(0, 0, 0);
+        pdf.setFont("helvetica", "normal");
+        startY += 35;
+
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(14);
+        pdf.text("ACCE CONSTRUCTION", margin, startY);
+
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(11);
+        startY += 20;
+        pdf.text("COMPANY ADDRESS:", margin, startY);
+        pdf.text("#6 KING FREDERIC ST.", margin + 130, startY);
+        startY += 15;
+        pdf.text("KINGSPOINT SUBDIVISION, BAGBAG,", margin + 130, startY);
+        startY += 15;
+        pdf.text("QUEZON CITY, 1116", margin + 130, startY);
+        startY += 20;
+        pdf.text("PHONE NUMBER:", margin, startY);
+        pdf.text("09561953997", margin + 130, startY);
+        startY += 20;
+        pdf.text("EMAIL:", margin, startY);
+        pdf.text("DUMMY@GMAIL.COM", margin + 130, startY);
+
+        // BILL TO
+        startY += 40;
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(12);
+        pdf.setFillColor(0, 0, 0);
+        pdf.rect(margin, startY - 10, pageWidth - margin * 2, 20, 'F');
+        pdf.setTextColor(255, 255, 255);
+        pdf.text("BILL TO:", margin + 5, startY + 3);
+
+        pdf.setTextColor(0, 0, 0);
+        startY += 25;
+        pdf.setFontSize(13);
+        const clientCompany = document.getElementById("projectCompany").textContent || "---";
+        pdf.text(clientCompany.toUpperCase(), margin, startY);
+
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(11);
+        startY += 20;
+        pdf.text("PROJECT TITLE:", margin, startY);
+        const projectTitle = document.getElementById("projectName").textContent || "---";
+        pdf.text(projectTitle.toUpperCase(), margin + 120, startY);
+
+        startY += 20;
+        pdf.text("COMPANY ADDRESS:", margin, startY);
+        const companyAddress = document.getElementById("projectLocation").textContent || "---";
+        pdf.text(companyAddress.toUpperCase(), margin + 120, startY);
+
+        // TABLE
+        const tableHeaders = ["ITEM NO.", "MATERIALS", "QUANTITY", "UNIT PRICE", "TOTAL"];
+        const columnWidths = [80, 150, 100, 100, 100];
+        const cellHeight = 25;
+
+        const invoiceRows = document.querySelectorAll("#invoiceBody tr");
+        let tableData = [];
+        let totalAmount = 0;
+
+        invoiceRows.forEach(row => {
+            const cells = row.querySelectorAll("td");
+            const rowData = Array.from(cells).map(td => td.innerText.trim());
+            const rowTotal = parseFloat(rowData[4].replace(/[^\d.]/g, '')) || 0;
+            totalAmount += rowTotal;
+            tableData.push(rowData);
+        });
+
+        let currentY = startY + 40;
+        let currentX = margin;
+
+        for (let i = 0; i < tableHeaders.length; i++) {
+            const width = columnWidths[i];
+            pdf.setFillColor(0, 0, 0);
+            pdf.setTextColor(255, 255, 255);
+            pdf.rect(currentX, currentY, width, cellHeight, "F");
+            pdf.text(tableHeaders[i], currentX + width / 2, currentY + 17, { align: "center" });
+            currentX += width;
+        }
+
+        pdf.setTextColor(0, 0, 0);
+        pdf.setFont("helvetica", "normal");
+        currentY += cellHeight;
+
+        for (let row of tableData) {
+            currentX = margin;
+            for (let i = 0; i < row.length; i++) {
+                const width = columnWidths[i];
+                pdf.rect(currentX, currentY, width, cellHeight);
+                pdf.text(row[i], currentX + 5, currentY + 17);
+                currentX += width;
+            }
+            currentY += cellHeight;
+        }
+
+        // TOTAL
+        const totalLabelWidth = 100;
+        const totalAmountWidth = 120;
+        currentY += 10;
+        pdf.setFillColor(0, 0, 0);
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFont("helvetica", "bold");
+        pdf.rect(pageWidth - margin - totalAmountWidth - totalLabelWidth, currentY, totalLabelWidth, cellHeight, 'F');
+        pdf.text("TOTAL:", pageWidth - margin - totalAmountWidth - totalLabelWidth + 10, currentY + 17);
+
+        pdf.setFillColor(255, 255, 255);
+        pdf.setTextColor(0, 0, 0);
+        pdf.setFont("helvetica", "normal");
+        pdf.rect(pageWidth - margin - totalAmountWidth, currentY, totalAmountWidth, cellHeight);
+        pdf.text(`PHP ${totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, pageWidth - margin - 10, currentY + 17, { align: "right" });
+
+        // Signature area
+        currentY += 40;
+        pdf.setTextColor(0, 0, 0);
+        pdf.setFontSize(10);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("RECEIVED BY:", margin, currentY);
+        pdf.text("DATE RECEIVED:", pageWidth - margin - 140, currentY);
+        pdf.setFont("helvetica", "normal");
+        pdf.text("SIGNATURE OVER PRINTED NAME", margin + 100, currentY);
+        const receivedDate = new Date().toLocaleDateString('en-GB');
+        pdf.text(receivedDate, pageWidth - margin - 20, currentY);
+
+        // Save file
+        pdf.save('invoice.pdf');
+    }
+</script>
 </body>
 
 </html>

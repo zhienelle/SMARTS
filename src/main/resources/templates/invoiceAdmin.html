@@ -6,8 +6,10 @@
     <title>Admin Invoice</title>
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
     <link
-        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
-        rel="stylesheet">
+            href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
+            rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -615,198 +617,198 @@
 </head>
 
 <body>
-    <!-- Header -->
-    <header>
-        <div class="smarts-logo">
-            <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
-        </div>
-        <div>
-            <p>ROLE: <span>ADMIN</span></p>
-            <i class='bx bxs-user-circle'></i>
-        </div>
-    </header>
+<!-- Header -->
+<header>
+    <div class="smarts-logo">
+        <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
+    </div>
+    <div>
+        <p>ROLE: <span>ADMIN</span></p>
+        <i class='bx bxs-user-circle'></i>
+    </div>
+</header>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="logo-details">
-            <div class="logo_name">ACCE Construction</div>
-            <i class='bx bx-menu' id="btn"></i>
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="logo-details">
+        <div class="logo_name">ACCE Construction</div>
+        <i class='bx bx-menu' id="btn"></i>
+    </div>
+    <ul class="nav-list">
+        <li>
+            <a href="homepageAdmin">
+                <i class='bx bx-home'></i>
+                <span class="links_name">Homepage</span>
+            </a>
+            <span class="tooltip">Homepage</span>
+        </li>
+        <li>
+            <a href="projectsAdmin">
+                <i class='bx bx-task'></i>
+                <span class="links_name">Projects</span>
+            </a>
+            <span class="tooltip">Projects</span>
+        </li>
+        <li>
+            <a href="inventoryAdmin">
+                <i class='bx bx-store-alt'></i>
+                <span class="links_name">Inventory</span>
+            </a>
+            <span class="tooltip">Inventory</span>
+        </li>
+        <li>
+            <a href="invoiceAdmin">
+                <i class='bx bx-receipt'></i>
+                <span class="links_name">Invoice</span>
+            </a>
+            <span class="tooltip">Invoice</span>
+        </li>
+        <li>
+            <a href="reportsAdmin">
+                <i class='bx bx-bar-chart'></i>
+                <span class="links_name">Reports & Analytics</span>
+            </a>
+            <span class="tooltip">Reports & Analytics</span>
+        </li>
+        <li>
+            <a href="userAdmin">
+                <i class='bx bx-user'></i>
+                <span class="links_name">User</span>
+            </a>
+            <span class="tooltip">User</span>
+        </li>
+        <li>
+            <a href="requestsAdmin">
+                <i class='bx bx-comment-dots'></i>
+                <span class="links_name">Requests</span>
+            </a>
+            <span class="tooltip">Requests</span>
+        </li>
+        <li>
+            <a href="settingsAdmin">
+                <i class='bx bx-cog'></i>
+                <span class="links_name">Settings</span>
+            </a>
+            <span class="tooltip">Settings</span>
+        </li>
+        <li>
+            <a href="confirmLogout">
+                <i class='bx bx-log-out'></i>
+                <span class="links_name">Logout</span>
+            </a>
+            <span class="tooltip">Logout</span>
+        </li>
+    </ul>
+</div>
+
+<!-- Main Section -->
+<section class="home-section">
+    <div class="upper">
+        <h1>INVOICE</h1>
+        <div class="functionality">
+            <select id="project-select">
+                <option value="" disabled selected>Select Project</option>
+            </select>
+            <button id="selectPeriod">Select Period</button>
         </div>
-        <ul class="nav-list">
-            <li>
-                <a href="homepageAdmin">
-                    <i class='bx bx-home'></i>
-                    <span class="links_name">Homepage</span>
-                </a>
-                <span class="tooltip">Homepage</span>
-            </li>
-            <li>
-                <a href="projectsAdmin">
-                    <i class='bx bx-task'></i>
-                    <span class="links_name">Projects</span>
-                </a>
-                <span class="tooltip">Projects</span>
-            </li>
-            <li>
-                <a href="inventoryAdmin">
-                    <i class='bx bx-store-alt'></i>
-                    <span class="links_name">Inventory</span>
-                </a>
-                <span class="tooltip">Inventory</span>
-            </li>
-            <li>
-                <a href="invoiceAdmin">
-                    <i class='bx bx-receipt'></i>
-                    <span class="links_name">Invoice</span>
-                </a>
-                <span class="tooltip">Invoice</span>
-            </li>
-            <li>
-                <a href="reportsAdmin">
-                    <i class='bx bx-bar-chart'></i>
-                    <span class="links_name">Reports & Analytics</span>
-                </a>
-                <span class="tooltip">Reports & Analytics</span>
-            </li>
-            <li>
-                <a href="userAdmin">
-                    <i class='bx bx-user'></i>
-                    <span class="links_name">User</span>
-                </a>
-                <span class="tooltip">User</span>
-            </li>
-            <li>
-                <a href="requestsAdmin">
-                    <i class='bx bx-comment-dots'></i>
-                    <span class="links_name">Requests</span>
-                </a>
-                <span class="tooltip">Requests</span>
-            </li>
-            <li>
-                <a href="settingsAdmin">
-                    <i class='bx bx-cog'></i>
-                    <span class="links_name">Settings</span>
-                </a>
-                <span class="tooltip">Settings</span>
-            </li>
-            <li>
-                <a href="confirmLogout">
-                    <i class='bx bx-log-out'></i>
-                    <span class="links_name">Logout</span>
-                </a>
-                <span class="tooltip">Logout</span>
-            </li>
-        </ul>
     </div>
 
-    <!-- Main Section -->
-    <section class="home-section">
-        <div class="upper">
-            <h1>INVOICE</h1>
-            <div class="functionality">
-                <select id="project-select">
-                    <option value="" disabled selected>Select Project</option>
-                </select>
-                <button id="selectPeriod">Select Period</button>
+    <div class="overlay" id="overlay"></div>
+    <div class="selected-period" id="selectedPeriod"></div>
+
+    <div class="invoice-container">
+        <div class="project-details">
+            <div>
+                <h2><strong>Project:</strong> <span id="projectName">---</span></h2>
+                <p><strong>Location:</strong> <span id="projectLocation">---</span></p>
+            </div>
+            <div class="b">
+                <h2><strong>Company:</strong> <span id="projectCompany">---</span></h2>
+                <p><strong>Contact:</strong> <span id="projectContact">---</span></p>
             </div>
         </div>
 
-        <div class="overlay" id="overlay"></div>
-        <div class="selected-period" id="selectedPeriod"></div>
+        <table id="invoiceTable">
+            <thead>
+            <tr>
+                <th>Item No.</th>
+                <th>Materials</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+            </tr>
+            </thead>
+            <tbody id="invoiceBody">
+            <!-- Dynamically populated -->
+            </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="4">Total:</td>
+                <td id="totalCost">PHP 0</td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
 
-        <div class="invoice-container">
-            <div class="project-details">
-                <div>
-                    <h2><strong>Project:</strong> <span id="projectName">---</span></h2>
-                    <p><strong>Location:</strong> <span id="projectLocation">---</span></p>
-                </div>
-                <div class="b">
-                    <h2><strong>Company:</strong> <span id="projectCompany">---</span></h2>
-                    <p><strong>Contact:</strong> <span id="projectContact">---</span></p>
-                </div>
-            </div>
+    <div class="buttons">
+        <button onclick="generatePDF()">Print</button>
+    </div>
 
-            <table id="invoiceTable">
-                <thead>
-                <tr>
-                    <th>Item No.</th>
-                    <th>Materials</th>
-                    <th>Quantity</th>
-                    <th>Unit Price</th>
-                    <th>Total</th>
-                </tr>
-                </thead>
-                <tbody id="invoiceBody">
-                <!-- Dynamically populated -->
-                </tbody>
-                <tfoot>
-                <tr>
-                    <td colspan="4">Total:</td>
-                    <td id="totalCost">PHP 0</td>
-                </tr>
-                </tfoot>
-            </table>
-        </div>
-
-        <div class="buttons">
-            <button onclick="generatePDF()">Print</button>
-        </div>
-
-        <div id="modal" class="modal">
-            <div class="modal-content">
-                <h3>Select Period</h3>
-                <input type="date" id="startDate">
-                <input type="date" id="endDate">
-                <div>
-                    <button id="cancelModal">Cancel</button>
-                    <button id="submitPeriod">Submit</button>
-                </div>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h3>Select Period</h3>
+            <input type="date" id="startDate">
+            <input type="date" id="endDate">
+            <div>
+                <button id="cancelModal">Cancel</button>
+                <button id="submitPeriod">Submit</button>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Footer -->
-    <footer>
-        <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
-    </footer>
+<!-- Footer -->
+<footer>
+    <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
+</footer>
 
-    <script>
-        async function fetchProjectsAndPopulateDropdown() {
-            const response = await fetch("/admin/invoice/getProjects");
-            const projects = await response.json();
+<script>
+    async function fetchProjectsAndPopulateDropdown() {
+        const response = await fetch("/admin/invoice/getProjects");
+        const projects = await response.json();
 
-            window.projectList = projects; // ✅ save for lookup
+        window.projectList = projects; // ✅ save for lookup
 
-            const dropdown = document.getElementById("project-select");
-            dropdown.innerHTML = `<option value="" disabled selected>Select Project</option>`;
+        const dropdown = document.getElementById("project-select");
+        dropdown.innerHTML = `<option value="" disabled selected>Select Project</option>`;
 
-            projects.forEach(p => {
-                dropdown.innerHTML += `<option value="${p.projectId}">${p.projectname}</option>`;
-            });
+        projects.forEach(p => {
+            dropdown.innerHTML += `<option value="${p.projectId}">${p.projectname}</option>`;
+        });
+    }
+
+    async function loadProjectDetails(projectId, startDate = null, endDate = null) {
+        let url = `/admin/invoice/getProjectDetails?projectId=${projectId}`;
+        if (startDate && endDate) {
+            url += `&startDate=${startDate}&endDate=${endDate}`;
         }
+        const res = await fetch(url);
+        const data = await res.json();
 
-        async function loadProjectDetails(projectId, startDate = null, endDate = null) {
-            let url = `/admin/invoice/getProjectDetails?projectId=${projectId}`;
-            if (startDate && endDate) {
-                url += `&startDate=${startDate}&endDate=${endDate}`;
-            }
-            const res = await fetch(url);
-            const data = await res.json();
+        document.getElementById('projectName').textContent = data.projectName || '---';
+        document.getElementById('projectLocation').textContent = data.location || '---';
+        document.getElementById('projectCompany').textContent = data.company || '---';
+        document.getElementById('projectContact').textContent = data.contact || '---';
 
-            document.getElementById('projectName').textContent = data.projectName || '---';
-            document.getElementById('projectLocation').textContent = data.location || '---';
-            document.getElementById('projectCompany').textContent = data.company || '---';
-            document.getElementById('projectContact').textContent = data.contact || '---';
+        const tbody = document.getElementById('invoiceBody');
+        tbody.innerHTML = '';
 
-            const tbody = document.getElementById('invoiceBody');
-            tbody.innerHTML = '';
+        let total = 0;
+        data.materials.forEach((item, idx) => {
+            const totalPerItem = item.totalPrice || 0;
+            total += totalPerItem;
 
-            let total = 0;
-            data.materials.forEach((item, idx) => {
-                const totalPerItem = item.totalPrice || 0;
-                total += totalPerItem;
-
-                tbody.innerHTML += `
+            tbody.innerHTML += `
                 <tr>
                     <td>${String(idx + 1).padStart(3, '0')}</td>
                     <td>${item.materialName}</td>
@@ -815,32 +817,32 @@
                     <td>PHP ${Number(totalPerItem).toLocaleString()}</td>
                 </tr>
             `;
-            });
+        });
 
-            document.getElementById('totalCost').textContent = `PHP ${total.toLocaleString()}`;
-        }
+        document.getElementById('totalCost').textContent = `PHP ${total.toLocaleString()}`;
+    }
 
-        document.getElementById('project-select').addEventListener('change', async (e) => {
-            const projectName = e.target.options[e.target.selectedIndex].text;
-            const res = await fetch(`/admin/invoice/getInventory?projectName=${projectName}`);
-            const inventory = await res.json();
+    document.getElementById('project-select').addEventListener('change', async (e) => {
+        const projectName = e.target.options[e.target.selectedIndex].text;
+        const res = await fetch(`/admin/invoice/getInventory?projectName=${projectName}`);
+        const inventory = await res.json();
 
-            document.getElementById('projectName').textContent = projectName;
+        document.getElementById('projectName').textContent = projectName;
 
-            const selected = e.target.options[e.target.selectedIndex];
-            const selectedProject = window.projectList.find(p => p.projectname === projectName);
+        const selected = e.target.options[e.target.selectedIndex];
+        const selectedProject = window.projectList.find(p => p.projectname === projectName);
 
-            document.getElementById('projectLocation').textContent = selectedProject.companyLocation || '---';
-            document.getElementById('projectCompany').textContent = selectedProject.companyname || '---';
-            document.getElementById('projectContact').textContent = selectedProject.companycontact || '---';
+        document.getElementById('projectLocation').textContent = selectedProject.companyLocation || '---';
+        document.getElementById('projectCompany').textContent = selectedProject.companyname || '---';
+        document.getElementById('projectContact').textContent = selectedProject.companycontact || '---';
 
-            const tbody = document.getElementById('invoiceBody');
-            tbody.innerHTML = '';
+        const tbody = document.getElementById('invoiceBody');
+        tbody.innerHTML = '';
 
-            let total = 0;
-            inventory.forEach((item, idx) => {
-                total += item.totalPrice;
-                tbody.innerHTML += `
+        let total = 0;
+        inventory.forEach((item, idx) => {
+            total += item.totalPrice;
+            tbody.innerHTML += `
             <tr>
                 <td>${String(idx + 1).padStart(3, '0')}</td>
                 <td>${item.materialName}</td>
@@ -849,76 +851,199 @@
                 <td>PHP ${item.totalPrice.toLocaleString()}</td>
             </tr>
         `;
-            });
-
-            document.getElementById('totalCost').textContent = `PHP ${total.toLocaleString()}`;
         });
 
+        document.getElementById('totalCost').textContent = `PHP ${total.toLocaleString()}`;
+    });
 
-        document.getElementById("submitPeriod").addEventListener("click", () => {
-            const start = document.getElementById("startDate").value;
-            const end = document.getElementById("endDate").value;
 
-            if (!start || !end) {
-                alert("⚠️ Please select both start and end date.");
-                return;
-            }
+    document.getElementById("submitPeriod").addEventListener("click", () => {
+        const start = document.getElementById("startDate").value;
+        const end = document.getElementById("endDate").value;
 
-            const selectedPeriod = document.getElementById("selectedPeriod");
-            selectedPeriod.innerText = `Selected Period: ${start} to ${end}`;
-            selectedPeriod.style.display = "block";
-
-            const projectId = document.getElementById("projectDropdown").value;
-            if (projectId) loadProjectDetails(projectId, start, end);
-        });
-
-        document.getElementById("cancelModal").addEventListener("click", () => {
-            document.getElementById("startDate").value = "";
-            document.getElementById("endDate").value = "";
-            document.getElementById("overlay").style.display = "none";
-            document.getElementById("modal").style.display = "none";
-        });
-
-        document.getElementById("selectPeriod").addEventListener("click", () => {
-            document.getElementById("overlay").style.display = "block";
-            document.getElementById("modal").style.display = "block";
-        });
-
-        fetchProjectsAndPopulateDropdown();
-
-        async function generatePDF() {
-            const { jsPDF } = window.jspdf;
-            const invoiceContainer = document.querySelector('.invoice-container');
-
-            // Capture the invoice section as image
-            const canvas = await html2canvas(invoiceContainer, {
-                scale: 2,
-                useCORS: true,
-            });
-
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF('p', 'pt', 'a4');
-
-            // Fit the canvas image into PDF width
-            const pageWidth = pdf.internal.pageSize.getWidth();
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
-
-            // Add date/time at the top
-            const now = new Date();
-            const formattedDate = now.toLocaleString();
-            pdf.setFontSize(10);
-            pdf.text(`Date: ${formattedDate}`, 40, 30);
-
-            // Add image below date
-            pdf.addImage(imgData, 'PNG', 40, 40, pageWidth - 80, pdfHeight);
-
-            // Save as PDF
-            pdf.save('invoice.pdf');
+        if (!start || !end) {
+            alert("⚠️ Please select both start and end date.");
+            return;
         }
 
-    </script>
+        const selectedPeriod = document.getElementById("selectedPeriod");
+        selectedPeriod.innerText = `Selected Period: ${start} to ${end}`;
+        selectedPeriod.style.display = "block";
+
+        const projectId = document.getElementById("projectDropdown").value;
+        if (projectId) loadProjectDetails(projectId, start, end);
+    });
+
+    document.getElementById("cancelModal").addEventListener("click", () => {
+        document.getElementById("startDate").value = "";
+        document.getElementById("endDate").value = "";
+        document.getElementById("overlay").style.display = "none";
+        document.getElementById("modal").style.display = "none";
+    });
+
+    document.getElementById("selectPeriod").addEventListener("click", () => {
+        document.getElementById("overlay").style.display = "block";
+        document.getElementById("modal").style.display = "block";
+    });
+
+    fetchProjectsAndPopulateDropdown();
+
+    let invoiceCounter = 20247180;
+
+    async function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'pt', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const margin = 40;
+
+        const now = new Date();
+        const formattedDate = now.toLocaleDateString('en-GB');
+        const invoiceNo = invoiceCounter++;
+
+        // Title
+        pdf.setFontSize(22);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("INVOICE", margin, 50);
+        pdf.setFontSize(11);
+        pdf.setFont("helvetica", "normal");
+        pdf.text("Period: " + (document.getElementById("selectedPeriod").textContent || "N/A"), margin, 65);
+
+        // Invoice bar
+        let startY = 75;
+        pdf.setFillColor(0, 0, 0);
+        pdf.rect(margin, startY, pageWidth - margin * 2, 20, 'F');
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFont("helvetica", "bold");
+        pdf.text(`INVOICE NO: ${invoiceNo}`, margin + 5, startY + 14);
+        pdf.text(`DATE: ${formattedDate}`, pageWidth - margin - 100, startY + 14);
+
+        pdf.setTextColor(0, 0, 0);
+        pdf.setFont("helvetica", "normal");
+        startY += 35;
+
+        // Company Block
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(14);
+        pdf.text("ACCE CONSTRUCTION", margin, startY);
+
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(11);
+        startY += 20;
+        pdf.text("COMPANY ADDRESS:", margin, startY);
+        pdf.text("#6 KING FREDERIC ST.", margin + 130, startY);
+        startY += 15;
+        pdf.text("KINGSPOINT SUBDIVISION, BAGBAG,", margin + 130, startY);
+        startY += 15;
+        pdf.text("QUEZON CITY, 1116", margin + 130, startY);
+        startY += 20;
+        pdf.text("PHONE NUMBER:", margin, startY);
+        pdf.text("09561953997", margin + 130, startY);
+        startY += 20;
+        pdf.text("EMAIL:", margin, startY);
+        pdf.text("DUMMY@GMAIL.COM", margin + 130, startY);
+
+        // BILL TO
+        startY += 40;
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(12);
+        pdf.setFillColor(0, 0, 0);
+        pdf.rect(margin, startY - 10, pageWidth - margin * 2, 20, 'F');
+        pdf.setTextColor(255, 255, 255);
+        pdf.text("BILL TO:", margin + 5, startY + 3);
+
+        // Company & Project Info
+        pdf.setTextColor(0, 0, 0);
+        startY += 25;
+        pdf.setFontSize(13);
+        const company = document.getElementById("projectCompany").textContent;
+        pdf.text(company.toUpperCase(), margin, startY);
+
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(11);
+        startY += 20;
+        pdf.text("PROJECT TITLE:", margin, startY);
+        pdf.text(document.getElementById("projectName").textContent, margin + 120, startY);
+
+        startY += 20;
+        pdf.text("COMPANY ADDRESS:", margin, startY);
+        pdf.text(document.getElementById("projectLocation").textContent, margin + 120, startY);
+
+        // TABLE HEADERS
+        const tableHeaders = ["ITEM NO.", "MATERIALS", "QUANTITY", "UNIT PRICE", "TOTAL"];
+        const columnWidths = [80, 150, 100, 100, 100];
+        const cellHeight = 25;
+
+        const rows = document.querySelectorAll("#invoiceBody tr");
+        let dataRows = [];
+        let total = 0;
+
+        rows.forEach(r => {
+            const cells = r.querySelectorAll("td");
+            const data = Array.from(cells).map(td => td.textContent.trim());
+            const rowTotal = parseFloat(data[4].replace(/[^\d.]/g, '')) || 0;
+            total += rowTotal;
+            dataRows.push(data);
+        });
+
+        const startTableY = startY + 40;
+        let currentY = startTableY;
+        let currentX = margin;
+
+        for (let i = 0; i < tableHeaders.length; i++) {
+            const w = columnWidths[i];
+            pdf.setFillColor(0, 0, 0);
+            pdf.setTextColor(255, 255, 255);
+            pdf.rect(currentX, currentY, w, cellHeight, "F");
+            pdf.text(tableHeaders[i], currentX + w / 2, currentY + 17, { align: "center" });
+            currentX += w;
+        }
+
+        // Table body
+        currentY += cellHeight;
+        pdf.setTextColor(0, 0, 0);
+        pdf.setFont("helvetica", "normal");
+
+        for (let row of dataRows) {
+            currentX = margin;
+            for (let i = 0; i < row.length; i++) {
+                const w = columnWidths[i];
+                pdf.rect(currentX, currentY, w, cellHeight);
+                pdf.text(row[i], currentX + 5, currentY + 17);
+                currentX += w;
+            }
+            currentY += cellHeight;
+        }
+
+        // TOTAL ROW
+        currentY += 10;
+        const labelWidth = 100;
+        const amountWidth = 120;
+
+        pdf.setFont("helvetica", "bold");
+        pdf.setFillColor(0, 0, 0);
+        pdf.setTextColor(255, 255, 255);
+        pdf.rect(pageWidth - margin - amountWidth - labelWidth, currentY, labelWidth, cellHeight, 'F');
+        pdf.text("TOTAL:", pageWidth - margin - amountWidth - labelWidth + 10, currentY + 17);
+
+        pdf.setFillColor(255, 255, 255);
+        pdf.setFont("helvetica", "normal");
+        pdf.setTextColor(0, 0, 0);
+        pdf.rect(pageWidth - margin - amountWidth, currentY, amountWidth, cellHeight);
+        pdf.text(`PHP ${total.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, pageWidth - margin - 10, currentY + 17, { align: "right" });
+
+        // Footer signature
+        currentY += 40;
+        pdf.setFontSize(10);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("RECEIVED BY:", margin, currentY);
+        pdf.text("DATE RECEIVED:", pageWidth - margin - 140, currentY);
+        pdf.setFont("helvetica", "normal");
+        pdf.text("SIGNATURE OVER PRINTED NAME", margin + 100, currentY);
+        pdf.text(formattedDate, pageWidth - margin - 20, currentY);
+
+        pdf.save("invoice.pdf");
+    }
+</script>
 </body>
+
 </html>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>

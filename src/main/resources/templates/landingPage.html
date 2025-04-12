@@ -361,8 +361,10 @@
             transform: scale(1.05);
             box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3);
         }
+
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.10.2/lottie.min.js"></script>
+
 </head>
 
 <body>
@@ -398,7 +400,7 @@
                         <input type="text" id="username" name="username" required>
                         <label for="password">PASSWORD</label>
                         <input type="password" id="password" name="password" required>
-                        <a onclick="openModal()">Forget Password?</a>
+<!--                        <a onclick="openModal()">Forget Password?</a>-->
                         <button type="submit">LOGIN</button>
                     </form>
                 </div>
@@ -423,8 +425,15 @@
         </div>
     </div>
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
+        var animation = lottie.loadAnimation({
+            container: document.getElementById('lottie-animation'),
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: 'https://lottie.host/ff744c0c-42a0-4f9e-8e41-cef5502ed03f/7qOmL4IDKq.json'
+        });
 
+        const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('inactive') === 'true') {
             alert("Your account is inactive. Please contact the admin.");
             window.history.replaceState({}, document.title, window.location.pathname);
@@ -491,18 +500,31 @@
                 .then(res => res.text())
                 .then(response => {
                     if (response.startsWith("ROLE:")) {
-                        const role = response.split(":")[1].trim().toUpperCase();
+                        const parts = response.split("|");
+                        const rolePart = parts[0]; // e.g. ROLE:ADMIN
+                        const statusPart = parts[1]; // e.g. STATUS:ACTIVE
+
+                        const role = rolePart.split(":")[1].trim().toUpperCase();
+                        const status = statusPart ? statusPart.split(":")[1].trim().toUpperCase() : "";
+
+                        if (status !== "ACTIVE") {
+                            alert("User is unavailable. Please contact the admin.");
+                            return; // Stop further execution
+                        }
 
                         if (["ADMIN", "STAFF", "MAIN CONTRACTOR"].includes(role)) {
                             window.location.href = "/captcha";
                         } else {
                             alert("Unrecognized role.");
                         }
+                    }
 
-                    } else if (response === "invalidUsername") {
+                    else if (response === "invalidUsername") {
                         window.location.href = "/invalidUsername";
                     } else if (response === "invalidPassword") {
                         window.location.href = "/invalidPassword";
+                    } else if (response === "inactive") {
+                        window.location.href = "/error/inactive.html";
                     } else {
                         alert("Unexpected error: " + response);
                     }

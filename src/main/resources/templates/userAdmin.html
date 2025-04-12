@@ -9,6 +9,165 @@
             href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
             rel="stylesheet">
     <style>
+        .modal-body-scrollable {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 10px;
+            margin-top: 10px;
+        }
+
+        /* Optional: Hide right-side scroll bar in some browsers */
+        .modal-body-scrollable::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal-body-scrollable::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 10px;
+        }
+
+        .project-search-box {
+            width: 90%;
+            margin: 10px auto;
+            display: block;
+            padding: 8px 12px;
+            border: 1.5px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Numans', sans-serif;
+            outline: none;
+        }
+        .project-search-box:focus {
+            border-color: #F9744B;
+        }
+
+        #projectDropdownContainer {
+            position: relative;
+            margin-bottom: 20px;
+            width: 100%;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        #projectDropdownButton {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #ccc;
+            border-radius: 12px;
+            background-color: white;
+            color: #124D54;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: left;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        #projectDropdownButton:hover {
+            border-color: #F9744B;
+            background-color: #fce8e2;
+        }
+
+        #projectCheckboxes {
+            display: none;
+            position: absolute;
+            top: 105%;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            border: 2px solid #ccc;
+            border-radius: 12px;
+            padding: 10px 0;
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
+            max-height: 220px;
+            overflow-y: auto;
+            z-index: 999;
+        }
+
+        .dropdown-btn {
+            padding: 12px;
+            background-color: white;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            cursor: pointer;
+            color: black;
+            font-weight: bold;
+            font-family: 'Numans', sans-serif;
+            width: 100%;
+            text-align: left;
+            transition: all 0.3s;
+        }
+
+        .dropdown-btn:hover {
+            background-color: #fce8e2;
+            border-color: #F9744B;
+        }
+
+        .dropdown-checkboxes {
+            display: none;
+            position: absolute;
+            z-index: 99;
+            width: 100%;
+            background-color: white;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            margin-top: 5px;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper:hover {
+            background-color: #f9e1d6;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            margin-right: 10px;
+            width: 16px;
+            height: 16px;
+            accent-color: #F9744B;
+        }
+
+        .checkbox-wrapper label {
+            font-size: 15px;
+            color: #124D54;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .checkbox-wrapper:hover {
+            background-color: #fbe1d7;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+            accent-color: #F9744B;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper label {
+            cursor: pointer;
+            font-size: 15px;
+            color: #124D54;
+            user-select: none;
+        }
+
+
         * {
             margin: 0;
             padding: 0;
@@ -668,6 +827,7 @@
 
     <div class="modal" id="userModal">
         <h3 id="modalTitle"></h3>
+        <div class="modal-body-scrollable">
         <input type="text" id="username" placeholder="Username" style="width: 100%; padding: 12px;">
         <input type="password" id="password" placeholder="Password" style="width: 100%; padding: 12px;">
         <input type="text" id="firstName" placeholder="First Name" style="width: 100%; padding: 12px;">
@@ -702,11 +862,11 @@
             </select>
         </div>
 
-        <!-- Placeholder for dynamically inserted checkboxes
-        <div id="projectCheckboxes" style="display: none; padding: 10px 0;"></div> -->
-        <select id="projectCheckboxes" multiple style="display: none; width: 100%; padding: 10px; border-radius: 8px; font-family: 'Fredoka', sans-serif;">
-            <!-- options will be added dynamically -->
-        </select>
+        <div id="projectDropdownContainer" style="display: none; position: relative;">
+            <div id="projectDropdownButton" class="dropdown-btn">SELECT PROJECTS ▾</div>
+            <div id="projectCheckboxes" class="dropdown-checkboxes"></div>
+        </div>
+
 
 
         <!-- Account Status dropdown -->
@@ -727,14 +887,11 @@
 
     </div>
 
-    <!-- Footer -->
-    <footer>
-        <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span>
-        </p>
-    </footer>
+
     <script>
         let selectedRow = null;
         let allProjects = [];
+        let originalPassword = ''; // ✅ add this
 
         const roleSelect = document.getElementById('role');
         const permissionsSelect = document.getElementById('permissions');
@@ -779,15 +936,61 @@
             });
         }
 
-        function renderProjectCheckboxes(projects) {
-            projectCheckboxesDiv.innerHTML = '';
+        function renderProjectCheckboxes(projects, preChecked = false) {
+            const dropdown = document.getElementById('projectCheckboxes');
+            dropdown.innerHTML = '';
+
+            // Create search input
+            const searchInput = document.createElement('input');
+            searchInput.type = 'text';
+            searchInput.placeholder = 'Search Projects...';
+            searchInput.classList.add('project-search-box');
+            dropdown.appendChild(searchInput);
+
+            // Container for checkboxes
+            const checkboxContainer = document.createElement('div');
+            checkboxContainer.id = 'checkboxList';
+            dropdown.appendChild(checkboxContainer);
+
+            // Store all checkbox wrappers for search filter
+            const allCheckboxes = [];
+
             projects.forEach(project => {
-                const option = document.createElement('option');
-                option.value = project.projectname;
-                option.textContent = project.projectname;
-                projectCheckboxesDiv.appendChild(option);
+                const wrapper = document.createElement('div');
+                wrapper.classList.add('checkbox-wrapper');
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'projectCheckbox';
+                checkbox.value = project.projectname;
+                checkbox.id = `checkbox-${project.projectname}`;
+                if (preChecked) checkbox.checked = true;
+
+                const label = document.createElement('label');
+                label.htmlFor = `checkbox-${project.projectname}`;
+                label.innerText = project.projectname;
+
+                wrapper.addEventListener('click', () => {
+                    checkbox.checked = !checkbox.checked;
+                });
+
+                wrapper.appendChild(checkbox);
+                wrapper.appendChild(label);
+                checkboxContainer.appendChild(wrapper);
+                allCheckboxes.push({ wrapper, projectName: project.projectname.toLowerCase() });
+            });
+
+            // Filter as you type
+            searchInput.addEventListener('input', function () {
+                const query = searchInput.value.toLowerCase();
+                allCheckboxes.forEach(({ wrapper, projectName }) => {
+                    wrapper.style.display = projectName.includes(query) ? 'flex' : 'none';
+                });
             });
         }
+
+
+
 
         roleSelect.addEventListener('change', function () {
             if (!selectedRow) { // Only reset fields in Add User mode
@@ -801,63 +1004,65 @@
             Array.from(permissionsSelect.options).forEach(opt => {
                 opt.style.display = 'none';
             });
-
             if (selectedRole === 'ADMIN') {
+                // ❌ Do NOT show project dropdown or checkboxes for ADMIN
+                document.getElementById('projectDropdownContainer').style.display = 'none';
+                projectSelect.style.display = 'none';
+
                 permissionsSelect.value = 'MANAGE EVERYTHING';
                 permissionsSelect.querySelector('option[value="MANAGE EVERYTHING"]').style.display = 'block';
                 projectCheckboxesDiv.style.display = 'none';
             } else if (selectedRole === 'STAFF') {
+                document.getElementById('projectDropdownContainer').style.display = 'block';
+                projectSelect.style.display = 'none';
+
                 permissionsSelect.value = 'MANAGE CERTAIN PROJECT';
                 permissionsSelect.querySelector('option[value="MANAGE CERTAIN PROJECT"]').style.display = 'block';
-                projectCheckboxesDiv.style.display = 'block';
-                renderProjectCheckboxes(allProjects, false); // ✅ no pre-check
+                renderProjectCheckboxes(allProjects, false);
             } else if (selectedRole === 'MAIN CONTRACTOR') {
+                document.getElementById('projectDropdownContainer').style.display = 'block';
+                projectSelect.style.display = 'none';
+
                 permissionsSelect.value = 'VIEWING MODE OF THEIR PROJECT';
                 permissionsSelect.querySelector('option[value="VIEWING MODE OF THEIR PROJECT"]').style.display = 'block';
-                projectCheckboxesDiv.style.display = 'block';
-                renderProjectCheckboxes(allProjects, false); // ✅ also no pre-check
+                renderProjectCheckboxes(allProjects, false);
             }
+
         });
 
         permissionsSelect.addEventListener('change', function () {
             const role = roleSelect.value;
             const permission = permissionsSelect.value;
 
+            // Hide both project selectors by default
+            projectSelect.style.display = 'none';
+            projectCheckboxesDiv.style.display = 'none';
+
             if (role === 'ADMIN') {
-                projectSelect.style.display = 'none';
-                projectCheckboxesDiv.style.display = 'none';
-                return;
+                return; // No project selection needed
             }
 
-            if (role === 'MAIN CONTRACTOR' && permission === 'VIEWING MODE OF THEIR PROJECT') {
-                projectSelect.style.display = 'none';
-                projectCheckboxesDiv.style.display = 'block';
-                renderProjectCheckboxes(allProjects); // will render as radio buttons
-                projectCheckboxesDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-
-            } else if (permission === 'MANAGE EVERYTHING') {
-                projectSelect.style.display = 'none';
+            if (permission === 'MANAGE EVERYTHING') {
                 projectCheckboxesDiv.style.display = 'block';
                 renderProjectCheckboxes(allProjects);
-                projectCheckboxesDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+                projectCheckboxesDiv.querySelectorAll('option').forEach(opt => opt.selected = true);
             } else if (permission === 'MANAGE CERTAIN PROJECT') {
-                projectSelect.style.display = 'none';
                 projectCheckboxesDiv.style.display = 'block';
                 renderProjectCheckboxes(allProjects);
-                projectCheckboxesDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            } else if (permission === 'VIEWING MODE OF THEIR PROJECT') {
+                projectCheckboxesDiv.style.display = 'block';
+                renderProjectCheckboxes(allProjects);
             } else {
                 projectSelect.style.display = 'block';
-                projectCheckboxesDiv.style.display = 'none';
             }
         });
 
+
         function getSelectedProjects() {
-            if (projectCheckboxesDiv.style.display === 'block') {
-                const radios = projectCheckboxesDiv.querySelectorAll('input[name="projectRadio"]:checked');
-                if (radios.length > 0) {
-                    return [radios[0].value];
-                }
-                const checkboxes = projectCheckboxesDiv.querySelectorAll('input[name="projectCheckbox"]:checked');
+            const dropdownContainerVisible = document.getElementById('projectDropdownContainer').style.display !== 'none';
+
+            if (dropdownContainerVisible) {
+                const checkboxes = document.querySelectorAll('input[name="projectCheckbox"]:checked');
                 return Array.from(checkboxes).map(cb => cb.value);
             } else {
                 const selected = projectSelect.value;
@@ -971,7 +1176,8 @@
                 const username = selectedRow.cells[0].innerText;
                 document.getElementById('modalTitle').innerText = `Edit  ${username}`;
                 document.getElementById('username').value = selectedRow.cells[0].innerText;
-                document.getElementById('password').value = selectedRow.cells[1].innerText;
+                originalPassword = selectedRow.cells[1].innerText;
+                document.getElementById('password').value = '********';
                 document.getElementById('role').value = selectedRow.cells[2].innerText;
                 document.getElementById('permissions').value = selectedRow.cells[3].innerText;
                 document.getElementById('status').value = selectedRow.cells[5].innerText;
@@ -1106,6 +1312,24 @@
 
         closeBtn.addEventListener("click", () => {
             sidebar.classList.toggle("open");
+        });
+
+        // Toggle dropdown visibility
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropdownBtn = document.getElementById('projectDropdownButton');
+            const checkboxMenu = document.getElementById('projectCheckboxes');
+
+            dropdownBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                checkboxMenu.style.display = checkboxMenu.style.display === 'block' ? 'none' : 'block';
+            });
+
+            // Close when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!document.getElementById('projectDropdownContainer').contains(e.target)) {
+                    checkboxMenu.style.display = 'none';
+                }
+            });
         });
     </script>
 </section>
