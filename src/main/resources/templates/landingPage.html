@@ -493,15 +493,12 @@
                     if (response.startsWith("ROLE:")) {
                         const role = response.split(":")[1].trim().toUpperCase();
 
-                        if (role === "ADMIN") {
-                            window.location.href = "/homepageAdmin";
-                        } else if (role === "STAFF") {
-                            window.location.href = "/homepageExestaff";
-                        } else if (role === "MAIN CONTRACTOR") {
-                            window.location.href = "/homepageGencon";
+                        if (["ADMIN", "STAFF", "MAIN CONTRACTOR"].includes(role)) {
+                            window.location.href = "/captcha";
                         } else {
                             alert("Unrecognized role.");
                         }
+
                     } else if (response === "invalidUsername") {
                         window.location.href = "/invalidUsername";
                     } else if (response === "invalidPassword") {
