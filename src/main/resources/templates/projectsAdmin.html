@@ -1288,6 +1288,7 @@
             dropdown.innerHTML = '<option value="">Select Project</option>';
             projects.forEach(project => {
                 const option = document.createElement('option');
+                console.log(option);
                 option.value = project.projectId;
                 option.textContent = project.projectname;
                 dropdown.appendChild(option);
