@@ -30,6 +30,10 @@ public class RequestsStatusExestaffController {
         User currentUser = (User) session.getAttribute("authenticatedUser");
         if (currentUser == null) return "redirect:/";
 
+        if (!"STAFF".equalsIgnoreCase(currentUser.getRole())) {
+            return "error/error403";
+        }
+
         model.addAttribute("username", currentUser.getUsername());
         return "requestsStatusExestaff";
     }

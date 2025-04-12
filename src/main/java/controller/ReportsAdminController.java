@@ -37,11 +37,9 @@ public class ReportsAdminController {
             return "redirect:/";
         }
 
-        String role = (String) session.getAttribute("role");
-        if (!"admin".equalsIgnoreCase(role)) {
+        if (!"ADMIN".equalsIgnoreCase(user.getRole())) {
             return "error/error403";
         }
-
 
         List<Project> allProjects = projectRepository.findAll();
         model.addAttribute("projects", allProjects);

@@ -13,8 +13,8 @@ public class HomepageAdminController {
     public String HomepageAdmin(HttpSession session, Model model) {
         // ✅ Check user is logged in
         User user = (User) session.getAttribute("authenticatedUser");
-        if (user == null || !"ADMIN".equalsIgnoreCase(user.getRole())) {
-            return "error/error403";
+        if (user == null) {
+            return "redirect:/";
         }
 
         // ✅ Check CAPTCHA was passed

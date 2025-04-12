@@ -12,13 +12,20 @@ public class HomepageExestaffController {
     public String HomepageExestaff(HttpSession session, Model model) {
         User user = (User) session.getAttribute("authenticatedUser");
         if (user == null) {
-            return "redirect:/"; // Redirect to login if session expired
+            return "redirect:/";
         }
 
-        String role = (String) session.getAttribute("role");
-        if (!"staff".equalsIgnoreCase(role)) {
+        // ✅ Check CAPTCHA was passed
+        Boolean captchaPassed = (Boolean) session.getAttribute("captchaPassed");
+        if (captchaPassed == null || !captchaPassed) {
+            return "redirect:/?captchaRequired=true";
+        }
+
+        // ✅ Role check — use user.getRole() instead of a separate session attribute
+        if (!"STAFF".equalsIgnoreCase(user.getRole())) {
             return "error/error403";
         }
+
 
         model.addAttribute("username", user.getUsername());
         return "homepageExestaff";

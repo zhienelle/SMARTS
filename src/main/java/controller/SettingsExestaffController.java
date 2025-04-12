@@ -14,8 +14,8 @@ public class SettingsExestaffController {
             return "redirect:/"; // Redirect to login if session expired
         }
 
-        String role = (String) session.getAttribute("role");
-        if (!"staff".equalsIgnoreCase(role)) {
+
+        if (!"STAFF".equalsIgnoreCase(user.getRole())) {
             return "error/error403";
         }
 

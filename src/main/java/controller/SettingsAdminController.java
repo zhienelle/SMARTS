@@ -14,8 +14,8 @@ public class SettingsAdminController {
             return "redirect:/"; // Redirect to login if session expired
         }
 
-        String role = (String) session.getAttribute("role");
-        if (!"admin".equalsIgnoreCase(role)) {
+
+        if (!"ADMIN".equalsIgnoreCase(user.getRole())) {
             return "error/error403";
         }
 

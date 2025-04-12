@@ -22,18 +22,23 @@ public class HomepageGenconController {
 
     @GetMapping("/homepageGencon")
     public String homepageGencon(HttpSession session, Model model) {
-
-        User currentUser = (User) session.getAttribute("authenticatedUser"); // ✅ CHANGED: get user from session
-
-        if (currentUser == null) {
-            return "redirect:/"; // or "error"
+        User user = (User) session.getAttribute("authenticatedUser");
+        if (user == null) {
+            return "redirect:/";
         }
 
-        String role = (String) session.getAttribute("role");
-        if (!"MAIN CONTRACTOR".equalsIgnoreCase(role)) {
+        // ✅ Check CAPTCHA was passed
+        Boolean captchaPassed = (Boolean) session.getAttribute("captchaPassed");
+        if (captchaPassed == null || !captchaPassed) {
+            return "redirect:/?captchaRequired=true";
+        }
+
+        // ✅ Role check — use user.getRole() instead of a separate session attribute
+        if (!"MAIN CONTRACTOR".equalsIgnoreCase(user.getRole())) {
             return "error/error403";
         }
 
+        model.addAttribute("username", user.getUsername());
         return "homepageGencon";
     }
     @GetMapping("/gencon/projects")

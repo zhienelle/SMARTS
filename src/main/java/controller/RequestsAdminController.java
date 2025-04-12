@@ -1,9 +1,8 @@
 package controller;
 
-import entity.Inventory;
-import entity.MaterialRequest;
-import entity.Project;
-import entity.ProjectInventory;
+import entity.*;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.ui.Model;
 import repository.InventoryRepository;
 import repository.MaterialRequestRepository;
 import repository.ProjectInventoryRepository;
@@ -32,7 +31,16 @@ public class RequestsAdminController {
     private ProjectInventoryRepository projectInventoryRepository;
 
     @GetMapping("requestsAdmin")
-    public String RequestAdmin() {
+    public String RequestAdmin(HttpSession session, Model model)
+    {
+        User currentUser = (User) session.getAttribute("authenticatedUser");
+        if (currentUser == null) return "redirect:/";
+
+        if (!"ADMIN".equalsIgnoreCase(currentUser.getRole())) {
+            return "error/error403";
+        }
+
+        model.addAttribute("username", currentUser.getUsername());
         return "requestsAdmin";
     }
 

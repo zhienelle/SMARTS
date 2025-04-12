@@ -35,10 +35,10 @@ public class InvoiceExestaffController {
                 return "redirect:/";
             }
 
-            String role = (String) session.getAttribute("role");
-            if (!"staff".equalsIgnoreCase(role)) {
-                return "error/error403";
-            }
+        if (!"STAFF".equalsIgnoreCase(user.getRole())) {
+            return "error/error403";
+        }
+
         return "invoiceExestaff";
     }
 

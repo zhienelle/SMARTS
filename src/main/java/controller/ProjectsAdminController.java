@@ -3,6 +3,7 @@ package controller;
 import entity.Project;
 import entity.ProjectStage;
 import entity.ProjectTask;
+import entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,15 +61,13 @@ public class ProjectsAdminController {
     }
 
     @GetMapping("/projectsAdmin")
-    public String projectAdminPage(Model model, HttpServletRequest request) {
-        HttpSession session = request.getSession(false); // don't create if it doesn't exist
-
-        if (session == null || session.getAttribute("authenticatedUser") == null) {
-            return "redirect:/";
+    public String projectAdminPage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("authenticatedUser");
+        if (user == null) {
+            return "redirect:/"; // Redirect to login if session expired
         }
 
-        String role = (String) session.getAttribute("role");
-        if (!"admin".equalsIgnoreCase(role)) {
+        if (!"ADMIN".equalsIgnoreCase(user.getRole())) {
             return "error/error403";
         }
 

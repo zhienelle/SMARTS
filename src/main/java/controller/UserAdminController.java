@@ -92,7 +92,16 @@ public class UserAdminController {
     }
 
     @GetMapping("/userAdmin")
-    public String userAdminPage(Model model) {
+    public String userAdminPage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("authenticatedUser");
+        if (user == null) {
+            return "redirect:/"; // Redirect to login if session expired
+        }
+
+        if (!"ADMIN".equalsIgnoreCase(user.getRole())) {
+            return "error/error403";
+        }
+
         model.addAttribute("users", userRepository.findAll());
         return "userAdmin";
     }

@@ -37,8 +37,7 @@ public class InvoiceAdminController {
             return "redirect:/";
         }
 
-        String role = (String) session.getAttribute("role");
-        if (!"admin".equalsIgnoreCase(role)) {
+        if (!"ADMIN".equalsIgnoreCase(user.getRole())) {
             return "error/error403";
         }
 
