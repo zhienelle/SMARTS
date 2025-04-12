@@ -3,7 +3,6 @@ package controller;
 import entity.Project;
 import entity.User;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import repository.ProjectRepository;
 import repository.UserRepository;
@@ -14,15 +13,12 @@ import org.springframework.ui.Model;
 
 import java.util.List;
 import java.util.Optional;
-//FIXED BY JED
+
 @Controller
 public class UserAdminController {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private ProjectRepository projectRepository;
@@ -42,8 +38,10 @@ public class UserAdminController {
     @PostMapping("/userAdmin/addUser")
     @ResponseBody
     public User addUser(@RequestBody User user) {
+        // Store plain password (or replace with your custom hash if needed)
         String rawPassword = user.getPassword();
-        user.setPassword(passwordEncoder.encode(rawPassword)); // Encrypt password
+        user.setPassword(rawPassword); // ❗Password stored as plain text for simplicity (NO ENCRYPTION)
+
         if ("STAFF".equalsIgnoreCase(user.getRole()) && user.getProject() != null) {
             if (isProjectAlreadyAssignedToOtherStaff(user.getProject(), null)) {
                 throw new RuntimeException("❌ This project is already assigned to another executive staff.");
@@ -67,9 +65,9 @@ public class UserAdminController {
             User user = existingUser.get();
             user.setUsername(updatedUser.getUsername());
 
-            // If password changed, re-encrypt it
+            // If password changed, update it (no encryption)
             if (!user.getPassword().equals(updatedUser.getPassword())) {
-                user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+                user.setPassword(updatedUser.getPassword());
             }
 
             user.setRole(updatedUser.getRole());
@@ -110,6 +108,4 @@ public class UserAdminController {
         }
         return null;
     }
-
-
 }
