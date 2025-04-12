@@ -1262,7 +1262,8 @@
                         const row = e.target.closest('tr');
                         const materialName = row.querySelector("td:nth-child(2)").textContent.trim();
                         const quantity = parseInt(row.querySelector("td:nth-child(3)").textContent);
-                        // const projectName = document.getElementById("projectName").textContent.trim();
+                        const projectName = document.getElementById("projectName").textContent.trim();
+
 
                         fetch('/projectManagementAdmin/removeMaterial', {
                             method: "POST",
@@ -1401,16 +1402,33 @@
             function saveSelectedMaterials() {
                 const inputs = document.querySelectorAll('.material-quantity');
                 const selectedMaterials = [];
+                let hasNegative = false;
 
                 inputs.forEach(input => {
                     const quantity = parseInt(input.value);
-                    if (!isNaN(quantity) && quantity > 0) {
-                        selectedMaterials.push({
-                            materialName: input.dataset.materialName,
-                            quantity: quantity
-                        });
+                    const materialName = input.dataset.materialName;
+
+                    if (!isNaN(quantity)) {
+                        if (quantity < 0) {
+                            hasNegative = true;
+                        } else if (quantity > 0) {
+                            selectedMaterials.push({
+                                materialName: materialName,
+                                quantity: quantity
+                            });
+                        }
                     }
                 });
+
+                if (hasNegative) {
+                    alert("Negative values cannot be added.");
+                    return; // Stop further processing
+                }
+
+                if (selectedMaterials.length === 0) {
+                    alert("Please enter a quantity greater than 0.");
+                    return;
+                }
 
                 const projectName = document.getElementById("projectName").textContent.trim();
                 const selectedCategory = document.getElementById("materialCategorySelect").value;
@@ -1436,9 +1454,9 @@
                         } else {
                             alert("Project ID not found — cannot reload.");
                         }
-
                     });
             }
+
 
             document.getElementById('addBtn').addEventListener('click', function () {
                 openModal('addMaterialModal');

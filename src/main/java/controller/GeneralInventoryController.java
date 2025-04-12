@@ -2,6 +2,7 @@ package controller;
 //FIXED BY JED
 import entity.Inventory;
 import entity.User;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
@@ -42,7 +43,17 @@ public class GeneralInventoryController {
     }
 
     @GetMapping("inventoryAdmin")
-    public String AdminInventory() {
+    public String AdminInventory(HttpSession session, Model model) {
+        User currentUser = (User) session.getAttribute("authenticatedUser");
+
+        if (currentUser == null) {
+            return "redirect:/"; // or "error"
+        }
+
+        if (!"ADMIN".equalsIgnoreCase(currentUser.getRole())) {
+            return "error/error403";
+        }
+
         return "inventoryAdmin";
     }
 

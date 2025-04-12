@@ -38,9 +38,22 @@ public class ProjectsAdminController {
 
     @PostMapping("/projectsAdmin/addProject")
     @ResponseBody
-    public Project addProject(@RequestBody Project project) {
-        return projectRepository.save(project);
+    public ResponseEntity<?> addProject(@RequestBody Project project) {
+        // Duplicate name check
+        Project existing = projectRepository.findByProjectname(project.getProjectname());
+        if (existing != null) {
+            return ResponseEntity.badRequest().body("Project with the same name already exists.");
+        }
+
+        // Start and end date should not be the same
+        if (project.getProjectstart() != null && project.getProjectend() != null &&
+                project.getProjectstart().equals(project.getProjectend())) {
+            return ResponseEntity.badRequest().body("Start and end date cannot be the same.");
+        }
+        Project saved = projectRepository.save(project);
+        return ResponseEntity.ok(saved);
     }
+
 
     @PutMapping("/projectsAdmin/updateProject/{project_id}")
     @ResponseBody

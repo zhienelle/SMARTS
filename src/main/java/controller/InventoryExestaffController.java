@@ -51,7 +51,7 @@ public class InventoryExestaffController {
         String username = currentUser.getUsername(); // ✅ CHANGED: retrieve username from User object
         System.out.println("this is the username:" + username);
 
-        if ("EXESTAFF".equalsIgnoreCase(currentUser.getRole())) {
+        if ("STAFF".equalsIgnoreCase(currentUser.getRole())) {
             List<Inventory> unarchivedInventory = inventoryRepository.findAll().stream()
                     .filter(item -> item.getMaterialArchived() == null || !item.getMaterialArchived())
                     .collect(Collectors.toList());
@@ -129,10 +129,6 @@ public class InventoryExestaffController {
         materialRequestRepository.save(request);
         return "✅ Request submitted successfully!";
     }
-
-
-
-
 
     // ✅ UNCHANGED
     @GetMapping("inventoryExestaff")

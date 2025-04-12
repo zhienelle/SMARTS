@@ -33,6 +33,6 @@ public class LoginController {
         session.setAttribute("captchaPassed", true); // ✅ Add this once CAPTCHA is verified
         session.setAttribute("username", user.getUsername());
 
-        return "ROLE: " + user.getRole(); // used by frontend to redirect
+        return "ROLE:" + user.getRole() + "|STATUS:" + user.getStatus(); // used by frontend to redirect
     }
 }
