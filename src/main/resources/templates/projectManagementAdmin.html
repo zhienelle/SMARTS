@@ -1037,11 +1037,16 @@
     <section class="home-section">
         <div class="upper">
             <h1>PROJECT MANAGEMENT</h1>
-            <div id="dropdown" class="functionality">
+            <div id="dropdown" class="functionality" style="gap: 10px; justify-content: flex-end;">
+                <select id="stageFilterDropdown" style="width: 200px;">
+                    <option value="ALL">Show All Stages</option>
+                </select>
                 <select id="projectDropdown">
-                    <option disabled selected hidden>Select a project</option>
+                    <option value="" disabled selected hidden>Select a project</option>
                 </select>
             </div>
+
+
         </div>
         <div class="modal" id="editProgressModal">
             <div class="modal-content">
@@ -1115,6 +1120,12 @@
                     <select id="materialCategorySelect">
                         <option disabled selected>SELECT CATEGORY</option>
                     </select>
+
+                    <label for="stageSelect">Select Stage</label>
+                    <select id="stageSelect" required>
+                        <option disabled selected value="">SELECT STAGE</option>
+                    </select>
+
 
                     <table id="addMaterialsTable">
                         <thead>
@@ -1319,28 +1330,51 @@
                 document.getElementById("companyName").textContent = project.companyname || 'N/A';
                 document.getElementById("companyContact").textContent = project.companycontact || 'N/A';
             }
+                document.getElementById("stageFilterDropdown").addEventListener("change", () => {
+                    const selectedStage = document.getElementById("stageFilterDropdown").value;
+                    if (selectedStage === "ALL") {
+                        renderMaterialsTable(currentMaterials);
+                    } else {
+                        const filtered = currentMaterials.filter(m => m.stageName === selectedStage);
+                        renderMaterialsTable(filtered);
+                    }
+                });
+
 
                 function renderMaterialsTable(materials) {
                     const tableBody = document.getElementById("materialsTableBody");
                     tableBody.innerHTML = "";
-                    currentMaterials = materials; // store globally
-console.log("📦 Materials to render:", materials);
-                    materials.forEach((item, index) => {
-                        const row = document.createElement("tr");
+                    currentMaterials = materials;
 
-                        row.innerHTML = `
-            <td>${String(index + 1).padStart(3, '0')}</td>
-            <td>${item.materialName || 'N/A'}</td>
-            <td>${item.quantityAssigned} PCS</td>
-            <td>PHP ${item.materialPrice}</td>
-            <td>PHP ${item.totalPrice}</td>
-            <td class="actions-col actions" style="display: ${inEditMode ? 'table-cell' : 'none'};">
-                ${inEditMode ? '<span class="delete-icon" title="Remove">❌</span>' : ''}
-            </td>
-        `;
-                        tableBody.appendChild(row);
+                    // Group by stageName
+                    const grouped = {};
+                    materials.forEach(item => {
+                        const stageName = item.stageName || 'No Stage'; // fallback
+                        if (!grouped[stageName]) grouped[stageName] = [];
+                        grouped[stageName].push(item);
+                    });
+
+                    let itemNo = 1;
+                    Object.keys(grouped).forEach(stage => {
+
+
+                        grouped[stage].forEach(item => {
+                            const row = document.createElement("tr");
+                            row.innerHTML = `
+                <td>${String(itemNo++).padStart(3, '0')}</td>
+                <td>${item.materialName || 'N/A'}</td>
+                <td>${item.quantityAssigned} PCS</td>
+                <td>PHP ${item.materialPrice}</td>
+                <td>PHP ${item.totalPrice}</td>
+                <td class="actions-col actions" style="display: ${inEditMode ? 'table-cell' : 'none'};">
+                    ${inEditMode ? '<span class="delete-icon" title="Remove">❌</span>' : ''}
+                </td>
+            `;
+                            tableBody.appendChild(row);
+                        });
                     });
                 }
+
             });
 
             // Open Modal
@@ -1373,6 +1407,77 @@ console.log("📦 Materials to render:", materials);
                     }
                 });
             });
+
+            function loadStagesForProject(projectId) {
+                const stageSelect = document.getElementById("stageSelect");
+                stageSelect.innerHTML = '<option disabled selected value="">SELECT STAGE</option>';
+
+                fetch(`/projectManagementAdmin/stages?projectId=${projectId}`)
+                    .then(res => res.json())
+                    .then(stages => {
+                        console.log("🔍 STAGES FROM BACKEND:", stages);
+                        stages.forEach(stage => {
+                            const option = document.createElement("option");
+                            option.value = stage.stageId;  // you must return this from backend
+                            option.textContent = stage.stageName;
+                            stageSelect.appendChild(option);
+                        });
+                    });
+            }
+
+            function loadStageFilterOptions(projectId) {
+                console.log("📥 loadStageFilterOptions() called with projectId:", projectId);
+                const stageDropdown = document.getElementById("stageFilterDropdown");
+                stageDropdown.innerHTML = '<option value="ALL">SHOW ALL STAGES</option>';
+
+                fetch(`/projectManagementAdmin/stages?projectId=${projectId}`)
+                    .then(res => res.json())
+                    .then(stages => {
+                        console.log("🔍 STAGES FROM BACKEND:", stages);
+                        stages.forEach(stage => {
+                            const option = document.createElement("option");
+                            option.value = stage.stageName;
+                            option.textContent = stage.stageName;
+                            stageDropdown.appendChild(option);
+                        });
+                    });
+            }
+
+            dropdown.addEventListener('change', () => {
+                const selectedIndex = dropdown.selectedIndex;
+
+                if (selectedIndex === -1) {
+                    console.warn("⚠️ No option is selected in the dropdown.");
+                    return;
+                }
+
+                const selected = dropdown.options[selectedIndex];
+
+                if (!selected || !selected.value) {
+                    console.warn("⚠️ Selected option has no value.");
+                    return;
+                }
+
+                const selectedId = selected.value;
+                window.currentSelectedProjectId = selectedId;
+
+                // Load both the stage dropdowns
+                loadStagesForProject(selectedId);
+                loadStageFilterOptions(selectedId);
+
+                // Fetch project material data
+                fetch(`/projectManagementAdmin/data?projectId=${selectedId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        displayProjectInfo(data.project);
+                        renderMaterialsTable(data.materials);
+                    });
+            });
+
+
+
+
+
 
             function loadMaterialsByCategory(category) {
                 const inventoryTableBody = document.querySelector('#addMaterialsTable tbody');
@@ -1440,6 +1545,12 @@ console.log("📦 Materials to render:", materials);
 
                 const projectName = document.getElementById("projectName").textContent.trim();
                 const selectedCategory = document.getElementById("materialCategorySelect").value;
+                const selectedStageId = document.getElementById("stageSelect").value;
+                if (!selectedStageId) {
+                    alert("Please select a stage before saving.");
+                    return;
+                }
+
 
                 fetch('/projectManagementAdmin/addMaterials', {
                     method: 'POST',
@@ -1447,6 +1558,7 @@ console.log("📦 Materials to render:", materials);
                     body: JSON.stringify({
                         category: selectedCategory,
                         projectName: projectName,
+                        stageId: selectedStageId,
                         materials: selectedMaterials
                     })
                 })
@@ -1473,6 +1585,22 @@ console.log("📦 Materials to render:", materials);
                     console.log(this.value);
                     loadMaterialsByCategory(this.value);
                 });
+
+            // function loadStageFilterOptions(projectId) {
+            //     const stageDropdown = document.getElementById("stageFilterDropdown");
+            //     stageDropdown.innerHTML = '<option value="ALL">SHOW ALL STAGES</option>';
+            //
+            //     fetch(`/projectManagementAdmin/stages?projectId=${projectId}`)
+            //         .then(res => res.json())
+            //         .then(stages => {
+            //             stages.forEach(stage => {
+            //                 const option = document.createElement("option");
+            //                 option.value = stage.stageName;
+            //                 option.textContent = stage.stageName;
+            //                 stageDropdown.appendChild(option);
+            //             });
+            //         });
+            // }
 
 
 

@@ -765,13 +765,41 @@
             </div>
         </div>
     </div>
+    <div id="stageWarningPopup" style="display:none; position:fixed; top:30%; left:50%; transform:translate(-50%, -50%);
+background-color:#f8d7da; color:#721c24; padding:20px 30px; border:1px solid #f5c6cb; border-radius:10px; z-index:9999;
+box-shadow: 0px 0px 10px rgba(0,0,0,0.2); font-family:sans-serif;">
+        <strong>⚠️ Tasks not finished</strong><br>
+        You cannot generate this invoice until all stages are completed.
+    </div>
 </section>
 
 <!-- Footer -->
 <footer>
     <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
 </footer>
+<script th:inline="javascript">
+    /*<![CDATA[*/
 
+    const projectId = [[${selectedProjectId}]];
+    const incompleteStagesMap = /*[[${incompleteStagesMap}]]*/ {};
+
+    console.log("JS Loaded: projectId = " + projectId);
+    console.log("JS Loaded: incompleteStagesMap = ", incompleteStagesMap);
+    console.log("JS: incompleteStagesMap[projectId] = ", incompleteStagesMap[projectId]);
+
+    const isIncomplete = incompleteStagesMap[projectId];
+    if (isIncomplete === true || isIncomplete === "true") {
+        document.getElementById("stageWarningPopup").style.display = "block";
+        const printBtn = document.getElementById("printBtn");
+        if (printBtn) printBtn.disabled = true;
+    } else {
+        document.getElementById("stageWarningPopup").style.display = "none";
+        const printBtn = document.getElementById("printBtn");
+        if (printBtn) printBtn.disabled = false;
+    }
+
+    /*]]>*/
+</script>
 <script>
     async function fetchProjectsAndPopulateDropdown() {
         const response = await fetch("/admin/invoice/getProjects");
