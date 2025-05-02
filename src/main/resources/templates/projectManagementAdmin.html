@@ -1138,7 +1138,7 @@
                         <tbody></tbody>
                     </table>
 
-                    <label for="material">Material</label>
+                    <label>Material</label>
                     <div id="materialCheckboxes" class="checkbox-container">
                         <!--<label>
                             <div class="checkbox-col">
@@ -1178,6 +1178,10 @@
                 const addRowBtn = document.getElementById('addRowBtn');
                 const toggleArchiveBtn = document.getElementById('toggleArchiveBtn');
                 const categorySelect = document.getElementById('category');
+                const stageDropdown = document.getElementById('stageFilterDropdown');
+                // Reset stage filter dropdown when switching project
+                stageDropdown.value = "ALL";
+
 
 
                 let inEditMode = false;
@@ -1245,11 +1249,39 @@
                             if (urlProjectId && project.projectId == urlProjectId) {
                                 option.selected = true;
                             }
+                            // // ✅ Immediately trigger stage loading
+                            // loadStagesForProject(urlProjectId);
+                            // loadStageFilterOptions(urlProjectId);
+
                         });
 
                         // ✅ Force load the selected project's data
+                        // ✅ Only trigger loading *after* setting selection
                         if (urlProjectId) {
-                            dropdown.dispatchEvent(new Event('change'));
+                            const selectedOption = dropdown.querySelector("option:checked");
+                            const selectedId = selectedOption?.value;
+
+                            if (selectedId) {
+                                window.currentSelectedProjectId = selectedId;
+
+                                // Trigger all necessary loading like user would on dropdown change
+                                loadStagesForProject(selectedId);
+                                loadStageFilterOptions(selectedId);
+
+                                fetch(`/projectManagementAdmin/data?projectId=${selectedId}`)
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        console.log("📦 Initial materials load:", data.materials);
+                                        displayProjectInfo(data.project);
+                                        renderMaterialsTable(data.materials);
+                                        currentMaterials = data.materials;
+                                        stageDropdown.value = "ALL";
+
+                                    })
+                                    .catch(err => {
+                                        console.error("❌ Initial load failed:", err);
+                                    });
+                            }
                         }
                     });
 
@@ -1294,6 +1326,23 @@
                     }
                 });
 
+                stageDropdown.addEventListener("change", function () {
+                    const selectedStage = this.value;
+                    console.log("🎯 Stage selected:", selectedStage);
+
+                    if (selectedStage === "ALL") {
+                        renderMaterialsTable(currentMaterials); // shows everything
+                    } else {
+                        console.log("this is a test inside the stage dropdown");
+                        const filtered = currentMaterials.filter(m => m.stageName === selectedStage);
+                        console.log("Filtered materials:", filtered);
+                         console.log(currentMaterials);
+                         console.log(selectedStage);
+                        renderMaterialsTable(filtered);
+                    }
+                });
+
+
                 dropdown.addEventListener('change', () => {
                     const selected = dropdown.selectedOptions[0];
                     const selectedId = selected.value;
@@ -1310,6 +1359,11 @@
                             console.log("📦 Materials received:", data.materials);
                             displayProjectInfo(data.project);
                             renderMaterialsTable(data.materials);
+                            currentMaterials = data.materials;
+                            stageDropdown.value = "ALL";
+                            loadStagesForProject(selectedId);
+                            loadStageFilterOptions(selectedId);
+
                         });
                 });
 
@@ -1340,271 +1394,262 @@
                     }
                 });
 
+            function renderMaterialsTable(materials) {
+                const tableBody = document.getElementById("materialsTableBody");
+                tableBody.innerHTML = "";
+                // currentMaterials = materials;
+                console.log("📦 Materials to render:", materials);
+                // Group by stageName
+                const grouped = {};
+                materials.forEach(item => {
+                    const stageName = item.stageName || 'No Stage'; // fallback
+                    if (!grouped[stageName]) grouped[stageName] = [];
+                    grouped[stageName].push(item);
+                });
 
-                function renderMaterialsTable(materials) {
-                    const tableBody = document.getElementById("materialsTableBody");
-                    tableBody.innerHTML = "";
-                    currentMaterials = materials;
+                let itemNo = 1;
+                Object.keys(grouped).forEach(stage => {
 
-                    // Group by stageName
-                    const grouped = {};
-                    materials.forEach(item => {
-                        const stageName = item.stageName || 'No Stage'; // fallback
-                        if (!grouped[stageName]) grouped[stageName] = [];
-                        grouped[stageName].push(item);
+
+                    grouped[stage].forEach(item => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+            <td>${String(itemNo++).padStart(3, '0')}</td>
+            <td>${item.materialName || 'N/A'}</td>
+            <td>${item.quantityAssigned} PCS</td>
+            <td>PHP ${item.materialPrice}</td>
+            <td>PHP ${(item.quantityAssigned * item.materialPrice).toLocaleString()}</td>
+            <td class="actions-col actions" style="display: ${inEditMode ? 'table-cell' : 'none'};">
+                ${inEditMode ? '<span class="delete-icon" title="Remove">❌</span>' : ''}
+            </td>
+        `;
+                        tableBody.appendChild(row);
                     });
+                });
+            }
 
-                    let itemNo = 1;
-                    Object.keys(grouped).forEach(stage => {
+        });
 
+        // Open Modal
+        document.getElementById('addBtn').addEventListener('click', function () {
+            openModal('addMaterialModal');
+        });
 
-                        grouped[stage].forEach(item => {
-                            const row = document.createElement("tr");
-                            row.innerHTML = `
-                <td>${String(itemNo++).padStart(3, '0')}</td>
-                <td>${item.materialName || 'N/A'}</td>
-                <td>${item.quantityAssigned} PCS</td>
-                <td>PHP ${item.materialPrice}</td>
-                <td>PHP ${item.totalPrice}</td>
-                <td class="actions-col actions" style="display: ${inEditMode ? 'table-cell' : 'none'};">
-                    ${inEditMode ? '<span class="delete-icon" title="Remove">❌</span>' : ''}
+        // Modal Open/Close Helpers
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const overlay = document.getElementById('overlay');
+            if (modal && overlay) {
+                modal.style.display = "block";
+                overlay.style.display = "block";
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+            document.getElementById('overlay').style.display = "none";
+        }
+
+        window.addEventListener('click', function (event) {
+            const modals = document.querySelectorAll('.modal');
+            const overlay = document.getElementById('overlay');
+            modals.forEach(modal => {
+                if (event.target === modal || event.target === overlay) {
+                    modal.style.display = "none";
+                    overlay.style.display = "none";
+                }
+            });
+        });
+
+        function loadStagesForProject(projectId) {
+            const stageSelect = document.getElementById("stageSelect");
+            stageSelect.innerHTML = '<option disabled selected value="">SELECT STAGE</option>';
+
+            console.log("im inside load stages");
+            fetch(`/projectManagementAdmin/stages?projectId=${projectId}`)
+                .then(res => res.json())
+                .then(stages => {
+                    console.log("🔍 STAGES FROM BACKEND:", stages);
+                    stages.forEach(stage => {
+                        const option = document.createElement("option");
+                        option.value = stage.stageId;  // you must return this from backend
+                        option.textContent = stage.stageName;
+                        stageSelect.appendChild(option);
+                    });
+                });
+        }
+
+        function loadStageFilterOptions(projectId) {
+            console.log("📥 loadStageFilterOptions() called with projectId:", projectId);
+            const stageDropdown = document.getElementById("stageFilterDropdown");
+            stageDropdown.innerHTML = '<option value="ALL">SHOW ALL STAGES</option>';
+
+            fetch(`/projectManagementAdmin/stages?projectId=${projectId}`)
+                .then(res => res.json())
+                .then(stages => {
+                    console.log("🔍 STAGES FROM BACKEND:", stages);
+                    stages.forEach(stage => {
+                        const option = document.createElement("option");
+                        option.value = stage.stageName;
+                        option.textContent = stage.stageName;
+                        stageDropdown.appendChild(option);
+                    });
+                });
+        }
+
+        // dropdown.addEventListener('change', function () {
+        //     console.log(this.options);
+        //     console.log(this.selectedIndex);
+        //     const selected = this.options[this.selectedIndex];
+        //     const selectedId = selected?.value;
+        //
+        //     console.log("⚡ Project selected:", selectedId);  // Add this
+        //     if (!selectedId) {
+        //         console.warn("⚠️ No valid project ID selected.");
+        //         return;
+        //     }
+        //
+        //     window.currentSelectedProjectId = selectedId;
+        //
+        //     console.log("🚀 Calling stage loading...");
+        //     loadStagesForProject(selectedId);          // This should populate stageSelect
+        //     loadStageFilterOptions(selectedId);        // This should populate stageFilterDropdown
+        //
+        //     fetch(`/projectManagementAdmin/data?projectId=${selectedId}`)
+        //         .then(res => res.json())
+        //         .then(data => {
+        //             console.log("📦 Materials received:", data.materials); // Already present
+        //             currentMaterials = data.materials; // <== this line is important
+        //             displayProjectInfo(data.project);
+        //             renderMaterialsTable(data.materials);
+        //         })
+        //         .catch(err => {
+        //             console.error("❌ Error loading project data:", err);
+        //         });
+        // });
+
+        function loadMaterialsByCategory(category) {
+            const inventoryTableBody = document.querySelector('#addMaterialsTable tbody');
+            inventoryTableBody.innerHTML = ''; // Clear previous
+
+            fetch(`/inventory/getByCategory?category=${encodeURIComponent(category)}`)
+                .then(response => response.json())
+                .then(materials => {
+                    console.log("📦 Materials by category:", materials);
+                    if (!Array.isArray(materials)) return;
+
+                    materials.forEach(material => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                <td>${material.materialName}</td>
+                <td>${material.materialStock}</td>
+                <td>
+                    <input type="number" class="material-quantity" min="1" max="${material.materialStock}" data-material-name="${material.materialName}" />
                 </td>
             `;
-                            tableBody.appendChild(row);
+                        inventoryTableBody.appendChild(row);
+                        // Fix #2: Prevent "e", "+", and "-" in input
+                        const input = row.querySelector("input.material-quantity");
+                        input.addEventListener("keydown", function (e) {
+                            if (["e", "E", "+", "-"].includes(e.key)) {
+                                e.preventDefault();
+                            }
                         });
                     });
+                })
+        }
+        // Save button inside modal
+        function saveSelectedMaterials() {
+            const inputs = document.querySelectorAll('.material-quantity');
+            const selectedMaterials = [];
+
+            let valid = true;
+            inputs.forEach(input => {
+                if (input.value.trim() === "") {
+                    return; // skip empty inputs
                 }
 
+                console.log(input.value);
+                const quantity = Number(input.value);
+                console.log(quantity);
+
+                if (!Number.isInteger(quantity) || quantity <= 0) {
+                    valid = false;
+                    alert(`🚫 Invalid quantity for ${input.dataset.materialName}. Please enter a whole number greater than 0.`);
+                    return;
+                }
+
+                selectedMaterials.push({
+                    materialName: input.dataset.materialName,
+                    quantity: quantity
+                });
             });
 
-            // Open Modal
+
+            if (!valid) return;  // Stop if any input is invalid
+
+
+            const projectName = document.getElementById("projectName").textContent.trim();
+            const selectedCategory = document.getElementById("materialCategorySelect").value;
+            const selectedStageId = document.getElementById("stageSelect").value;
+            if (!selectedStageId) {
+                alert("Please select a stage before saving.");
+                return;
+            }
+
+
+            fetch('/projectManagementAdmin/addMaterials', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    category: selectedCategory,
+                    projectName: projectName,
+                    stageId: selectedStageId,
+                    materials: selectedMaterials
+                })
+            })
+                .then(res => res.text())
+                .then(msg => {
+                    alert(msg);
+                    closeModal('addMaterialModal');
+
+                    const selectedProjectId = window.currentSelectedProjectId;
+
+                    if (selectedProjectId && !isNaN(selectedProjectId)) {
+                        window.location.href = `/projectManagementAdmin?projectId=${selectedProjectId}`;
+                    } else {
+                        alert("Project ID not found — cannot reload.");
+                    }
+
+                });
+        }
             document.getElementById('addBtn').addEventListener('click', function () {
                 openModal('addMaterialModal');
             });
 
-            // Modal Open/Close Helpers
-            function openModal(modalId) {
-                const modal = document.getElementById(modalId);
-                const overlay = document.getElementById('overlay');
-                if (modal && overlay) {
-                    modal.style.display = "block";
-                    overlay.style.display = "block";
-                }
-            }
-
-            function closeModal(modalId) {
-                document.getElementById(modalId).style.display = "none";
-                document.getElementById('overlay').style.display = "none";
-            }
-
-            window.addEventListener('click', function (event) {
-                const modals = document.querySelectorAll('.modal');
-                const overlay = document.getElementById('overlay');
-                modals.forEach(modal => {
-                    if (event.target === modal || event.target === overlay) {
-                        modal.style.display = "none";
-                        overlay.style.display = "none";
-                    }
-                });
+            document.getElementById('materialCategorySelect').addEventListener('change', function () {
+                console.log(this.value);
+                loadMaterialsByCategory(this.value);
             });
 
-            function loadStagesForProject(projectId) {
-                const stageSelect = document.getElementById("stageSelect");
-                stageSelect.innerHTML = '<option disabled selected value="">SELECT STAGE</option>';
-
-                fetch(`/projectManagementAdmin/stages?projectId=${projectId}`)
-                    .then(res => res.json())
-                    .then(stages => {
-                        console.log("🔍 STAGES FROM BACKEND:", stages);
-                        stages.forEach(stage => {
-                            const option = document.createElement("option");
-                            option.value = stage.stageId;  // you must return this from backend
-                            option.textContent = stage.stageName;
-                            stageSelect.appendChild(option);
-                        });
-                    });
-            }
-
-            function loadStageFilterOptions(projectId) {
-                console.log("📥 loadStageFilterOptions() called with projectId:", projectId);
-                const stageDropdown = document.getElementById("stageFilterDropdown");
-                stageDropdown.innerHTML = '<option value="ALL">SHOW ALL STAGES</option>';
-
-                fetch(`/projectManagementAdmin/stages?projectId=${projectId}`)
-                    .then(res => res.json())
-                    .then(stages => {
-                        console.log("🔍 STAGES FROM BACKEND:", stages);
-                        stages.forEach(stage => {
-                            const option = document.createElement("option");
-                            option.value = stage.stageName;
-                            option.textContent = stage.stageName;
-                            stageDropdown.appendChild(option);
-                        });
-                    });
-            }
-
-            dropdown.addEventListener('change', () => {
-                const selectedIndex = dropdown.selectedIndex;
-
-                if (selectedIndex === -1) {
-                    console.warn("⚠️ No option is selected in the dropdown.");
-                    return;
-                }
-
-                const selected = dropdown.options[selectedIndex];
-
-                if (!selected || !selected.value) {
-                    console.warn("⚠️ Selected option has no value.");
-                    return;
-                }
-
-                const selectedId = selected.value;
-                window.currentSelectedProjectId = selectedId;
-
-                // Load both the stage dropdowns
-                loadStagesForProject(selectedId);
-                loadStageFilterOptions(selectedId);
-
-                // Fetch project material data
-                fetch(`/projectManagementAdmin/data?projectId=${selectedId}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        displayProjectInfo(data.project);
-                        renderMaterialsTable(data.materials);
-                    });
-            });
+        // function loadStageFilterOptions(projectId) {
+        //     const stageDropdown = document.getElementById("stageFilterDropdown");
+        //     stageDropdown.innerHTML = '<option value="ALL">SHOW ALL STAGES</option>';
+        //
+        //     fetch(`/projectManagementAdmin/stages?projectId=${projectId}`)
+        //         .then(res => res.json())
+        //         .then(stages => {
+        //             stages.forEach(stage => {
+        //                 const option = document.createElement("option");
+        //                 option.value = stage.stageName;
+        //                 option.textContent = stage.stageName;
+        //                 stageDropdown.appendChild(option);
+        //             });
+        //         });
+        // }
 
 
-
-
-
-
-            function loadMaterialsByCategory(category) {
-                const inventoryTableBody = document.querySelector('#addMaterialsTable tbody');
-                inventoryTableBody.innerHTML = ''; // Clear previous
-
-                fetch(`/inventory/getByCategory?category=${encodeURIComponent(category)}`)
-                    .then(response => response.json())
-                    .then(materials => {
-                        console.log("📦 Materials by category:", materials);
-                        if (!Array.isArray(materials)) return;
-
-                        materials.forEach(material => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                    <td>${material.materialName}</td>
-                    <td>${material.materialStock}</td>
-                    <td>
-                        <input type="number" class="material-quantity" min="1" max="${material.materialStock}" data-material-name="${material.materialName}" />
-                    </td>
-                `;
-                            inventoryTableBody.appendChild(row);
-                            // Fix #2: Prevent "e", "+", and "-" in input
-                            const input = row.querySelector("input.material-quantity");
-                            input.addEventListener("keydown", function (e) {
-                                if (["e", "E", "+", "-"].includes(e.key)) {
-                                    e.preventDefault();
-                                }
-                            });
-                        });
-                    })
-
-
-
-            }
-            // Save button inside modal
-            function saveSelectedMaterials() {
-                const inputs = document.querySelectorAll('.material-quantity');
-                const selectedMaterials = [];
-
-                let valid = true;
-                inputs.forEach(input => {
-                    if (input.value.trim() === "") {
-                        return; // skip empty inputs
-                    }
-
-                    console.log(input.value);
-                    const quantity = Number(input.value);
-                    console.log(quantity);
-
-                    if (!Number.isInteger(quantity) || quantity <= 0) {
-                        valid = false;
-                        alert(`🚫 Invalid quantity for ${input.dataset.materialName}. Please enter a whole number greater than 0.`);
-                        return;
-                    }
-
-                    selectedMaterials.push({
-                        materialName: input.dataset.materialName,
-                        quantity: quantity
-                    });
-                });
-
-
-                if (!valid) return;  // Stop if any input is invalid
-
-
-                const projectName = document.getElementById("projectName").textContent.trim();
-                const selectedCategory = document.getElementById("materialCategorySelect").value;
-                const selectedStageId = document.getElementById("stageSelect").value;
-                if (!selectedStageId) {
-                    alert("Please select a stage before saving.");
-                    return;
-                }
-
-
-                fetch('/projectManagementAdmin/addMaterials', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        category: selectedCategory,
-                        projectName: projectName,
-                        stageId: selectedStageId,
-                        materials: selectedMaterials
-                    })
-                })
-                    .then(res => res.text())
-                    .then(msg => {
-                        alert(msg);
-                        closeModal('addMaterialModal');
-
-                        const selectedProjectId = window.currentSelectedProjectId;
-
-                        if (selectedProjectId && !isNaN(selectedProjectId)) {
-                            window.location.href = `/projectManagementAdmin?projectId=${selectedProjectId}`;
-                        } else {
-                            alert("Project ID not found — cannot reload.");
-                        }
-
-                    });
-            }
-                document.getElementById('addBtn').addEventListener('click', function () {
-                    openModal('addMaterialModal');
-                });
-
-                document.getElementById('materialCategorySelect').addEventListener('change', function () {
-                    console.log(this.value);
-                    loadMaterialsByCategory(this.value);
-                });
-
-            // function loadStageFilterOptions(projectId) {
-            //     const stageDropdown = document.getElementById("stageFilterDropdown");
-            //     stageDropdown.innerHTML = '<option value="ALL">SHOW ALL STAGES</option>';
-            //
-            //     fetch(`/projectManagementAdmin/stages?projectId=${projectId}`)
-            //         .then(res => res.json())
-            //         .then(stages => {
-            //             stages.forEach(stage => {
-            //                 const option = document.createElement("option");
-            //                 option.value = stage.stageName;
-            //                 option.textContent = stage.stageName;
-            //                 stageDropdown.appendChild(option);
-            //             });
-            //         });
-            // }
-
-
-
-        </script>
+</script>
     </section>
 </body>
 </html>

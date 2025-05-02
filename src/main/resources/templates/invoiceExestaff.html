@@ -613,6 +613,13 @@
             margin: 0 10px;
             text-transform: uppercase;
         }
+        #invoiceTable, #invoiceTable * {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
     </style>
 </head>
 
@@ -707,44 +714,52 @@
     </div>
 
     <div class="overlay" id="overlay"></div>
-    <div class="selected-period" id="selectedPeriod">
-    </div>
+    <div class="selected-period" id="selectedPeriod"></div>
 
-    <div class="invoice-container">
-        <div class="project-details">
-            <div>
-                <h2><strong>Project:</strong> <span id="projectName">---</span></h2>
-                <p><strong>Location:</strong> <span id="projectLocation">---</span></p>
-            </div>
-            <div class="b">
-                <h2><strong>Company:</strong> <span id="projectCompany">---</span></h2>
-                <p><strong>Contact:</strong> <span id="projectContact">---</span></p>
+    <!-- BEGIN: Blur Wrapper (ONLY wraps table + button) -->
+
+        <div id="invoiceMainContent">
+            <div id="blurWrapper">
+            <div class="invoice-container">
+                <div class="project-details">
+                    <div>
+                        <h2><strong>Project:</strong> <span id="projectName">---</span></h2>
+                        <p><strong>Location:</strong> <span id="projectLocation">---</span></p>
+                    </div>
+                    <div class="b">
+                        <h2><strong>Company:</strong> <span id="projectCompany">---</span></h2>
+                        <p><strong>Contact:</strong> <span id="projectContact">---</span></p>
+                    </div>
+                </div>
+
+                <table id="invoiceTable">
+                    <thead>
+                    <tr>
+                        <th>Item No.</th>
+                        <th>Materials</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                    </tr>
+                    </thead>
+                    <tbody id="invoiceBody"></tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="4">Total:</td>
+                        <td id="totalCost">PHP 0</td>
+                    </tr>
+                    </tfoot>
+                </table>
+
+
+            <div class="buttons">
+                <button id="printBtn" onclick="generatePDF()">Print</button>
             </div>
         </div>
-
-        <table id="invoiceTable">
-            <thead>
-            <tr>
-                <th>Item No.</th>
-                <th>Materials</th>
-                <th>Quantity</th>
-                <th>Unit Price</th>
-                <th>Total</th>
-            </tr>
-            </thead>
-            <tbody id="invoiceBody"></tbody>
-            <tfoot>
-            <tr>
-                <td colspan="4">Total:</td>
-                <td id="totalCost">PHP 0</td>
-            </tr>
-            </tfoot>
-        </table>
+            </div>
     </div>
 
-    <div class="buttons">
-        <button onclick="generatePDF()">Print</button>
-    </div>
+    <!-- END: Blur Wrapper -->
 
     <div id="modal" class="modal">
         <div class="modal-content">
@@ -757,41 +772,34 @@
             </div>
         </div>
     </div>
-    <div id="stageWarningPopup" style="display:none; position:fixed; top:30%; left:50%; transform:translate(-50%, -50%);
-background-color:#f8d7da; color:#721c24; padding:20px 30px; border:1px solid #f5c6cb; border-radius:10px; z-index:9999;
-box-shadow: 0px 0px 10px rgba(0,0,0,0.2); font-family:sans-serif;">
+
+    <!-- Warning Overlay and Popup -->
+    <div id="stageBlockOverlay" style="display:none;
+     position:absolute; top:0; left:0; width:100%; height:100%;
+     background: rgba(0,0,0,0.4); z-index:998;
+     pointer-events: none;">
+    </div>
+
+
+    <div id="stageWarningPopup" style="display:none;
+         position:fixed; top:30%; left:50%; transform:translate(-50%, -50%);
+         background-color:#f8d7da; color:#721c24;
+         padding:20px 30px; border:1px solid #f5c6cb; border-radius:10px;
+         z-index:9999; box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+         font-family:sans-serif;">
         <strong>⚠️ Tasks not finished</strong><br>
         You cannot generate this invoice until all stages are completed.
     </div>
 </section>
-
 <!-- Footer -->
 <footer>
     <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
 </footer>
 <script th:inline="javascript">
     /*<![CDATA[*/
-
-    const projectId = [[${selectedProjectId}]];
     const incompleteStagesMap = /*[[${incompleteStagesMap}]]*/ {};
-
-    if (incompleteStagesMap[projectId] === true) {
-        document.getElementById("stageWarningPopup").style.display = "block";
-
-        const printBtn = document.getElementById("printBtn");
-        if (printBtn) printBtn.disabled = true;
-    } else {
-        // ✅ Ensure popup stays hidden if complete
-        document.getElementById("stageWarningPopup").style.display = "none";
-
-        const printBtn = document.getElementById("printBtn");
-        if (printBtn) printBtn.disabled = false;
-    }
-
     /*]]>*/
 </script>
-
-
 <script>
 
     document.addEventListener("DOMContentLoaded", async () => {
@@ -814,6 +822,28 @@ box-shadow: 0px 0px 10px rgba(0,0,0,0.2); font-family:sans-serif;">
 
             dropdown.addEventListener("change", async () => {
                 const selected = projects.find(p => p.projectId == dropdown.value);
+                const selectedProjectId = parseInt(dropdown.value);
+                const isIncomplete = incompleteStagesMap[selectedProjectId];
+
+                console.log("Executive Staff - Selected Project ID:", selectedProjectId);
+                console.log("Stage Completion Map:", incompleteStagesMap);
+                console.log("Is Incomplete?", isIncomplete);
+
+                if (isIncomplete === true || isIncomplete === "true") {
+                    document.getElementById("stageWarningPopup").style.display = "block";
+                    document.getElementById("stageBlockOverlay").style.display = "block";
+                    document.getElementById("blurWrapper").style.filter = "blur(6px)";
+                    const printBtn = document.getElementById("printBtn");
+                    if (printBtn) printBtn.disabled = true;
+                } else {
+                    document.getElementById("stageWarningPopup").style.display = "none";
+                    document.getElementById("stageBlockOverlay").style.display = "none";
+                    document.getElementById("blurWrapper").style.filter = "none";
+                    const printBtn = document.getElementById("printBtn");
+                    if (printBtn) printBtn.disabled = false;
+                }
+
+
                 if (!selected) return;
 
                 document.getElementById("projectName").textContent = selected.projectname;
@@ -822,6 +852,7 @@ box-shadow: 0px 0px 10px rgba(0,0,0,0.2); font-family:sans-serif;">
                 document.getElementById("projectContact").textContent = selected.companycontact;
 
                 const res = await fetch(`/exestaff/invoice/materials?projectId=${selected.projectId}`);
+
                 if (!res.ok) throw new Error("Failed to fetch materials");
 
                 const materials = await res.json();
@@ -831,21 +862,23 @@ box-shadow: 0px 0px 10px rgba(0,0,0,0.2); font-family:sans-serif;">
 
                 materials.forEach((item, i) => {
                     const row = document.createElement("tr");
-                    const totalRow = item.materialPrice * item.quantityAssigned;
+                    const totalRow = item.unitPrice * item.quantityAssigned;
                     total += totalRow;
 
                     row.innerHTML = `
-        <td>${String(i + 1).padStart(3, '0')}</td>
-        <td>${item.materialName || '---'}</td>
-        <td>${item.quantityAssigned}</td>
-        <td>PHP ${item.materialPrice.toLocaleString()}</td>
-        <td>PHP ${totalRow.toLocaleString()}</td>
-    `;
+    <td>${String(i + 1).padStart(3, '0')}</td>
+    <td>${item.materialName || '---'}</td>
+    <td>${item.quantityAssigned}</td>
+    <td>PHP ${item.unitPrice.toLocaleString()}</td>
+    <td>PHP ${totalRow.toLocaleString()}</td>
+`;
                     tbody.appendChild(row);
+
                 });
 
 
                 document.getElementById("totalCost").textContent = `PHP ${total.toLocaleString()}`;
+
             });
         } catch (err) {
             console.error("Error loading invoice page:", err);
@@ -922,6 +955,7 @@ box-shadow: 0px 0px 10px rgba(0,0,0,0.2); font-family:sans-serif;">
         pdf.setFontSize(11);
         pdf.setTextColor(255, 255, 255);
         pdf.text(`INVOICE NO: ${invoiceNo}`, margin + 5, startY + 14);
+
         pdf.text(`DATE: ${formattedDate}`, pageWidth - margin - 100, startY + 14);
 
         pdf.setTextColor(0, 0, 0);
