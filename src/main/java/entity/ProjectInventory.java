@@ -26,6 +26,11 @@ public class ProjectInventory {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // ✅ Add this
     private Inventory inventory;
 
+    @ManyToOne
+    @JoinColumn(name = "stage_id") // must exist in DB schema
+    private ProjectStage stage;
+
+
 
     @Column(name = "quantity_assigned", nullable = false)
     private Integer quantityAssigned;
@@ -39,12 +44,21 @@ public class ProjectInventory {
     @Column(name = "total_price")
     private double totalPrice;
 
+    
+
 
     // --- Getters and Setters ---
     public Long getId() {
         return id;
     }
 
+    public ProjectStage getStage() {
+        return stage;
+    }
+
+    public void setStage(ProjectStage stage) {
+        this.stage = stage;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -97,6 +111,7 @@ public class ProjectInventory {
     public void setTotalPrice(double totalPrice) {
         this.totalPrice = totalPrice;
     }
+
 
 
 

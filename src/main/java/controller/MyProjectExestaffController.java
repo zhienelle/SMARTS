@@ -180,4 +180,41 @@ public class MyProjectExestaffController {
 
         return ResponseEntity.ok("Project progress saved successfully.");
     }
+
+    @GetMapping("/myProjectExestaff/getStagesByName")
+    @ResponseBody
+    public ResponseEntity<List<ProjectStage>> getStagesByProjectName(@RequestParam String projectName) {
+        Project project = projectRepository.findByProjectname(projectName);
+        if (project == null) return ResponseEntity.badRequest().body(Collections.emptyList());
+
+        List<ProjectStage> stages = stageRepo.findByProject(project);
+        return ResponseEntity.ok(stages);
+    }
+
+    @GetMapping("/myProjectExestaff/getMaterialsByStage")
+    @ResponseBody
+    public List<ProjectInventory> getMaterialsByStage(@RequestParam String projectName,
+                                                      @RequestParam int stageNumber) {
+        Project project = projectRepository.findByProjectname(projectName);
+        if (project == null) return new ArrayList<>();
+
+        Optional<ProjectStage> optionalStage = stageRepo.findByProjectAndStageNumber(project, stageNumber);
+        if (!optionalStage.isPresent()) return new ArrayList<>();
+
+        ProjectStage stage = optionalStage.get();
+
+        List<ProjectInventory> materials = stage.getProjectInventoryList();
+        materials.forEach(pi -> {
+            if (pi.getInventory() != null) {
+                pi.getInventory().getMaterialName();
+                pi.getInventory().getMaterialCategory();
+                pi.getInventory().getMaterialStock();
+                pi.getInventory().getMaterialPrice();
+            }
+        });
+
+        return materials;
+    }
+
+
 }

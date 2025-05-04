@@ -2,10 +2,12 @@ package controller;
 
 import entity.Project;
 import entity.ProjectInventory;
+import entity.ProjectStage;
 import entity.User;
 import org.springframework.format.annotation.DateTimeFormat;
 import repository.ProjectRepository;
 import repository.ProjectInventoryRepository;
+import repository.ProjectStageRepository;
 import repository.UserRepository;
 
 import jakarta.servlet.http.HttpSession;
@@ -30,21 +32,47 @@ public class InvoiceAdminController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ProjectStageRepository projectStageRepository;
+
+
+
     @GetMapping("/invoiceAdmin")
     public String loadInvoicePage(HttpSession session, Model model) {
         User user = (User) session.getAttribute("authenticatedUser");
-        if (user == null ) {
-            return "redirect:/";
-        }
-
-        if (!"ADMIN".equalsIgnoreCase(user.getRole())) {
-            return "error/error403";
-        }
+        if (user == null) return "redirect:/";
+        if (!"ADMIN".equalsIgnoreCase(user.getRole())) return "error/error403";
 
         List<Project> allProjects = projectRepository.findAll();
         model.addAttribute("projects", allProjects);
+
+        Map<Long, Boolean> stageCompletionMap = new HashMap<>();
+        Long selectedProjectId = null;
+
+        for (Project p : allProjects) {
+            if (selectedProjectId == null) {
+                selectedProjectId = (long) p.getProjectId(); // First project as default
+            }
+
+            List<ProjectStage> stages = projectStageRepository.findByProject(p);
+
+            if (stages == null || stages.isEmpty()) {
+                stageCompletionMap.put((long) p.getProjectId(), true);
+            } else {
+                boolean hasIncomplete = stages.stream().anyMatch(stage ->
+                        stage.getStatus() == null || !stage.getStatus().equalsIgnoreCase("Complete")
+                );
+                stageCompletionMap.put((long) p.getProjectId(), hasIncomplete);
+            }
+        }
+
+        model.addAttribute("selectedProjectId", selectedProjectId);
+        model.addAttribute("incompleteStagesMap", stageCompletionMap);
+
         return "invoiceAdmin";
     }
+
+
 
     @GetMapping("/admin/invoice/getProjects")
     @ResponseBody
@@ -75,8 +103,8 @@ public class InvoiceAdminController {
             entry.put("materialName", pi.getInventory().getMaterialName());
             entry.put("materialCategory", pi.getInventory().getMaterialCategory());
             entry.put("quantity", pi.getQuantityAssigned());
-            entry.put("unitPrice", pi.getMaterialPrice());
-            entry.put("totalPrice", pi.getTotalPrice());
+            entry.put("unitPrice", pi.getInventory().getMaterialPrice()); // ✅ FIXED
+            entry.put("totalPrice", pi.getQuantityAssigned() * pi.getInventory().getMaterialPrice()); // ✅ FIXED
             return entry;
         }).collect(Collectors.toList());
     }

@@ -15,6 +15,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -86,49 +89,55 @@ public class InventoryExestaffController {
 
     // ✅ UNCHANGED
     // ✅ Submit material request
-    @PostMapping("/exestaff/inventory/requestMaterial")
+    @PostMapping("/exestaff/inventory/requestMaterials")
     @ResponseBody
-    public String submitMaterialRequest(@RequestParam("projectName") String projectName,
-                                        @RequestParam("category") String category,
-                                        @RequestParam("material") String material,
-                                        @RequestParam("quantity") Integer quantity,
-                                        HttpSession session) {
-        System.out.println("Received request: projectName=" + projectName + ", category=" + category + ", material=" + material + ", quantity=" + quantity);
-
+    public String submitMultipleMaterialRequests(@RequestBody Map<String, Object> payload, HttpSession session) {
         User user = (User) session.getAttribute("authenticatedUser");
-        if (user == null) {
-            return "❌ Not authenticated.";
-        }
+        if (user == null) return "❌ Not authenticated.";
 
-        if (quantity == null || quantity <= 0) {
-            return "❌ Quantity must be atleast 1.";
-        }
+        String projectName = (String) payload.get("projectName");
+        Integer stageId = Integer.parseInt(payload.get("stageId").toString());  // you can use this later if needed
+        List<Map<String, Object>> materials = (List<Map<String, Object>>) payload.get("materials");
 
-        Inventory inventory = inventoryRepository.findByMaterialCategoryIgnoreCaseAndMaterialNameIgnoreCase(
-                category.trim(), material.trim());
+        if (projectName == null || materials == null || materials.isEmpty()) {
+            return "❌ Missing project name or material list.";
+        }
 
         Project project = projectRepository.findByProjectname(projectName.trim());
+        if (project == null) return "❌ Project not found.";
 
-        if (inventory == null || project == null) {
-            return "❌ Invalid material or project.";
+        for (Map<String, Object> item : materials) {
+            String name = (String) item.get("materialName");
+            String category = (String) item.get("category");
+            Integer quantity = Integer.parseInt(item.get("quantity").toString());
+
+            if (quantity == null || quantity <= 0) return "❌ Quantity must be valid for all materials.";
+
+            Inventory inventory = inventoryRepository.findByMaterialCategoryIgnoreCaseAndMaterialNameIgnoreCase(
+                    category.trim(), name.trim());
+
+            if (inventory == null) return "❌ Material not found: " + name;
+
+            if (quantity > inventory.getMaterialStock()) {
+                return "❌ Not enough stock for " + name;
+            }
+
+            MaterialRequest request = new MaterialRequest();
+            request.setUser(user);
+            request.setProject(project);
+            request.setInventory(inventory);
+            request.setMaterialName(name);
+            request.setMaterialCategory(category);
+            request.setMaterialStock(quantity);
+            request.setMaterialRequestStatus("PENDING");
+
+            materialRequestRepository.save(request);
         }
 
-        if (quantity > inventory.getMaterialStock()) {
-            return "❌ Not enough stock available.";
-        }
-
-        MaterialRequest request = new MaterialRequest();
-        request.setProject(project);
-        request.setInventory(inventory);
-        request.setMaterialName(material);
-        request.setMaterialCategory(category);
-        request.setMaterialStock(quantity);
-        request.setMaterialRequestStatus("PENDING");
-        request.setUser(user);
-
-        materialRequestRepository.save(request);
-        return "✅ Request submitted successfully!";
+        return "✅ Material request submitted successfully!";
     }
+
+
 
     // ✅ UNCHANGED
     @GetMapping("inventoryExestaff")

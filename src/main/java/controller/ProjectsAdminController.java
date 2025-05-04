@@ -114,14 +114,20 @@ public class ProjectsAdminController {
             stage.setProject(project);
             stage.setStageNumber(stageNumber);
 
-            stage = stageRepo.save(stage); // save new stage or update existing
+            stage = stageRepo.save(stage); // Save or update stage
             List<Map<String, Object>> tasks = (List<Map<String, Object>>) stageData.get("tasks");
 
             Set<Integer> taskIdsFromFrontend = new HashSet<>();
+            boolean allCompleted = true; // ✅ Track task completion for this stage
+
             for (Map<String, Object> taskData : tasks) {
                 Integer taskId = taskData.get("taskId") != null ? (Integer) taskData.get("taskId") : null;
                 String taskName = (String) taskData.get("taskName");
                 Boolean completed = (Boolean) taskData.get("completed");
+
+                if (completed == null || !completed) {
+                    allCompleted = false; // ✅ Any incomplete task makes the stage incomplete
+                }
 
                 ProjectTask task;
                 if (taskId != null && taskRepo.existsById(taskId)) {
@@ -130,23 +136,29 @@ public class ProjectsAdminController {
                     task = new ProjectTask();
                     task.setStage(stage);
                 }
+
                 task.setTaskName(taskName);
-                task.setCompleted(completed);
+                task.setCompleted(completed != null && completed);
                 task = taskRepo.save(task);
                 taskIdsFromFrontend.add(task.getTaskId());
             }
 
-            // ✅ Delete removed tasks (existing in DB but not in frontend)
+            // ✅ Delete removed tasks
             List<ProjectTask> existingTasks = taskRepo.findByStage(stage);
             for (ProjectTask existing : existingTasks) {
                 if (!taskIdsFromFrontend.contains(existing.getTaskId())) {
                     taskRepo.delete(existing);
                 }
             }
+
+            // ✅ Set stage status based on tasks
+            stage.setStatus(allCompleted ? "Complete" : "Incomplete");
+            stageRepo.save(stage); // ✅ Save the updated status
         }
 
         return ResponseEntity.ok("Project progress saved successfully.");
     }
+
 
     @GetMapping("/projectsAdmin/getStagesByName")
     @ResponseBody
