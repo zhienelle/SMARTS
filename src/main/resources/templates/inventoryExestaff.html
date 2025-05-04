@@ -6,8 +6,8 @@
     <title>Staff Inventory</title>
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
     <link
-        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
-        rel="stylesheet">
+            href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
+            rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -576,6 +576,49 @@
             text-transform: uppercase;
         }
 
+        .request-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #ffe0dc;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .request-table th,
+        .request-table td {
+            padding: 10px;
+            text-align: center;
+            border: none;
+        }
+
+        .request-table th {
+            background-color: #ff6f61;
+            color: white;
+            text-transform: uppercase;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .request-table td select,
+        .request-table td input {
+            width: 90%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 14px;
+            text-transform: uppercase;
+            box-sizing: border-box;
+        }
+
+        .request-table td input[disabled] {
+            background-color: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+
         .modal-content h3 {
             font-size: 24px;
             font-weight: 700;
@@ -602,6 +645,30 @@
             font-family: 'Fredoka', sans-serif;
             text-transform: uppercase;
         }
+
+        .styled-dropdown {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Fredoka', sans-serif;
+            text-transform: uppercase;
+        }
+
+
+        .styled-dropdown {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Fredoka', sans-serif;
+            text-transform: uppercase;
+        }
+
 
         #material {
             width: 100%;
@@ -647,6 +714,26 @@
         .button-container button:hover {
             background: #124D54;
         }
+
+        .button-container.single-btn {
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .button-container.single-btn button {
+            width: 199px;
+            height: 50px;
+            padding: 12px 25px;
+            background: linear-gradient(180deg, #12B1D1, #124D54);
+            border: none;
+            border-radius: 40px;
+            font-size: 16px;
+            color: white;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: 'Fredoka', sans-serif;
+        }
+
     </style>
 </head>
 
@@ -654,165 +741,192 @@
 
 
 
-    <!-- Header -->
-    <header>
-        <div class="smarts-logo">
-            <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
-        </div>
-        <div>
-            <p>ROLE: <span>EXECUTIVE STAFF</span></p>
-            <i class='bx bxs-user-circle'></i>
-        </div>
-    </header>
+<!-- Header -->
+<header>
+    <div class="smarts-logo">
+        <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
+    </div>
+    <div>
+        <p>ROLE: <span>EXECUTIVE STAFF</span></p>
+        <i class='bx bxs-user-circle'></i>
+    </div>
+</header>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="logo-details">
-            <div class="logo_name">ACCE Construction</div>
-            <i class='bx bx-menu' id="btn"></i>
-        </div>
-        <ul class="nav-list">
-            <li>
-                <a href="homepageExestaff">
-                    <i class='bx bx-home'></i>
-                    <span class="links_name">Homepage</span>
-                </a>
-                <span class="tooltip">Homepage</span>
-            </li>
-            <li>
-                <a href="myProjectExestaff">
-                    <i class='bx bx-task'></i>
-                    <span class="links_name">My Project</span>
-                </a>
-                <span class="tooltip">My Project</span>
-            </li>
-            <li>
-                <a href="/exestaff/inventory">
-                    <i class='bx bx-store-alt'></i>
-                    <span class="links_name">Inventory</span>
-                </a>
-                <span class="tooltip">Inventory</span>
-            </li>
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="logo-details">
+        <div class="logo_name">ACCE Construction</div>
+        <i class='bx bx-menu' id="btn"></i>
+    </div>
+    <ul class="nav-list">
+        <li>
+            <a href="homepageExestaff">
+                <i class='bx bx-home'></i>
+                <span class="links_name">Homepage</span>
+            </a>
+            <span class="tooltip">Homepage</span>
+        </li>
+        <li>
+            <a href="myProjectExestaff">
+                <i class='bx bx-task'></i>
+                <span class="links_name">My Project</span>
+            </a>
+            <span class="tooltip">My Project</span>
+        </li>
+        <li>
+            <a href="/exestaff/inventory">
+                <i class='bx bx-store-alt'></i>
+                <span class="links_name">Inventory</span>
+            </a>
+            <span class="tooltip">Inventory</span>
+        </li>
 
-            <li>
-                <a href="invoiceExestaff">
-                    <i class='bx bx-receipt'></i>
-                    <span class="links_name">Invoice</span>
-                </a>
-                <span class="tooltip">Invoice</span>
-            </li>
-            <li>
-                <a href="reportsExestaff">
-                    <i class='bx bx-bar-chart'></i>
-                    <span class="links_name">Reports & Analytics</span>
-                </a>
-                <span class="tooltip">Reports & Analytics</span>
-            </li>
-            <li>
-                <a href="requestsStatusExestaff">
-                    <i class='bx bx-comment-dots'></i>
-                    <span class="links_name">Requests Status</span>
-                </a>
-                <span class="tooltip">Requests Status</span>
-            </li>
-            <li>
-                <a href="settingsExestaff">
-                    <i class='bx bx-cog'></i>
-                    <span class="links_name">Settings</span>
-                </a>
-                <span class="tooltip">Settings</span>
-            </li>
-            <li>
-                <a href="confirmLogout">
-                    <i class='bx bx-log-out'></i>
-                    <span class="links_name">Logout</span>
-                </a>
-                <span class="tooltip">Logout</span>
-            </li>
-        </ul>
+        <li>
+            <a href="invoiceExestaff">
+                <i class='bx bx-receipt'></i>
+                <span class="links_name">Invoice</span>
+            </a>
+            <span class="tooltip">Invoice</span>
+        </li>
+        <li>
+            <a href="reportsExestaff">
+                <i class='bx bx-bar-chart'></i>
+                <span class="links_name">Reports & Analytics</span>
+            </a>
+            <span class="tooltip">Reports & Analytics</span>
+        </li>
+        <li>
+            <a href="requestsStatusExestaff">
+                <i class='bx bx-comment-dots'></i>
+                <span class="links_name">Requests Status</span>
+            </a>
+            <span class="tooltip">Requests Status</span>
+        </li>
+        <li>
+            <a href="settingsExestaff">
+                <i class='bx bx-cog'></i>
+                <span class="links_name">Settings</span>
+            </a>
+            <span class="tooltip">Settings</span>
+        </li>
+        <li>
+            <a href="confirmLogout">
+                <i class='bx bx-log-out'></i>
+                <span class="links_name">Logout</span>
+            </a>
+            <span class="tooltip">Logout</span>
+        </li>
+    </ul>
+</div>
+
+<!-- Main Section -->
+<section class="home-section">
+    <div class="upper">
+        <h1>INVENTORY</h1>
     </div>
 
-    <!-- Main Section -->
-    <section class="home-section">
-        <div class="upper">
-            <h1>INVENTORY</h1>
-        </div>
-
-        <div class="inventory-container">
-            <div class="category-container">
-                <h2>CATEGORY</h2>
-                <div class="category-list" id="categoryList">
-                    <!-- checkboxes will be injected here -->
-                </div>
-
+    <div class="inventory-container">
+        <div class="category-container">
+            <h2>CATEGORY</h2>
+            <div class="category-list" id="categoryList">
+                <!-- checkboxes will be injected here -->
             </div>
-            <div class="inventory-table-container">
-                <div class="inventory-table">
-                    <table id="inventoryTable">
-                        <thead>
+
+        </div>
+        <div class="inventory-table-container">
+            <div class="inventory-table">
+                <table id="inventoryTable">
+                    <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Material</th>
+                        <th>Stock Available</th>
+                        <th>Cost Per Unit</th>
+                    </tr>
+                    </thead>
+                    <tbody id="inventoryTableBody">
+                    <!-- Inventory rows will be injected here -->
+                    </tbody>
+
+                </table>
+            </div>
+            <div class="buttons">
+                <button id="requestBtn">Request</button>
+            </div>
+            <div class="overlay" id="overlay"></div>
+
+            <!-- Modal Structure -->
+            <div id="requestModal" class="modal">
+                <div class="modal-content">
+                    <h3>Request Material</h3>
+                    <form id="requestForm">
+                        <label for="project-name">Project Name</label>
+                        <select id="project-name" name="project-name" required>
+                            <option value="">Select Project</option>
+                        </select>
+
+                        <label for="stage">Stage</label>
+                        <select id="stage" name="stage" class="styled-dropdown" required>
+                        <option value="">Select Stage</option>
+                        </select>
+
+
+
+                        <label for="category">Category</label>
+                        <select id="category" name="category" required>
+                            <option value="">Select Category</option>
+                        </select>
+
+                        <table id="materialRequestTable" class="request-table">
+                            <thead>
                             <tr>
-                                <th>Category</th>
                                 <th>Material</th>
-                                <th>Stock Available</th>
-                                <th>Cost Per Unit</th>
+                                <th>Stock</th>
+                                <th>Quantity</th>
                             </tr>
-                        </thead>
-                        <tbody id="inventoryTableBody">
-                        <!-- Inventory rows will be injected here -->
-                        </tbody>
+                            </thead>
+                            <tbody>
+                            <!-- Dynamically populated rows -->
+                            </tbody>
+                        </table>
 
-                    </table>
-                </div>
-                <div class="buttons">
-                    <button id="requestBtn">Request</button>
-                </div>
-                <div class="overlay" id="overlay"></div>
-
-                <!-- Modal Structure -->
-                <div id="requestModal" class="modal">
-                    <div class="modal-content">
-                        <h3>Request Material</h3>
-                        <form id="requestForm">
-                            <label for="project-name">Project Name</label>
-                            <select id="project-name" name="project-name" required>
-                                <option value="">Select Project</option>
-                            </select>
-
-
-                            <label for="category">Category</label>
-                            <select id="category" name="category" required>
-                                <option value="">Select Category</option>
-                            </select>
-
-
-                            <label for="material">Material</label>
-                            <select id="material" name="material" required>
-                                <option value="">Select Material</option>
-                            </select>
-
-
-
-                            <label for="quantity">Quantity</label>
-                            <input type="number" id="quantity" name="quantity" placeholder="Enter quantity" required>
-
-                            <div class="button-container">
-                                <button type="button" class="cancelModalBtn"
+                        <div class="button-container" style="margin-top: 20px;">
+                            <button type="button" class="cancelModalBtn"
                                     onclick="cancelModal('requestModal')">Cancel</button>
-                                <button type="submit">Submit Request</button>
-                            </div>
-                        </form>
+                            <button type="submit">Submit Request</button>
+                        </div>
+                        <div class="button-container single-btn">
+                            <button type="button" id="addRowBtn">Add Material</button>
+                        </div>
+
+
+
+                    </form>
+                </div>
+            </div>
+
+            <!-- Checkout Receipt Modal -->
+            <div id="receiptModal" class="modal">
+                <div class="modal-content">
+                    <h3>Request Receipt</h3>
+                    <div id="receiptContent"></div>
+
+                    <div class="button-container">
+                        <button type="button" class="cancelModalBtn" onclick="cancelModal('receiptModal')">Close</button>
                     </div>
                 </div>
             </div>
+
         </div>
+    </div>
 
 
-    </section>
+</section>
 
-    <!-- Footer -->
-    <footer>
-        <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
-    </footer>
+<!-- Footer -->
+<footer>
+    <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
+</footer>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -948,6 +1062,29 @@
             });
         }
 
+        document.getElementById("project-name").addEventListener("change", function () {
+            const selectedProject = this.value;
+            const stageSelect = document.getElementById("stage");
+            stageSelect.innerHTML = `<option value="">Select Stage</option>`;
+
+            if (!selectedProject) return;
+
+            fetch(`/exestaff/inventory/getStagesByProject?projectName=${encodeURIComponent(selectedProject)}`)
+                .then(res => res.json())
+                .then(data => {
+                    data.forEach(stage => {
+                        const option = document.createElement("option");
+                        option.value = stage.stageId; // make sure backend sends this
+                        option.textContent = stage.stageName;
+                        stageSelect.appendChild(option);
+                    });
+                })
+                .catch(err => {
+                    console.error("Failed to load stages", err);
+                });
+        });
+
+
 
 // 🔁 Trigger material population when category changes
         document.getElementById("category").addEventListener("change", () => {
@@ -955,53 +1092,95 @@
             populateMaterials(selectedCategory);
         });
 
+        document.getElementById("addRowBtn").addEventListener("click", () => {
+            const category = document.getElementById("category").value;
+            if (!category) {
+                alert("Please select a category before adding a material.");
+                return;
+            }
+
+            const tbody = document.querySelector("#materialRequestTable tbody");
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+        <td>
+            <select class="material-select" data-category="${category}" required>
+                <option value="">Select Material</option>
+                ${globalInventory
+                .filter(item => item.material_category.toLowerCase() === category.toLowerCase())
+                .map(item => `<option value="${item.material_name}" data-category="${item.material_category}">${item.material_name}</option>`)
+                .join('')}
+            </select>
+        </td>
+        <td>
+            <input type="text" class="stock-display" disabled placeholder="Auto">
+        </td>
+        <td>
+            <input type="number" class="quantity-input" min="1" placeholder="Enter Quantity" required>
+        </td>
+    `;
+
+            tbody.appendChild(row);
+
+            // Auto-fill stock when material is selected
+            row.querySelector(".material-select").addEventListener("change", function () {
+                const selectedMaterial = this.value;
+                const stockCell = row.querySelector(".stock-display");
+                const item = globalInventory.find(inv =>
+                    inv.material_name === selectedMaterial &&
+                    inv.material_category.toLowerCase() === this.dataset.category.toLowerCase()
+                );
+                stockCell.value = item ? item.material_stock : "N/A";
+            });
+        });
+
+
 
         document.getElementById("requestForm").addEventListener("submit", function (e) {
             e.preventDefault();
 
             const projectName = document.getElementById("project-name").value;
-            const category = document.getElementById("category").value;
-            const material = document.getElementById("material").value;
-            const quantity = parseInt(document.getElementById("quantity").value);
+            const stageId = document.getElementById("stage").value;
 
-            if (isNaN(quantity) || quantity <= 0) {
-                alert("❌ Quantity must be atleast 1.");
+            if (!projectName || !stageId) {
+                alert("Please select both a project and a stage.");
                 return;
             }
 
+            const rows = document.querySelectorAll("#materialRequestTable tbody tr");
+            const materials = [];
 
-            const matched = globalInventory.find(item =>
-                item.material_category.trim().toLowerCase() === category.trim().toLowerCase() &&
-                item.material_name === material
-            );
+            for (const row of rows) {
+                const material = row.querySelector(".material-select").value;
+                const quantity = parseInt(row.querySelector(".quantity-input").value);
+                const category = row.querySelector(".material-select").selectedOptions[0].dataset.category;
 
+                if (!material || isNaN(quantity) || quantity <= 0) {
+                    alert("Please complete all material entries and ensure quantities are valid.");
+                    return;
+                }
 
-            if (!matched) {
-                alert("❌ Material not found in inventory.");
-                return;
+                materials.push({ materialName: material, quantity, category });
             }
 
-            if (quantity > matched.material_stock) {
-                alert(`❌ Cannot request ${quantity}. Only ${matched.material_stock} left in stock for ${material}.`);
-                return;
-            }
-
-            fetch("/exestaff/inventory/requestMaterial", {
+            fetch("/exestaff/inventory/requestMaterials", {
                 method: "POST",
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `projectName=${encodeURIComponent(projectName)}&category=${encodeURIComponent(category)}&material=${encodeURIComponent(material)}&quantity=${encodeURIComponent(quantity)}`
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ projectName, stageId, materials })
             })
                 .then(res => res.text())
                 .then(msg => {
                     alert(msg);
                     cancelModal("requestModal");
                     document.getElementById("requestForm").reset();
+                    document.querySelector("#materialRequestTable tbody").innerHTML = "";
                 })
                 .catch(err => {
                     alert("Failed to submit request.");
                     console.error(err);
                 });
         });
+
 
         fetchAndRenderInventory();
         setTimeout(() => populateCategories(), 500);
@@ -1021,11 +1200,5 @@
         document.getElementById('overlay').style.display = "block";
     }
 </script>
-
-
-
-
-
 </body>
-
 </html>

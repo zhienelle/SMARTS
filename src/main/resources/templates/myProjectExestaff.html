@@ -1048,17 +1048,18 @@
                         <label for="editEndDate">End Date</label>
                         <input id="editEndDate" name="endDate" required="" type="date"/>
                     </div>
-                </div>
-                <label for="editClientName">Client Name</label>
-                <input id="editClientName" name="clientName" placeholder="Enter client name" required="" type="text"/>
-                <div class="button-container">
-                    <button class="closeModalBtn" onclick="closeModal('editDetailsModal')">Cancel</button>
-                    <button id="archiveProjectBtn" onclick="archiveProject()" type="button">Archive</button>
-                    <button type="submit">Save</button>
-                </div>
-            </form>
-        </div>
-    </div></section>
+                    <div class="extra-info">
+                        <label for="editClientName">Client Name</label>
+                        <input id="editClientName" name="clientName" placeholder="Enter client name" required type="text"/>
+                        <div class="button-container">
+                            <button class="closeModalBtn" onclick="closeModal('editProgressModal')">Cancel</button>
+                            <button id="archiveProjectBtn" onclick="archiveProject()" type="button">Archive</button>
+                            <button type="submit">Save</button>
+                        </div>
+                    </div>
+                </div> <!-- closes .modal-content -->
+
+            </div></section>
 <!-- Footer -->
 <footer>
     <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
