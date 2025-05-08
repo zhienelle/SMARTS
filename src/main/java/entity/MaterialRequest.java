@@ -1,7 +1,10 @@
 package entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
+
 import entity.ProjectStage;
 
 
@@ -32,7 +35,9 @@ public class MaterialRequest {
     // 🔗 FK to project stage
     @ManyToOne
     @JoinColumn(name = "stage_id")
+    @JsonIgnoreProperties({"project", "tasks", "projectInventoryList"}) // ✅ ADD THIS
     private ProjectStage stage;
+
 
     // 📦 Requested quantity
     @Column(name = "material_stock", nullable = false)
@@ -53,7 +58,6 @@ public class MaterialRequest {
     // 🆕 Material category snapshot
     @Column(name = "material_category")
     private String materialCategory;
-
 
 
     // --- Constructors ---

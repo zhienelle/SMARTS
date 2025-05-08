@@ -665,6 +665,7 @@
             <th>Requested Material</th>
             <th>Requested Quantity</th>
             <th>Project</th>
+            <th>Stage</th>
             <th>Approval</th>
         </tr>
         </thead>
@@ -721,8 +722,16 @@
                 .then(res => res.json())
                 .then(data => {
                     allRequests = data;
+
+                    // ✅ DEBUG LOGGING START
+                    console.log("Selected Project:", project);
+                    console.log("Selected Stage ID:", stageId);
+                    console.log("Available Request Stage IDs:", allRequests.map(r => r.stage?.stageId));
+                    // ✅ DEBUG LOGGING END
+
                     const projectSet = new Set();
                     const stageSet = new Set();
+
 
                     tbody.innerHTML = "";
 
@@ -735,28 +744,30 @@
 
                         // Filter by project and stage
                         if (project && projName !== project) return;
-                        if (stageId && stageId != stageIdReq) return;
+                        if (stageId && String(stageId) !== String(stageIdReq)) return;
 
                         if (projName === project && stageIdReq != null) {
-                            stageSet.add({id: stageIdReq, number: stage});
+                            stageMap.set(stageIdReq, stage);
                         }
 
                         const row = document.createElement("tr");
                         row.setAttribute("data-id", req.materialRequestId);
 
                         row.innerHTML = `
-                    <td><input type="checkbox" class="row-checkbox" data-id="${req.materialRequestId}"> ${req.user?.username || 'N/A'}</td>
-                    <td>${req.user?.role || 'N/A'}</td>
-                    <td>${req.materialName || '-'}</td>
-                    <td>${req.materialStock || 0}</td>
-                    <td>${projName}</td>
-                    <td>
-                        <div class="approval-buttons">
-                            <button class="approve-btn">YES</button>
-                            <button class="deny-btn">NO</button>
-                        </div>
-                    </td>
-                `;
+                        <td><input type="checkbox" class="row-checkbox" data-id="${req.materialRequestId}"> ${req.user?.username || 'N/A'}</td>
+                        <td>${req.user?.role || 'N/A'}</td>
+                        <td>${req.materialName || '-'}</td>
+                        <td>${req.materialStock || 0}</td>
+                        <td>${projName}</td>
+                        <td>${req.stage ? `Stage ${req.stage.stageNumber}` : '-'}</td>
+                        <td>
+                            <div class="approval-buttons">
+                                <button class="approve-btn">YES</button>
+                                <button class="deny-btn">NO</button>
+                            </div>
+                        </td>
+                    `;
+
 
                         tbody.appendChild(row);
                         row.querySelector(".approve-btn").addEventListener("click", () => {
@@ -781,18 +792,34 @@
 
                     // Re-populate stage dropdown
                     stageFilter.innerHTML = '<option value="">All Stages</option>';
+
+                    const stageMap = new Map();
+
                     allRequests
-                        .filter(req => req.project?.projectname === project)
+                        .filter(req => req.project?.projectname === project && req.stage)
                         .forEach(req => {
-                            if (req.stage) {
-                                const opt = document.createElement("option");
-                                opt.value = req.stage.stageId;
-                                opt.textContent = `Stage ${req.stage.stageNumber}`;
-                                if (!Array.from(stageFilter.options).some(o => o.value === opt.value)) {
-                                    stageFilter.appendChild(opt);
-                                }
+                            const stageId = req.stage.stageId;
+                            const stageNumber = req.stage.stageNumber;
+                            if (!stageMap.has(stageId)) {
+                                stageMap.set(stageId, stageNumber);
                             }
                         });
+
+                    Array.from(stageMap.entries())
+                        .sort((a, b) => a[1] - b[1]) // sort by stage number
+                        .forEach(([stageId, stageNumber]) => {
+                            const opt = document.createElement("option");
+                            opt.value = stageId;
+                            opt.textContent = `Stage ${stageNumber}`;
+                            stageFilter.appendChild(opt);
+                        });
+
+                    console.log("DEBUG: Full request data:", allRequests);
+                    console.log("DEBUG: Selected project:", project);
+                    console.log("DEBUG: Selected stageId:", stageId);
+                    console.log("DEBUG: Matched rows count:", tbody.children.length);
+
+
                 });
         }
 
@@ -846,7 +873,7 @@
         stageFilter.addEventListener("change", () => {
             loadRequests(projectFilter.value, stageFilter.value);
         });
-    
+
 
         fetch("/admin/inventory/getAll")
             .then(res => res.json())

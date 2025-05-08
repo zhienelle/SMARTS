@@ -1494,7 +1494,7 @@
                 fetch(`/projectManagementAdmin/stages?projectId=${projectId}`)
                     .then(res => res.json())
                     .then(stages => {
-                        // ✅ Sort using stageNumber (ideal), or fallback to number inside stageName
+                        //  Sort using stageNumber (ideal), or fallback to number inside stageName
                         stages
                             .sort((a, b) => {
                                 if (a.stageNumber !== undefined && b.stageNumber !== undefined) {

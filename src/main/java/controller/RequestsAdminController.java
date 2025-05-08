@@ -3,10 +3,7 @@ package controller;
 import entity.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.ui.Model;
-import repository.InventoryRepository;
-import repository.MaterialRequestRepository;
-import repository.ProjectInventoryRepository;
-import repository.ProjectRepository;
+import repository.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -30,9 +27,12 @@ public class RequestsAdminController {
     @Autowired
     private ProjectInventoryRepository projectInventoryRepository;
 
+    @Autowired
+    private ProjectStageRepository projectStageRepository;
+
+
     @GetMapping("requestsAdmin")
-    public String RequestAdmin(HttpSession session, Model model)
-    {
+    public String RequestAdmin(HttpSession session, Model model) {
         User currentUser = (User) session.getAttribute("authenticatedUser");
         if (currentUser == null) return "redirect:/";
 
@@ -55,13 +55,26 @@ public class RequestsAdminController {
                 req.setMaterialName(req.getInventory().getMaterialName());
                 req.setMaterialCategory(req.getInventory().getMaterialCategory());
             }
+
             if (req.getProject() != null) {
-                req.getProject().getProjectname();
+                req.getProject().getProjectname(); // ✅ force load
+            }
+
+            if (req.getStage() != null) {
+                req.getStage().getStageId();       // ✅ force load
+                req.getStage().getStageNumber();   // ✅ force load
             }
         });
+        pending.forEach(req -> {
+            System.out.println("Request ID: " + req.getMaterialRequestId() +
+                    ", Project: " + (req.getProject() != null ? req.getProject().getProjectname() : "null") +
+                    ", Stage: " + (req.getStage() != null ? req.getStage().getStageNumber() : "null"));
+        });
+
 
         return pending;
     }
+
 //        pending.forEach(req -> {
 //            Inventory inv = req.getInventory();
 //            if (inv != null) {
@@ -195,7 +208,6 @@ public class RequestsAdminController {
         }
 
 
-
         // Step 3: Proceed with approvals if all validations passed
         for (Long id : requestIds) {
             updateRequestStatus(id, "APPROVED");
@@ -209,7 +221,6 @@ public class RequestsAdminController {
     public List<Inventory> getAllInventory() {
         return inventoryRepository.findAll();
     }
-
 
 
     @PostMapping("/admin/requests/updateMultipleStatus")
@@ -251,4 +262,23 @@ public class RequestsAdminController {
                 .distinct()
                 .collect(Collectors.toList());
     }
+
+    @GetMapping("/admin/requests/stages")
+    @ResponseBody
+    public List<Map<String, Object>> getStagesByProject(@RequestParam String projectName) {
+        Project project = projectRepository.findByProjectname(projectName);
+        if (project == null) return List.of();
+
+        return projectStageRepository.findByProject(project).stream()
+                .sorted(Comparator.comparingInt(ProjectStage::getStageNumber))
+                .map(stage -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("stageId", stage.getStageId());
+                    map.put("stageName", "Stage " + stage.getStageNumber());
+                    map.put("stageNumber", stage.getStageNumber());
+                    return map;
+                })
+                .collect(Collectors.toList());
+    }
+
 }

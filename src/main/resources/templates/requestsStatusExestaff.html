@@ -703,8 +703,19 @@
 
             if (selectedStage !== "ALL") {
                 const selectedStageId = parseInt(selectedStage);
-                filtered = filtered.filter(req => req.stage && req.stage.stageId == selectedStageId);
+                filtered = filtered.filter(req =>
+                    req.stage && String(req.stage.stageId) === String(selectedStageId)
+                );
             }
+
+
+            // if (selectedStage !== "ALL") {
+            //     const selectedStageId = parseInt(selectedStage);
+            //     // ✅ DEBUG LOGS — put here
+            //     console.log("Selected Stage ID:", selectedStageId, typeof selectedStageId);
+            //     console.log("Available Stage IDs from requests:", filtered.map(r => r.stage?.stageId));
+            //     filtered = filtered.filter(req => req.stage && req.stage.stageId == selectedStageId);
+            // }
 
             if (selectedStatus !== "ALL") {
                 filtered = filtered.filter(req => req.materialRequestStatus === selectedStatus);

@@ -20,6 +20,7 @@
         .modal-body-scrollable::-webkit-scrollbar {
             width: 6px;
         }
+
         .modal-body-scrollable::-webkit-scrollbar-thumb {
             background-color: #ccc;
             border-radius: 10px;
@@ -36,6 +37,7 @@
             font-family: 'Numans', sans-serif;
             outline: none;
         }
+
         .project-search-box:focus {
             border-color: #F9744B;
         }
@@ -709,6 +711,7 @@
             background-color: #fff;
 
         }
+
         .logo-details img {
             height: 40px;
             margin-right: 10px;
@@ -833,48 +836,46 @@
     <div class="modal" id="userModal">
         <h3 id="modalTitle"></h3>
         <div class="modal-body-scrollable">
-        <input type="text" id="username" placeholder="Username" style="width: 100%; padding: 12px;">
-        <input type="password" id="password" placeholder="Password" style="width: 100%; padding: 12px;">
-        <input type="text" id="firstName" placeholder="First Name" style="width: 100%; padding: 12px;">
-        <input type="text" id="lastName" placeholder="Last Name" style="width: 100%; padding: 12px;">
-        <input type="text" id="phone" placeholder="Phone Number" style="width: 100%; padding: 12px;">
-        <input type="email" id="email" placeholder="Email" style="width: 100%; padding: 12px;">
+            <input type="text" id="username" placeholder="Username" style="width: 100%; padding: 12px;">
+            <input type="password" id="password" placeholder="Password" style="width: 100%; padding: 12px;">
+            <input type="text" id="firstName" placeholder="First Name" style="width: 100%; padding: 12px;">
+            <input type="text" id="lastName" placeholder="Last Name" style="width: 100%; padding: 12px;">
+            <input type="text" id="phone" placeholder="Phone Number" style="width: 100%; padding: 12px;">
+            <input type="email" id="email" placeholder="Email" style="width: 100%; padding: 12px;">
 
 
-
-        <!-- Role dropdown -->
-        <select id="role" style="width: 100%; padding: 10px;">
-            <option value="" disabled selected>Role</option>
-            <option value="ADMIN">ADMIN</option>
-            <option value="STAFF">STAFF</option>
-            <option value="MAIN CONTRACTOR">MAIN CONTRACTOR</option>
-        </select>
-
-        <!-- Role Permissions dropdown -->
-        <select id="permissions" style="width: 100%; padding: 10px;">
-            <option value="" disabled selected>Permissions</option>
-            <option value="MANAGE EVERYTHING">MANAGE EVERYTHING</option>
-            <option value="MANAGE CERTAIN PROJECT">MANAGE CERTAIN PROJECT</option>
-            <option value="VIEWING MODE OF THEIR PROJECT">VIEWING MODE OF THEIR PROJECT</option>
-        </select>
-
-        <!-- Project dropdown -->
-        <!-- Project Selection Container -->
-        <div id="projectSelectionContainer">
-            <select id="project" style="width: 100%; padding: 10px;">
-                <option value="" disabled selected>Project</option>
-                <!-- Dynamically populated -->
+            <!-- Role dropdown -->
+            <select id="role" style="width: 100%; padding: 10px;">
+                <option value="" disabled selected>Role</option>
+                <option value="ADMIN">ADMIN</option>
+                <option value="STAFF">STAFF</option>
+                <option value="MAIN CONTRACTOR">MAIN CONTRACTOR</option>
             </select>
-        </div>
 
-        <div id="projectDropdownContainer" style="display: none; position: relative;">
-            <div id="projectDropdownButton" class="dropdown-btn">SELECT PROJECTS ▾</div>
-            <div id="projectCheckboxes" class="dropdown-checkboxes"></div>
-        </div>
+            <!-- Role Permissions dropdown -->
+            <select id="permissions" style="width: 100%; padding: 10px;">
+                <option value="" disabled selected>Permissions</option>
+                <option value="MANAGE EVERYTHING">MANAGE EVERYTHING</option>
+                <option value="MANAGE CERTAIN PROJECT">MANAGE CERTAIN PROJECT</option>
+                <option value="VIEWING MODE OF THEIR PROJECT">VIEWING MODE OF THEIR PROJECT</option>
+            </select>
+
+            <!-- Project dropdown -->
+            <!-- Project Selection Container -->
+            <div id="projectSelectionContainer">
+                <select id="project" style="width: 100%; padding: 10px;">
+                    <option value="" disabled selected>Project</option>
+                    <!-- Dynamically populated -->
+                </select>
+            </div>
+
+            <div id="projectDropdownContainer" style="display: none; position: relative;">
+                <div id="projectDropdownButton" class="dropdown-btn">SELECT PROJECTS ▾</div>
+                <div id="projectCheckboxes" class="dropdown-checkboxes"></div>
+            </div>
 
 
-
-        <!-- Account Status dropdown -->
+            <!-- Account Status dropdown -->
             <select id="status" style="width: 100%; padding: 10px;">
                 <option value="" disabled selected>Status</option>
                 <option value="ACTIVE">ACTIVE</option>
@@ -882,13 +883,13 @@
             </select>
 
 
-        <div class="popup-btn-container">
-            <button class="cancel-btn" onclick="closeModal()">CANCEL</button>
-            <button class="archive-btn" id="archiveBtn" onclick="archiveUser()"
-                    style="display: none;">ARCHIVE
-            </button>
-            <button onclick="saveUserDetails()">SAVE</button>
-        </div>
+            <div class="popup-btn-container">
+                <button class="cancel-btn" onclick="closeModal()">CANCEL</button>
+                <button class="archive-btn" id="archiveBtn" onclick="archiveUser()"
+                        style="display: none;">ARCHIVE
+                </button>
+                <button onclick="saveUserDetails()">SAVE</button>
+            </div>
         </div>
     </div>
 
@@ -921,15 +922,32 @@
 
 
         function loadProjectsIntoDropdownAndCache() {
-            fetch('/projectsAdmin/getProjects')
-                .then(response => response.json())
-                .then(projects => {
-                    allProjects = projects;
-                    refreshProjectDropdown();
-                    renderProjectCheckboxes(projects);
-                })
-                .catch(error => console.error('Error loading projects:', error));
+            Promise.all([
+                fetch('/projectsAdmin/getProjects').then(res => res.json()),
+                fetch('/userAdmin/getUsers').then(res => res.json())
+            ]).then(([projects, users]) => {
+                allProjects = projects;
+
+                // 🔥 Filter out projects already assigned to STAFF
+                const assignedStaffProjects = new Set();
+                users.forEach(user => {
+                    if (user.role === 'STAFF' && user.project) {
+                        user.project.split(',').forEach(p => assignedStaffProjects.add(p.trim()));
+                    }
+                });
+
+                const unassignedProjects = allProjects.filter(p => !assignedStaffProjects.has(p.projectname));
+
+                // 🔁 Cache and render only unassigned
+                allProjects = unassignedProjects;
+                refreshProjectDropdown();
+                renderProjectCheckboxes(allProjects);
+
+            }).catch(error => {
+                console.error('Error loading projects or users:', error);
+            });
         }
+
 
         function refreshProjectDropdown() {
             projectSelect.innerHTML = '<option value="" disabled selected>Project</option>';
@@ -982,19 +1000,17 @@
                 wrapper.appendChild(checkbox);
                 wrapper.appendChild(label);
                 checkboxContainer.appendChild(wrapper);
-                allCheckboxes.push({ wrapper, projectName: project.projectname.toLowerCase() });
+                allCheckboxes.push({wrapper, projectName: project.projectname.toLowerCase()});
             });
 
             // Filter as you type
             searchInput.addEventListener('input', function () {
                 const query = searchInput.value.toLowerCase();
-                allCheckboxes.forEach(({ wrapper, projectName }) => {
+                allCheckboxes.forEach(({wrapper, projectName}) => {
                     wrapper.style.display = projectName.includes(query) ? 'flex' : 'none';
                 });
             });
         }
-
-
 
 
         roleSelect.addEventListener('change', function () {
@@ -1076,7 +1092,6 @@
         }
 
 
-
         function saveUserDetails() {
             const userId = selectedRow ? selectedRow.getAttribute('data-user-id') : null;
 
@@ -1140,7 +1155,7 @@
 
             fetch(url, {
                 method: method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(userData)
             })
                 .then(response => response.json())
@@ -1269,6 +1284,7 @@
         }
 
         let showingArchived = false;
+
         function toggleUserView() {
             const tableBody = document.getElementById('userTable').getElementsByTagName('tbody')[0];
             tableBody.innerHTML = ''; // Clear existing rows

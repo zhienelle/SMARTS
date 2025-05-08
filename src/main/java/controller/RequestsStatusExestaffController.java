@@ -17,12 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpSession;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Comparator;
+import java.util.*;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -56,9 +52,10 @@ public class RequestsStatusExestaffController {
     }
 
     // ✅ Fetch material requests for user's assigned projects
+    // ✅ Updated to explicitly map all nested fields as primitives
     @GetMapping("/exestaff/requests/getMaterialRequests")
     @ResponseBody
-    public List<MaterialRequest> getMaterialRequests(HttpSession session) {
+    public List<Map<String, Object>> getMaterialRequests(HttpSession session) {
         User user = (User) session.getAttribute("authenticatedUser");
 
         if (user != null && user.getProject() != null && !user.getProject().isEmpty()) {
@@ -71,23 +68,41 @@ public class RequestsStatusExestaffController {
                     .filter(req -> assignedProjects.contains(req.getProject().getProjectname()))
                     .collect(Collectors.toList());
 
-            // ❗ Explicitly access nested fields while session is open
-            allRequests.forEach(req -> {
-                if (req.getInventory() != null) {
-                    req.getInventory().getMaterialCategory(); // trigger lazy load
-                    req.getInventory().getMaterialName();     // trigger lazy load
-                }
+            List<Map<String, Object>> mappedRequests = new ArrayList<>();
+
+            for (MaterialRequest req : allRequests) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("materialRequestId", req.getMaterialRequestId());
+                map.put("materialStock", req.getMaterialStock());
+                map.put("materialCategory", req.getMaterialCategory());
+                map.put("materialName", req.getMaterialName());
+                map.put("materialRequestStatus", req.getMaterialRequestStatus());
+                map.put("requestDate", req.getRequestDate());
+
                 if (req.getStage() != null) {
-                    req.getStage().getStageId();              // ✅ trigger lazy load
-                    req.getStage().getStageNumber();          // ✅ trigger lazy load
+                    Map<String, Object> stageMap = new HashMap<>();
+                    stageMap.put("stageId", req.getStage().getStageId());
+                    stageMap.put("stageNumber", req.getStage().getStageNumber());
+                    map.put("stage", stageMap);
                 }
-            });
 
+                if (req.getInventory() != null) {
+                    map.put("inventory", Map.of(
+                            "materialCategory", req.getInventory().getMaterialCategory(),
+                            "materialName", req.getInventory().getMaterialName()
+                    ));
+                }
 
-            return allRequests;
+                map.put("project", Map.of("projectname", req.getProject().getProjectname()));
+
+                mappedRequests.add(map);
+            }
+
+            return mappedRequests;
         }
         return List.of();
     }
+
 
     @GetMapping("/exestaff/requests/projects")
     @ResponseBody
