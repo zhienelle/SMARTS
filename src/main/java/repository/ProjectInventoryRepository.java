@@ -10,9 +10,12 @@ import java.util.List;
 
 public interface ProjectInventoryRepository extends JpaRepository<ProjectInventory, Long> {
     ProjectInventory findByProjectAndInventory(Project project, Inventory inventory);
+
     List<ProjectInventory> findByProject_ProjectIdIn(List<Integer> projectIds);
-    List<ProjectStage> findByProject(Project project);
+
     // ProjectInventoryRepository.java
     ProjectInventory findByProjectAndInventoryAndStage(Project project, Inventory inventory, ProjectStage stage);
+
+    List<ProjectInventory> findByProject_ProjectIdAndStage_StageId(Integer projectId, Long stageId);
 
 }

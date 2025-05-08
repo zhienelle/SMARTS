@@ -609,6 +609,10 @@
             font-size: 16px;
             margin-bottom: 8px;
         }
+        .logo-details img {
+            height: 40px;
+            margin-right: 10px;
+        }
     </style>
 </head>
 
@@ -627,6 +631,7 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo-details">
+            <img src="https://i.ibb.co/GV6QFjJ/acce-logo.png" alt="acce-logo" style="height: 40px; margin-right: 10px;">
             <div class="logo_name">ACCE Construction</div>
             <i class='bx bx-menu' id="btn"></i>
         </div>
@@ -831,6 +836,15 @@
                     }
                 })
                 .catch(err => console.error('Failed to load user info:', err));
+        });
+
+        closeBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("open");
+            if (sidebar.classList.contains("open")) {
+                closeBtn.classList.replace("bx-menu", "bx-menu-alt-right");
+            } else {
+                closeBtn.classList.replace("bx-menu-alt-right", "bx-menu");
+            }
         });
     </script>
 </body>

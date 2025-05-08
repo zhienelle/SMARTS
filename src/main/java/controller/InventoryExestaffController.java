@@ -1,9 +1,7 @@
 package controller;
 //FIXED BY JED
-import entity.Inventory;
-import entity.MaterialRequest;
-import entity.Project;
-import entity.User;
+
+import entity.*;
 import repository.InventoryRepository;
 import repository.MaterialRequestRepository;
 import repository.ProjectRepository;
@@ -14,11 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpSession; // ✅ Changed: Added for session handling
@@ -96,7 +91,7 @@ public class InventoryExestaffController {
         if (user == null) return "❌ Not authenticated.";
 
         String projectName = (String) payload.get("projectName");
-        Integer stageId = Integer.parseInt(payload.get("stageId").toString());  // you can use this later if needed
+        Integer stageId = Integer.parseInt(payload.get("stageId").toString());  // ✅ you're already extracting this
         List<Map<String, Object>> materials = (List<Map<String, Object>>) payload.get("materials");
 
         if (projectName == null || materials == null || materials.isEmpty()) {
@@ -105,6 +100,15 @@ public class InventoryExestaffController {
 
         Project project = projectRepository.findByProjectname(projectName.trim());
         if (project == null) return "❌ Project not found.";
+
+        Optional<ProjectStage> stageOpt = project.getStages()
+                .stream()
+                .filter(s -> s.getStageId() == stageId)
+                .findFirst();
+
+        if (stageOpt.isEmpty()) return "❌ Stage not found for this project.";
+
+        ProjectStage stage = stageOpt.get();
 
         for (Map<String, Object> item : materials) {
             String name = (String) item.get("materialName");
@@ -125,6 +129,7 @@ public class InventoryExestaffController {
             MaterialRequest request = new MaterialRequest();
             request.setUser(user);
             request.setProject(project);
+            request.setStage(stage); // ✅ SET STAGE HERE
             request.setInventory(inventory);
             request.setMaterialName(name);
             request.setMaterialCategory(category);
@@ -136,7 +141,6 @@ public class InventoryExestaffController {
 
         return "✅ Material request submitted successfully!";
     }
-
 
 
     // ✅ UNCHANGED
@@ -160,4 +164,25 @@ public class InventoryExestaffController {
 
         return List.of(); // Return empty if not found or no projects
     }
+
+    @GetMapping("/exestaff/inventory/getStagesByProject")
+    @ResponseBody
+    public List<Map<String, Object>> getStagesByProject(@RequestParam String projectName) {
+        Project project = projectRepository.findByProjectname(projectName.trim());
+        if (project == null) return new ArrayList<>();
+
+        List<ProjectStage> stages = project.getStages(); // assuming you added getStages() in Project.java
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        for (ProjectStage stage : stages) {
+            Map<String, Object> stageInfo = new HashMap<>();
+            stageInfo.put("stageId", stage.getStageId());
+            stageInfo.put("stageName", "Stage " + stage.getStageNumber());
+            stageInfo.put("stageNumber", stage.getStageNumber()); // <— ADD THIS
+            result.add(stageInfo);
+        }
+
+        return result;
+    }
+
 }

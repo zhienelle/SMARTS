@@ -2,6 +2,8 @@ package entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import entity.ProjectStage;
+
 
 @Entity
 @Table(name = "material_request")
@@ -27,6 +29,11 @@ public class MaterialRequest {
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     private User user;
 
+    // 🔗 FK to project stage
+    @ManyToOne
+    @JoinColumn(name = "stage_id")
+    private ProjectStage stage;
+
     // 📦 Requested quantity
     @Column(name = "material_stock", nullable = false)
     private Integer materialStock;
@@ -47,6 +54,8 @@ public class MaterialRequest {
     @Column(name = "material_category")
     private String materialCategory;
 
+
+
     // --- Constructors ---
     public MaterialRequest() {
         this.requestDate = LocalDateTime.now();
@@ -62,6 +71,15 @@ public class MaterialRequest {
     }
 
     // --- Getters and Setters ---
+
+    public ProjectStage getStage() {
+        return stage;
+    }
+
+    public void setStage(ProjectStage stage) {
+        this.stage = stage;
+    }
+
 
     public Long getMaterialRequestId() {
         return materialRequestId;

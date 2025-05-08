@@ -112,7 +112,19 @@ public class ProjectInventory {
         this.totalPrice = totalPrice;
     }
 
+    @Transient
+    public String getMaterialName() {
+        return inventory != null ? inventory.getMaterialName() : null;
+    }
 
+    @Transient
+    public int getQuantity() {
+        return quantityAssigned; // or quantityUsed if you prefer
+    }
 
+    @Transient
+    public double getUnitPrice() {
+        return materialPrice;
+    }
 
 }

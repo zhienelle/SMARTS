@@ -1,10 +1,12 @@
 package entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -56,5 +58,13 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore // 🔥 This ignores it for JSON deserialization (fixes 415)
     private List<ProjectInventory> projectInventoryList;
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("project")
+    private List<ProjectStage> stages = new ArrayList<>();
+
+    public List<ProjectStage> getStages() {
+        return stages;
+    }
 
 }

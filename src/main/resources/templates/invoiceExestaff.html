@@ -70,7 +70,7 @@
             background-color: #F9744B;
         }
 
-        .sidebar.open~header {
+        .sidebar.open ~ header {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -94,7 +94,7 @@
             padding-right: 20px;
         }
 
-        .sidebar.open~footer {
+        .sidebar.open ~ footer {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -303,7 +303,7 @@
             margin-top: 30px;
         }
 
-        .sidebar.open~.home-section {
+        .sidebar.open ~ .home-section {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -613,11 +613,23 @@
             margin: 0 10px;
             text-transform: uppercase;
         }
+
         #invoiceTable, #invoiceTable * {
             user-select: none;
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
+        }
+
+        .logo-details img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        option {
+            color: #124D54 !important;
+            background-color: white !important;
+            font-size: 14px;
         }
 
     </style>
@@ -638,6 +650,7 @@
 <!-- Sidebar -->
 <div class="sidebar">
     <div class="logo-details">
+        <img src="https://i.ibb.co/GV6QFjJ/acce-logo.png" alt="acce-logo" style="height: 40px; margin-right: 10px;">
         <div class="logo_name">ACCE Construction</div>
         <i class='bx bx-menu' id="btn"></i>
     </div>
@@ -709,6 +722,11 @@
             <select id="project-select">
                 <option value="" disabled selected>Select Project</option>
             </select>
+
+            <select id="stage-select" disabled>
+                <option value="" disabled selected>Select Stage</option>
+            </select>
+
             <button id="selectPeriod">Select Period</button>
         </div>
     </div>
@@ -718,8 +736,8 @@
 
     <!-- BEGIN: Blur Wrapper (ONLY wraps table + button) -->
 
-        <div id="invoiceMainContent">
-            <div id="blurWrapper">
+    <div id="invoiceMainContent">
+        <div id="blurWrapper">
             <div class="invoice-container">
                 <div class="project-details">
                     <div>
@@ -752,11 +770,11 @@
                 </table>
 
 
-            <div class="buttons">
-                <button id="printBtn" onclick="generatePDF()">Print</button>
+                <div class="buttons">
+                    <button id="printBtn" onclick="generatePDF()">Print</button>
+                </div>
             </div>
         </div>
-            </div>
     </div>
 
     <!-- END: Blur Wrapper -->
@@ -845,6 +863,66 @@
 
 
                 if (!selected) return;
+// Load stages for selected project
+                const stageDropdown = document.getElementById("stage-select");
+                stageDropdown.innerHTML = '<option value="" disabled selected>Select Stage</option>';
+                stageDropdown.disabled = true;
+
+                try {
+                    const resStages = await fetch(`/exestaff/invoice/stages?projectId=${selected.projectId}`);
+                    if (!resStages.ok) throw new Error("Failed to fetch stages");
+
+                    const stages = await resStages.json();
+                    if (stages.length > 0) {
+                        stages.sort((a, b) => a.stageNumber - b.stageNumber);
+                        stages.forEach(stage => {
+                            console.log("Appending stage:", stage.stageName); // ✅ Debug log
+                            const option = document.createElement("option");
+                            option.value = stage.stageId;
+                            option.textContent = `Stage ${stage.stageNumber}`;
+                            stageDropdown.appendChild(option);
+                        });
+                        stageDropdown.disabled = false;
+                    }
+                } catch (err) {
+                    console.error("Error loading stages:", err);
+                }
+
+                // Handle stage selection and reload invoice material table
+                document.getElementById("stage-select").addEventListener("change", async (e) => {
+                    const stageId = e.target.value;
+                    if (!stageId) return;
+
+                    try {
+                        const res = await fetch(`/exestaff/invoice/materials-by-stage?stageId=${stageId}`);
+                        if (!res.ok) throw new Error("Failed to fetch stage materials");
+
+                        const materials = await res.json();
+                        const tbody = document.getElementById("invoiceBody");
+                        tbody.innerHTML = "";
+                        let total = 0;
+
+                        materials.forEach((item, i) => {
+                            const totalRow = item.unitPrice * item.quantityAssigned;
+                            total += totalRow;
+
+                            const row = document.createElement("tr");
+                            row.innerHTML = `
+                <td>${String(i + 1).padStart(3, '0')}</td>
+                <td>${item.materialName || '---'}</td>
+                <td>${item.quantityAssigned}</td>
+                <td>PHP ${item.unitPrice.toLocaleString()}</td>
+                <td>PHP ${totalRow.toLocaleString()}</td>
+            `;
+                            tbody.appendChild(row);
+                        });
+
+                        document.getElementById("totalCost").textContent = `PHP ${total.toLocaleString()}`;
+                    } catch (err) {
+                        console.error("Error loading materials for selected stage:", err);
+                    }
+                });
+
 
                 document.getElementById("projectName").textContent = selected.projectname;
                 document.getElementById("projectLocation").textContent = selected.companyLocation;
@@ -933,7 +1011,7 @@
     let invoiceCounter = 20247182;
 
     async function generatePDF() {
-        const { jsPDF } = window.jspdf;
+        const {jsPDF} = window.jspdf;
         const pdf = new jsPDF('p', 'pt', 'a4');
         const pageWidth = pdf.internal.pageSize.getWidth();
         const margin = 40;
@@ -1034,7 +1112,7 @@
             pdf.setFillColor(0, 0, 0);
             pdf.setTextColor(255, 255, 255);
             pdf.rect(currentX, currentY, width, cellHeight, "F");
-            pdf.text(tableHeaders[i], currentX + width / 2, currentY + 17, { align: "center" });
+            pdf.text(tableHeaders[i], currentX + width / 2, currentY + 17, {align: "center"});
             currentX += width;
         }
 
@@ -1067,7 +1145,7 @@
         pdf.setTextColor(0, 0, 0);
         pdf.setFont("helvetica", "normal");
         pdf.rect(pageWidth - margin - totalAmountWidth, currentY, totalAmountWidth, cellHeight);
-        pdf.text(`PHP ${totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, pageWidth - margin - 10, currentY + 17, { align: "right" });
+        pdf.text(`PHP ${totalAmount.toLocaleString(undefined, {minimumFractionDigits: 2})}`, pageWidth - margin - 10, currentY + 17, {align: "right"});
 
         // Signature area
         currentY += 40;
@@ -1082,7 +1160,18 @@
         pdf.text(receivedDate, pageWidth - margin - 20, currentY);
 
         // Save file
-        pdf.save('invoice.pdf');
+        const formattedFileDate = formattedDate.replace(/\//g, '-');
+        pdf.save(`Invoice_Staff-${formattedFileDate}.pdf`);
+    }
+
+
+    closeBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("open");
+    });
+    if (searchBtn) {
+        searchBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("open");
+        });
     }
 </script>
 </body>

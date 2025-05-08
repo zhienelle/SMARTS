@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import repository.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 public class MyProjectExestaffController {
@@ -127,59 +128,73 @@ public class MyProjectExestaffController {
         return ResponseEntity.ok("Removed");
     }
 
-    // ✅ NEW: Save project progress by project name
     @PostMapping("/projectsAdmin/saveStagesByName")
-    @ResponseBody
     public ResponseEntity<String> saveStagesByName(@RequestParam String projectName,
                                                    @RequestBody List<Map<String, Object>> stages) {
-        Project project = projectRepository.findByProjectname(projectName);
-        if (project == null) return ResponseEntity.badRequest().body("Project not found.");
-
-        List<ProjectStage> existingStages = stageRepo.findByProject(project);
-        Map<Integer, ProjectStage> stageMap = new HashMap<>();
-        for (ProjectStage s : existingStages) {
-            stageMap.put(s.getStageNumber(), s);
-        }
-
-        for (Map<String, Object> stageData : stages) {
-            Integer stageNumber = (Integer) stageData.get("stageNumber");
-            ProjectStage stage = stageMap.getOrDefault(stageNumber, new ProjectStage());
-            stage.setProject(project);
-            stage.setStageNumber(stageNumber);
-            stage = stageRepo.save(stage);
-
-            List<Map<String, Object>> tasks = (List<Map<String, Object>>) stageData.get("tasks");
-            Set<Integer> taskIdsFromFrontend = new HashSet<>();
-
-            for (Map<String, Object> taskData : tasks) {
-                Integer taskId = taskData.get("taskId") != null ? (Integer) taskData.get("taskId") : null;
-                String taskName = (String) taskData.get("taskName");
-                Boolean completed = (Boolean) taskData.get("completed");
-
-                ProjectTask task;
-                if (taskId != null && taskRepo.existsById(taskId)) {
-                    task = taskRepo.findById(taskId).get();
-                } else {
-                    task = new ProjectTask();
-                    task.setStage(stage);
-                }
-                task.setTaskName(taskName);
-                task.setCompleted(completed);
-                task = taskRepo.save(task);
-                taskIdsFromFrontend.add(task.getTaskId());
+        try {
+            Project project = projectRepository.findByProjectname(projectName);
+            if (project == null) {
+                return ResponseEntity.badRequest().body("Project not found.");
             }
 
-            // Delete removed tasks
-            List<ProjectTask> existingTasks = taskRepo.findByStage(stage);
-            for (ProjectTask existing : existingTasks) {
-                if (!taskIdsFromFrontend.contains(existing.getTaskId())) {
-                    taskRepo.delete(existing);
-                }
-            }
-        }
+            List<ProjectStage> existingStages = stageRepo.findByProject(project);
+            Map<Integer, ProjectStage> stageMap = existingStages.stream()
+                    .collect(Collectors.toMap(ProjectStage::getStageNumber, s -> s));
 
-        return ResponseEntity.ok("Project progress saved successfully.");
+            for (Map<String, Object> stageData : stages) {
+                Integer stageNumber = (Integer) stageData.get("stageNumber");
+                ProjectStage stage = stageMap.getOrDefault(stageNumber, new ProjectStage());
+                stage.setProject(project);
+                stage.setStageNumber(stageNumber);
+
+                boolean allCompleted = true;
+                List<Map<String, Object>> tasks = (List<Map<String, Object>>) stageData.get("tasks");
+                Set<Integer> frontendTaskIds = new HashSet<>();
+
+                stage = stageRepo.save(stage); // Save or update stage
+
+                for (Map<String, Object> taskData : tasks) {
+                    Integer taskId = taskData.get("taskId") != null ? ((Number) taskData.get("taskId")).intValue() : null;
+                    String taskName = (String) taskData.get("taskName");
+                    Boolean completed = (Boolean) taskData.get("completed");
+
+                    if (completed == null || !completed) {
+                        allCompleted = false;
+                    }
+
+                    ProjectTask task;
+                    if (taskId != null && taskRepo.existsById(taskId)) {
+                        task = taskRepo.findById(taskId).get();
+                    } else {
+                        task = new ProjectTask();
+                        task.setStage(stage);
+                    }
+
+                    task.setTaskName(taskName);
+                    task.setCompleted(completed != null && completed);
+                    task = taskRepo.save(task);
+                    frontendTaskIds.add(task.getTaskId());
+                }
+
+                // Remove any tasks that no longer exist
+                List<ProjectTask> existingTasks = taskRepo.findByStage(stage);
+                for (ProjectTask existing : existingTasks) {
+                    if (!frontendTaskIds.contains(existing.getTaskId())) {
+                        taskRepo.delete(existing);
+                    }
+                }
+
+                stage.setStatus(allCompleted ? "Complete" : "Incomplete");
+                stageRepo.save(stage); // Save status
+            }
+
+            return ResponseEntity.ok("Stages saved successfully.");
+        } catch (Exception e) {
+            e.printStackTrace(); // Print full stack trace in console
+            return ResponseEntity.status(500).body("Error: " + e.getMessage());
+        }
     }
+
 
     @GetMapping("/myProjectExestaff/getStagesByName")
     @ResponseBody

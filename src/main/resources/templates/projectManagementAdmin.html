@@ -947,6 +947,10 @@
             background-color: #eee;
             cursor: not-allowed;
         }
+        .logo-details img {
+            height: 40px;
+            margin-right: 10px;
+        }
     </style>
 </head>
 
@@ -964,6 +968,7 @@
 
     <div class="sidebar">
         <div class="logo-details">
+            <img src="https://i.ibb.co/GV6QFjJ/acce-logo.png" alt="acce-logo" style="height: 40px; margin-right: 10px;">
             <div class="logo_name">ACCE Construction</div>
             <i class='bx bx-menu' id="btn"></i>
         </div>
@@ -1470,32 +1475,45 @@
                 .then(res => res.json())
                 .then(stages => {
                     console.log("🔍 STAGES FROM BACKEND:", stages);
-                    stages.forEach(stage => {
-                        const option = document.createElement("option");
-                        option.value = stage.stageId;  // you must return this from backend
-                        option.textContent = stage.stageName;
-                        stageSelect.appendChild(option);
-                    });
-                });
+                    stages
+                        .sort((a, b) => a.stageNumber - b.stageNumber)
+                        .forEach(stage => {
+                            const option = document.createElement("option");
+                            option.value = stage.stageId;  // you must return this from backend
+                            option.textContent = stage.stageName || `Stage ${stage.stageNumber}`;
+                            stageSelect.appendChild(option);
+                        });
+                })
         }
 
-        function loadStageFilterOptions(projectId) {
-            console.log("📥 loadStageFilterOptions() called with projectId:", projectId);
-            const stageDropdown = document.getElementById("stageFilterDropdown");
-            stageDropdown.innerHTML = '<option value="ALL">SHOW ALL STAGES</option>';
+            function loadStageFilterOptions(projectId) {
+                console.log("📥 loadStageFilterOptions() called with projectId:", projectId);
+                const stageDropdown = document.getElementById("stageFilterDropdown");
+                stageDropdown.innerHTML = '<option value="ALL">Show All Stages</option>';
 
-            fetch(`/projectManagementAdmin/stages?projectId=${projectId}`)
-                .then(res => res.json())
-                .then(stages => {
-                    console.log("🔍 STAGES FROM BACKEND:", stages);
-                    stages.forEach(stage => {
-                        const option = document.createElement("option");
-                        option.value = stage.stageName;
-                        option.textContent = stage.stageName;
-                        stageDropdown.appendChild(option);
+                fetch(`/projectManagementAdmin/stages?projectId=${projectId}`)
+                    .then(res => res.json())
+                    .then(stages => {
+                        // ✅ Sort using stageNumber (ideal), or fallback to number inside stageName
+                        stages
+                            .sort((a, b) => {
+                                if (a.stageNumber !== undefined && b.stageNumber !== undefined) {
+                                    return a.stageNumber - b.stageNumber;
+                                }
+                                const numA = parseInt(a.stageName.match(/\d+/));
+                                const numB = parseInt(b.stageName.match(/\d+/));
+                                return numA - numB;
+                            })
+                            .forEach(stage => {
+                                const option = document.createElement("option");
+                                option.value = stage.stageName;
+                                option.textContent = stage.stageName || `Stage ${stage.stageNumber}`;
+                                stageDropdown.appendChild(option);
+                            });
                     });
-                });
-        }
+            }
+
+
 
         // dropdown.addEventListener('change', function () {
         //     console.log(this.options);

@@ -850,6 +850,10 @@
         color: #124D54;
         "
         >
+        .logo-details img {
+            height: 40px;
+            margin-right: 10px;
+        }
     </style>
 </head>
 
@@ -868,6 +872,7 @@
 <!-- Sidebar -->
 <div class="sidebar">
     <div class="logo-details">
+        <img src="https://i.ibb.co/GV6QFjJ/acce-logo.png" alt="acce-logo" style="height: 40px; margin-right: 10px;">
         <div class="logo_name">ACCE Construction</div>
         <i class='bx bx-menu' id="btn"></i>
     </div>
@@ -1140,12 +1145,45 @@
             </div>
             <div class="button-container">
                 <button type="button" class="cancel-btn" onclick="closeModal('editProgressModal')">Cancel</button>
-                <button type="button" class="add-stage-btn" onclick="addStage()">Add Stage</button>
+                <button type="button" class="add-stage-btn" onclick="openModal('addStageConfirmModal')">Add Stage</button>
                 <button type="submit" class="submit-btn">Submit</button>
             </div>
         </div>
     </div>
 </section>
+
+
+<!-- Add Stage Confirmation Modal -->
+<div id="addStageConfirmModal" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+        <h3 style="color: #124D54; font-size: 20px;">Are you sure you want to add a new stage?</h3>
+        <div class="button-container" style="margin-top: 20px; justify-content: center;">
+            <button onclick="closeModal('addStageConfirmModal')" style="
+                background: linear-gradient(180deg, #B0B0B0, #7F8C8D);
+                color: white;
+                font-family: 'Fredoka', sans-serif;
+                font-size: 14px;
+                padding: 10px 20px;
+                margin-right: 10px;
+                border-radius: 30px;
+                border: none;
+                text-transform: uppercase;
+                cursor: pointer;
+            ">Cancel</button>
+            <button onclick="confirmAddStage()" style="
+                background: linear-gradient(180deg, #12B1D1, #124D54);
+                color: white;
+                font-family: 'Fredoka', sans-serif;
+                font-size: 14px;
+                padding: 10px 20px;
+                border-radius: 30px;
+                border: none;
+                text-transform: uppercase;
+                cursor: pointer;
+            ">Yes</button>
+        </div>
+    </div>
+</div>
 
 <!-- Footer -->
 <footer>
@@ -1637,7 +1675,7 @@
                 const stageContainer = document.querySelector('.stage-container');
                 stageContainer.innerHTML = '';
 
-                stages.forEach(stage => {
+                stages.sort((a, b) => a.stageNumber - b.stageNumber).forEach(stage => {
                     const stageDiv = document.createElement('div');
                     stageDiv.classList.add('stage');
                     stageDiv.dataset.stageNumber = stage.stageNumber;
@@ -1822,7 +1860,37 @@
         stageContainer.appendChild(stageDiv);
     }
 
+    document.querySelector('.add-stage-btn').addEventListener('click', () => {
+        openModal('addStageConfirmModal');
+    });
 
+
+    function confirmAddStage() {
+        const stageContainer = document.querySelector('.stage-container');
+        const existingStages = stageContainer.querySelectorAll('.stage');
+
+        if (existingStages.length >= 20) {
+            alert("Maximum of 20 stages reached.");
+        } else {
+            addStage(); // ✅ This handles everything: creating and appending a new stage
+        }
+
+        closeModal('addStageConfirmModal'); // ✅ Always close modal at the end
+    }
+
+
+    let sidebar = document.querySelector(".sidebar");
+    let closeBtn = document.querySelector("#btn");
+    let searchBtn = document.querySelector(".bx-search");
+
+    closeBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("open");
+    });
+    if (searchBtn) {
+        searchBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("open");
+        });
+    }
 
 </script>
 </body>

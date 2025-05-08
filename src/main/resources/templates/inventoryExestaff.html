@@ -68,7 +68,7 @@
             background-color: #F9744B;
         }
 
-        .sidebar.open~header {
+        .sidebar.open ~ header {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -92,7 +92,7 @@
             padding-right: 20px;
         }
 
-        .sidebar.open~footer {
+        .sidebar.open ~ footer {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -302,7 +302,7 @@
             margin-bottom: 45px;
         }
 
-        .sidebar.open~.home-section {
+        .sidebar.open ~ .home-section {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -411,15 +411,12 @@
         }
 
         .inventory-container {
-            display: flex;
-            flex-direction: row;
-            margin: auto;
-            max-width: 1500px;
-            gap: 40px;
+            flex-direction: column;
             width: 90%;
-            justify-content: center;
-            margin-top: 30px;
+            max-width: 1500px;
+            margin: 30px auto 0;
         }
+
 
         .category-container {
             width: 20%;
@@ -463,14 +460,14 @@
             height: 18px;
         }
 
-        .category-checkbox:checked+label {
+        .category-checkbox:checked + label {
             background-color: #FF6F61;
             color: #fff;
             transform: scale(1.05);
         }
 
         .inventory-table-container {
-            width: 80%;
+            width: 100%;
             background-color: #fff;
             border-radius: 10px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
@@ -576,49 +573,6 @@
             text-transform: uppercase;
         }
 
-        .request-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background-color: #ffe0dc;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .request-table th,
-        .request-table td {
-            padding: 10px;
-            text-align: center;
-            border: none;
-        }
-
-        .request-table th {
-            background-color: #ff6f61;
-            color: white;
-            text-transform: uppercase;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .request-table td select,
-        .request-table td input {
-            width: 90%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            font-family: 'Fredoka', sans-serif;
-            font-size: 14px;
-            text-transform: uppercase;
-            box-sizing: border-box;
-        }
-
-        .request-table td input[disabled] {
-            background-color: #f5f5f5;
-            color: #999;
-            cursor: not-allowed;
-        }
-
-
         .modal-content h3 {
             font-size: 24px;
             font-weight: 700;
@@ -635,7 +589,8 @@
 
         .modal-content input,
         #project-name,
-        #category {
+        #category,
+        #stage {
             width: 100%;
             padding: 10px;
             margin: 5px 0 20px 0;
@@ -645,30 +600,6 @@
             font-family: 'Fredoka', sans-serif;
             text-transform: uppercase;
         }
-
-        .styled-dropdown {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0 20px 0;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px;
-            font-family: 'Fredoka', sans-serif;
-            text-transform: uppercase;
-        }
-
-
-        .styled-dropdown {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0 20px 0;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px;
-            font-family: 'Fredoka', sans-serif;
-            text-transform: uppercase;
-        }
-
 
         #material {
             width: 100%;
@@ -715,32 +646,14 @@
             background: #124D54;
         }
 
-        .button-container.single-btn {
-            justify-content: center;
-            margin-top: 15px;
+        .logo-details img {
+            height: 40px;
+            margin-right: 10px;
         }
-
-        .button-container.single-btn button {
-            width: 199px;
-            height: 50px;
-            padding: 12px 25px;
-            background: linear-gradient(180deg, #12B1D1, #124D54);
-            border: none;
-            border-radius: 40px;
-            font-size: 16px;
-            color: white;
-            text-transform: uppercase;
-            cursor: pointer;
-            font-family: 'Fredoka', sans-serif;
-        }
-
     </style>
 </head>
 
 <body>
-
-
-
 <!-- Header -->
 <header>
     <div class="smarts-logo">
@@ -755,6 +668,7 @@
 <!-- Sidebar -->
 <div class="sidebar">
     <div class="logo-details">
+        <img src="https://i.ibb.co/GV6QFjJ/acce-logo.png" alt="acce-logo" style="height: 40px; margin-right: 10px;">
         <div class="logo_name">ACCE Construction</div>
         <i class='bx bx-menu' id="btn"></i>
     </div>
@@ -826,12 +740,17 @@
     </div>
 
     <div class="inventory-container">
-        <div class="category-container">
-            <h2>CATEGORY</h2>
-            <div class="category-list" id="categoryList">
-                <!-- checkboxes will be injected here -->
+        <div class="inventory-controls"
+             style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <label for="categoryFilterDropdown" style="font-weight: bold; color: #F9744B; font-size: 30px;">CATEGORY: </label>
+                <div id="categoryDropdownContainer" style="max-width: 250px; width: 100%;">
+                    <select id="categoryFilterDropdown"
+                            style="width: 100%; padding: 10px; border-radius: 8px; background-color: #FF6F61; color: white; border: none; font-weight: bold;">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
             </div>
-
         </div>
         <div class="inventory-table-container">
             <div class="inventory-table">
@@ -865,11 +784,10 @@
                             <option value="">Select Project</option>
                         </select>
 
-                        <label for="stage">Stage</label>
-                        <select id="stage" name="stage" class="styled-dropdown" required>
-                        <option value="">Select Stage</option>
+                        <label for="stage">Project Stage</label>
+                        <select id="stage" name="stage" required>
+                            <option value="">Select Stage</option>
                         </select>
-
 
 
                         <label for="category">Category</label>
@@ -890,17 +808,22 @@
                             </tbody>
                         </table>
 
+                        <!--<label for="material">Material</label>
+                        <select id="material" name="material" required>
+                            <option value="">Select Material</option>
+                        </select>
+
+
+
+                        <label for="quantity">Quantity</label>
+                        <input type="number" id="quantity" name="quantity" placeholder="Enter quantity" required>-->
+
                         <div class="button-container" style="margin-top: 20px;">
                             <button type="button" class="cancelModalBtn"
-                                    onclick="cancelModal('requestModal')">Cancel</button>
+                                    onclick="cancelModal('requestModal')">Cancel
+                            </button>
                             <button type="submit">Submit Request</button>
                         </div>
-                        <div class="button-container single-btn">
-                            <button type="button" id="addRowBtn">Add Material</button>
-                        </div>
-
-
-
                     </form>
                 </div>
             </div>
@@ -912,11 +835,11 @@
                     <div id="receiptContent"></div>
 
                     <div class="button-container">
-                        <button type="button" class="cancelModalBtn" onclick="cancelModal('receiptModal')">Close</button>
+                        <button type="button" class="cancelModalBtn" onclick="cancelModal('receiptModal')">Close
+                        </button>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -968,36 +891,38 @@
                         inventoryTableBody.appendChild(row);
                     });
 
-                    renderCategoryCheckboxes([...categories]);
+                    renderCategoryDropdown([...categories]);
                 });
         }
 
 
-        function renderCategoryCheckboxes(categories) {
-            categoryList.innerHTML = "";
+        function renderCategoryDropdown(categories) {
+            const dropdown = document.getElementById("categoryFilterDropdown");
+            dropdown.innerHTML = `<option value="">ALL CATEGORIES</option>`;
+
             categories.sort().forEach(category => {
                 const value = category.toLowerCase().replace(/\s+/g, "-");
-                const label = document.createElement("label");
                 const displayName = category.charAt(0).toUpperCase() + category.slice(1);
-                label.innerHTML = `<input type="checkbox" class="category-checkbox" value="${value}"> ${displayName}`;
-
-                categoryList.appendChild(label);
+                const option = document.createElement("option");
+                option.value = value;
+                option.textContent = displayName;
+                dropdown.appendChild(option);
             });
 
-            document.querySelectorAll('.category-checkbox').forEach(cb => {
-                cb.addEventListener('change', filterRowsByCategory);
-            });
+            dropdown.addEventListener("change", filterRowsByCategory);
         }
 
+
         function filterRowsByCategory() {
-            const selected = [...document.querySelectorAll('.category-checkbox:checked')].map(cb => cb.value);
+            const selected = document.getElementById("categoryFilterDropdown").value;
             const rows = inventoryTable.querySelectorAll("tbody tr");
 
             rows.forEach(row => {
                 const rowCategory = row.getAttribute('data-category');
-                row.style.display = selected.length === 0 || selected.includes(rowCategory) ? "" : "none";
+                row.style.display = !selected || rowCategory === selected ? "" : "none";
             });
         }
+
 
         document.getElementById("requestBtn").addEventListener("click", () => {
             openModal("requestModal");
@@ -1025,6 +950,29 @@
                 });
             });
 
+        // 🔁 Populate stages based on selected project
+        document.getElementById("project-name").addEventListener("change", function () {
+            const selectedProject = this.value;
+            const stageSelect = document.getElementById("stage");
+            stageSelect.innerHTML = `<option value="">Loading...</option>`;
+
+            fetch(`/exestaff/inventory/getStagesByProject?projectName=${encodeURIComponent(selectedProject)}`)
+                .then(res => res.json())
+                .then(stages => {
+                    stageSelect.innerHTML = `<option value="">Select Stage</option>`;
+                    stages.sort((a, b) => a.stageNumber - b.stageNumber); // 🧠 Sort numerically
+                    stages.forEach(stage => {
+                        const option = document.createElement("option");
+                        option.value = stage.stageId;
+                        option.textContent = stage.stageName; // Already in "Stage X" format
+                        stageSelect.appendChild(option);
+                    });
+                });
+
+
+        });
+
+
         function populateCategories() {
             const uniqueCategories = [...new Set(globalInventory.map(item => item.material_category.trim().toLowerCase()))];
             const select = document.getElementById("category");
@@ -1040,147 +988,132 @@
 
         // 🔁 Populate materials dropdown based on selected category
         function populateMaterials(selectedCategory) {
-            const materialSelect = document.getElementById("material");
-            materialSelect.innerHTML = `<option value="">Select Material</option>`;
+            const tableBody = document.querySelector("#materialRequestTable tbody");
+            tableBody.innerHTML = "";
 
-            let filtered;
+            if (!selectedCategory) return;
 
-            if (selectedCategory) {
-                filtered = globalInventory.filter(item =>
-                    item.material_category.trim().toLowerCase() === selectedCategory.trim().toLowerCase()
-                );
-            } else {
-                filtered = globalInventory;
-            }
+            const filtered = globalInventory.filter(item =>
+                item.material_category.trim().toLowerCase() === selectedCategory.trim().toLowerCase()
+            );
 
-            const materialNames = [...new Set(filtered.map(item => item.material_name))];
-            materialNames.forEach(mat => {
-                const option = document.createElement("option");
-                option.value = mat;
-                option.textContent = mat;
-                materialSelect.appendChild(option);
+            filtered.forEach(item => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+            <td>${item.material_name}</td>
+            <td>${item.material_stock}</td>
+            <td><input type="number" min="0" max="${item.material_stock}" data-material="${item.material_name}" placeholder="0" /></td>
+        `;
+                tableBody.appendChild(row);
             });
         }
 
-        document.getElementById("project-name").addEventListener("change", function () {
-            const selectedProject = this.value;
-            const stageSelect = document.getElementById("stage");
-            stageSelect.innerHTML = `<option value="">Select Stage</option>`;
 
-            if (!selectedProject) return;
-
-            fetch(`/exestaff/inventory/getStagesByProject?projectName=${encodeURIComponent(selectedProject)}`)
-                .then(res => res.json())
-                .then(data => {
-                    data.forEach(stage => {
-                        const option = document.createElement("option");
-                        option.value = stage.stageId; // make sure backend sends this
-                        option.textContent = stage.stageName;
-                        stageSelect.appendChild(option);
-                    });
-                })
-                .catch(err => {
-                    console.error("Failed to load stages", err);
-                });
-        });
-
-
-
-// 🔁 Trigger material population when category changes
+        // 🔁 Trigger material population when category changes
         document.getElementById("category").addEventListener("change", () => {
             const selectedCategory = document.getElementById("category").value;
             populateMaterials(selectedCategory);
         });
-
-        document.getElementById("addRowBtn").addEventListener("click", () => {
-            const category = document.getElementById("category").value;
-            if (!category) {
-                alert("Please select a category before adding a material.");
-                return;
-            }
-
-            const tbody = document.querySelector("#materialRequestTable tbody");
-            const row = document.createElement("tr");
-
-            row.innerHTML = `
-        <td>
-            <select class="material-select" data-category="${category}" required>
-                <option value="">Select Material</option>
-                ${globalInventory
-                .filter(item => item.material_category.toLowerCase() === category.toLowerCase())
-                .map(item => `<option value="${item.material_name}" data-category="${item.material_category}">${item.material_name}</option>`)
-                .join('')}
-            </select>
-        </td>
-        <td>
-            <input type="text" class="stock-display" disabled placeholder="Auto">
-        </td>
-        <td>
-            <input type="number" class="quantity-input" min="1" placeholder="Enter Quantity" required>
-        </td>
-    `;
-
-            tbody.appendChild(row);
-
-            // Auto-fill stock when material is selected
-            row.querySelector(".material-select").addEventListener("change", function () {
-                const selectedMaterial = this.value;
-                const stockCell = row.querySelector(".stock-display");
-                const item = globalInventory.find(inv =>
-                    inv.material_name === selectedMaterial &&
-                    inv.material_category.toLowerCase() === this.dataset.category.toLowerCase()
-                );
-                stockCell.value = item ? item.material_stock : "N/A";
-            });
-        });
-
 
 
         document.getElementById("requestForm").addEventListener("submit", function (e) {
             e.preventDefault();
 
             const projectName = document.getElementById("project-name").value;
-            const stageId = document.getElementById("stage").value;
+            const category = document.getElementById("category").value;
+            const materialInputs = document.querySelectorAll('#materialRequestTable tbody input[type="number"]');
+            const requestedMaterials = [];
 
-            if (!projectName || !stageId) {
-                alert("Please select both a project and a stage.");
+            materialInputs.forEach(input => {
+                const qty = parseInt(input.value);
+                if (!isNaN(qty) && qty > 0) {
+                    requestedMaterials.push({
+                        material: input.getAttribute("data-material"),
+                        quantity: qty
+                    });
+                }
+            });
+
+            if (requestedMaterials.length === 0) {
+                alert("❌ Please enter at least one material quantity.");
                 return;
             }
 
-            const rows = document.querySelectorAll("#materialRequestTable tbody tr");
-            const materials = [];
+            for (const r of requestedMaterials) {
+                const matched = globalInventory.find(item =>
+                    item.material_category.trim().toLowerCase() === category.trim().toLowerCase() &&
+                    item.material_name === r.material
+                );
 
-            for (const row of rows) {
-                const material = row.querySelector(".material-select").value;
-                const quantity = parseInt(row.querySelector(".quantity-input").value);
-                const category = row.querySelector(".material-select").selectedOptions[0].dataset.category;
-
-                if (!material || isNaN(quantity) || quantity <= 0) {
-                    alert("Please complete all material entries and ensure quantities are valid.");
+                if (!matched) {
+                    alert(`❌ Material "${r.material}" not found in inventory.`);
                     return;
                 }
 
-                materials.push({ materialName: material, quantity, category });
+                if (r.quantity > matched.material_stock) {
+                    alert(`❌ Cannot request ${r.quantity} of "${r.material}". Only ${matched.material_stock} available.`);
+                    return;
+                }
             }
+
+
+            const stageId = document.getElementById("stage").value;
+
+            const payload = {
+                projectName,
+                stageId,
+                materials: requestedMaterials.map(r => ({
+                    materialName: r.material,
+                    category: category,
+                    quantity: r.quantity
+                }))
+            };
 
             fetch("/exestaff/inventory/requestMaterials", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ projectName, stageId, materials })
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(payload)
             })
+
                 .then(res => res.text())
                 .then(msg => {
-                    alert(msg);
                     cancelModal("requestModal");
                     document.getElementById("requestForm").reset();
-                    document.querySelector("#materialRequestTable tbody").innerHTML = "";
+                    populateMaterials(document.getElementById("category").value);
+
+                    // 🧾 Show receipt
+                    const receiptDiv = document.getElementById("receiptContent");
+                    receiptDiv.innerHTML = `
+        <p><strong>Project:</strong> ${projectName}</p>
+        <p><strong>Stage:</strong> ${document.getElementById("stage").selectedOptions[0].textContent}</p>
+        <p><strong>Category:</strong> ${category}</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Material</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${requestedMaterials.map(r => `
+                    <tr>
+                        <td>${r.material}</td>
+                        <td>${r.quantity}</td>
+                    </tr>
+                `).join("")}
+            </tbody>
+        </table>
+        <p style="margin-top: 10px;">✅ ${msg}</p>
+    `;
+
+                    openModal("receiptModal");
                 })
+
                 .catch(err => {
                     alert("Failed to submit request.");
                     console.error(err);
                 });
         });
-
 
         fetchAndRenderInventory();
         setTimeout(() => populateCategories(), 500);
@@ -1199,6 +1132,20 @@
         document.getElementById(modalId).style.display = "block";
         document.getElementById('overlay').style.display = "block";
     }
+
+    let sidebar = document.querySelector(".sidebar");
+    let closeBtn = document.querySelector("#btn");
+    let searchBtn = document.querySelector(".bx-search");
+
+    closeBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("open");
+    });
+    if (searchBtn) {
+        searchBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("open");
+        });
+    }
 </script>
 </body>
+
 </html>

@@ -619,7 +619,10 @@
             -moz-user-select: none;
             -ms-user-select: none;
         }
-
+        .logo-details img {
+            height: 40px;
+            margin-right: 10px;
+        }
     </style>
 </head>
 
@@ -638,6 +641,7 @@
 <!-- Sidebar -->
 <div class="sidebar">
     <div class="logo-details">
+        <img src="https://i.ibb.co/GV6QFjJ/acce-logo.png" alt="acce-logo" style="height: 40px; margin-right: 10px;">
         <div class="logo_name">ACCE Construction</div>
         <i class='bx bx-menu' id="btn"></i>
     </div>
@@ -716,12 +720,14 @@
             <select id="project-select">
                 <option value="" disabled selected>Select Project</option>
             </select>
-            <button id="selectPeriod">Select Period</button>
+            <select id="stage-select">
+                <option value="" disabled selected>Select Stage</option>
+            </select>
         </div>
     </div>
 
-    <div class="overlay" id="overlay"></div>
-    <div class="selected-period" id="selectedPeriod"></div>
+<!--    <div class="overlay" id="overlay"></div>-->
+<!--    <div class="selected-period" id="selectedPeriod"></div>-->
 
     <!-- BEGIN blur-target wrapper -->
     <div id="invoiceMainContent">
@@ -763,17 +769,17 @@
     </div>
     <!-- END blur-target wrapper -->
 
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <h3>Select Period</h3>
-            <input type="date" id="startDate">
-            <input type="date" id="endDate">
-            <div>
-                <button id="cancelModal">Cancel</button>
-                <button id="submitPeriod">Submit</button>
-            </div>
-        </div>
-    </div>
+<!--    <div id="modal" class="modal">-->
+<!--        <div class="modal-content">-->
+<!--            <h3>Select Period</h3>-->
+<!--            <input type="date" id="startDate">-->
+<!--            <input type="date" id="endDate">-->
+<!--            <div>-->
+<!--                <button id="cancelModal">Cancel</button>-->
+<!--                <button id="submitPeriod">Submit</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
 
     <!-- Warning Overlay and Popup -->
     <div id="stageBlockOverlay" style="display:none;
@@ -800,15 +806,10 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
     const incompleteStagesMap = /*[[${incompleteStagesMap}]]*/ {};
-
     console.log("Loaded incompleteStagesMap: ", incompleteStagesMap);
-    console.log("JS Loaded: projectId = " + projectId);
-    console.log("JS Loaded: incompleteStagesMap = ", incompleteStagesMap);
-    console.log("JS: incompleteStagesMap[projectId] = ", incompleteStagesMap[projectId]);
-    const isIncomplete = incompleteStagesMap[projectId];
-
     /*]]>*/
 </script>
+
 <script>
     async function fetchProjectsAndPopulateDropdown() {
         const response = await fetch("/admin/invoice/getProjects");
@@ -824,11 +825,8 @@
         });
     }
 
-    async function loadProjectDetails(projectId, startDate = null, endDate = null) {
-        let url = `/admin/invoice/getProjectDetails?projectId=${projectId}`;
-        if (startDate && endDate) {
-            url += `&startDate=${startDate}&endDate=${endDate}`;
-        }
+    async function loadProjectDetails(projectId) {
+        const url = `/admin/invoice/getProjectDetails?projectId=${projectId}`;
         const res = await fetch(url);
         const data = await res.json();
 
@@ -859,40 +857,77 @@
         document.getElementById('totalCost').textContent = `PHP ${total.toLocaleString()}`;
     }
 
-    document.getElementById('project-select').addEventListener('change', async (e) => {
-        const projectName = e.target.options[e.target.selectedIndex].text;
-        const res = await fetch(`/admin/invoice/getInventory?projectName=${projectName}`);
-        const inventory = await res.json();
+    async function fetchStagesAndPopulate(projectId) {
+        const stageDropdown = document.getElementById("stage-select");
+        stageDropdown.innerHTML = `<option value="" disabled selected>Select Stage</option>`;
 
-        document.getElementById('projectName').textContent = projectName;
+        const res = await fetch(`/admin/invoice/stages?projectId=${projectId}`);
+        const text = await res.text();
+        console.log("Stage response (raw):", text); // TEMP LOG
 
-        const selected = e.target.options[e.target.selectedIndex];
-        const selectedProject = window.projectList.find(p => p.projectname === projectName);
-        const selectedProjectId = parseInt(e.target.value); // value of <option> is projectId
-        console.log("Selected project ID:", selectedProjectId);
-        console.log("IncompleteStagesMap:", incompleteStagesMap);
+        try {
+            const stages = JSON.parse(text);
+            stages
+                .sort((a, b) => {
+                    const numA = parseInt(a.stageName.replace(/[^\d]/g, ''), 10);
+                    const numB = parseInt(b.stageName.replace(/[^\d]/g, ''), 10);
+                    return numA - numB;
+                })
+                .forEach(stage => {
+                    stageDropdown.innerHTML += `<option value="${stage.stageId}" data-status="${stage.status}">${stage.stageName}</option>`;
+                });
 
-        const isIncomplete = incompleteStagesMap[selectedProjectId];
-        console.log("Is incomplete? ", isIncomplete);
-
-        if (isIncomplete === true || isIncomplete === "true") {
-            document.getElementById("stageWarningPopup").style.display = "block";
-            document.getElementById("stageBlockOverlay").style.display = "block";
-            document.getElementById("invoiceMainContent").style.filter = "blur(6px)";
-            const printBtn = document.getElementById("printBtn");
-            if (printBtn) printBtn.disabled = true;
-        } else {
-            document.getElementById("stageWarningPopup").style.display = "none";
-            document.getElementById("stageBlockOverlay").style.display = "none";
-            document.getElementById("invoiceMainContent").style.filter = "none";
-            const printBtn = document.getElementById("printBtn");
-            if (printBtn) printBtn.disabled = false;
+        } catch (err) {
+            console.error("Failed to parse stage response:", err);
         }
+    }
 
+
+    // On project change → load stages, clear invoice
+    document.getElementById("project-select").addEventListener("change", async (e) => {
+        const projectId = e.target.value;
+        await fetchStagesAndPopulate(projectId);
+
+        document.getElementById("invoiceBody").innerHTML = "";
+        document.getElementById("totalCost").textContent = "PHP 0";
+
+        // Hide warning
+        document.getElementById("stageWarningPopup").style.display = "none";
+        document.getElementById("stageBlockOverlay").style.display = "none";
+        document.getElementById("invoiceMainContent").style.filter = "none";
+        document.getElementById("printBtn").disabled = true;
+
+        // Set project info
+        const selectedProject = window.projectList.find(p => p.projectId == projectId);
+        document.getElementById('projectName').textContent = selectedProject.projectname || '---';
         document.getElementById('projectLocation').textContent = selectedProject.companyLocation || '---';
         document.getElementById('projectCompany').textContent = selectedProject.companyname || '---';
         document.getElementById('projectContact').textContent = selectedProject.companycontact || '---';
+    });
 
+    // On stage change → load invoice or blur if incomplete
+    document.getElementById("stage-select").addEventListener("change", async (e) => {
+        const selectedStage = e.target.options[e.target.selectedIndex];
+        const status = selectedStage.dataset.status;
+        const stageId = selectedStage.value;
+        const projectId = document.getElementById("project-select").value;
+
+        if (status !== "Complete") {
+            document.getElementById("stageWarningPopup").style.display = "block";
+            document.getElementById("stageBlockOverlay").style.display = "block";
+            document.getElementById("invoiceMainContent").style.filter = "blur(6px)";
+            document.getElementById("printBtn").disabled = true;
+            return;
+        }
+
+        // Stage is complete → enable invoice view
+        document.getElementById("stageWarningPopup").style.display = "none";
+        document.getElementById("stageBlockOverlay").style.display = "none";
+        document.getElementById("invoiceMainContent").style.filter = "none";
+        document.getElementById("printBtn").disabled = false;
+
+        const res = await fetch(`/admin/invoice/stageInventory?projectId=${projectId}&stageId=${stageId}`);
+        const inventory = await res.json();
         const tbody = document.getElementById('invoiceBody');
         tbody.innerHTML = '';
 
@@ -900,48 +935,48 @@
         inventory.forEach((item, idx) => {
             total += item.totalPrice;
             tbody.innerHTML += `
-            <tr>
-                <td>${String(idx + 1).padStart(3, '0')}</td>
-                <td>${item.materialName}</td>
-                <td>${item.quantity}</td>
-                <td>PHP ${item.unitPrice.toLocaleString()}</td>
-                <td>PHP ${item.totalPrice.toLocaleString()}</td>
-            </tr>
-        `;
+        <tr>
+            <td>${String(idx + 1).padStart(3, '0')}</td>
+            <td>${item.materialName}</td>
+            <td>${item.quantity}</td>
+            <td>PHP ${item.unitPrice.toLocaleString()}</td>
+            <td>PHP ${item.totalPrice.toLocaleString()}</td>
+        </tr>`;
         });
 
         document.getElementById('totalCost').textContent = `PHP ${total.toLocaleString()}`;
     });
 
 
-    document.getElementById("submitPeriod").addEventListener("click", () => {
-        const start = document.getElementById("startDate").value;
-        const end = document.getElementById("endDate").value;
 
-        if (!start || !end) {
-            alert("⚠️ Please select both start and end date.");
-            return;
-        }
+    // document.getElementById("submitPeriod").addEventListener("click", () => {
+    //     const start = document.getElementById("startDate").value;
+    //     const end = document.getElementById("endDate").value;
+    //
+    //     if (!start || !end) {
+    //         alert("⚠️ Please select both start and end date.");
+    //         return;
+    //     }
+    //
+    //     const selectedPeriod = document.getElementById("selectedPeriod");
+    //     selectedPeriod.innerText = `Selected Period: ${start} to ${end}`;
+    //     selectedPeriod.style.display = "block";
+    //
+    //     const projectId = document.getElementById("projectDropdown").value;
+    //     if (projectId) loadProjectDetails(projectId, start, end);
+    // });
+    //
+    // document.getElementById("cancelModal").addEventListener("click", () => {
+    //     document.getElementById("startDate").value = "";
+    //     document.getElementById("endDate").value = "";
+    //     document.getElementById("overlay").style.display = "none";
+    //     document.getElementById("modal").style.display = "none";
+    // });
 
-        const selectedPeriod = document.getElementById("selectedPeriod");
-        selectedPeriod.innerText = `Selected Period: ${start} to ${end}`;
-        selectedPeriod.style.display = "block";
-
-        const projectId = document.getElementById("projectDropdown").value;
-        if (projectId) loadProjectDetails(projectId, start, end);
-    });
-
-    document.getElementById("cancelModal").addEventListener("click", () => {
-        document.getElementById("startDate").value = "";
-        document.getElementById("endDate").value = "";
-        document.getElementById("overlay").style.display = "none";
-        document.getElementById("modal").style.display = "none";
-    });
-
-    document.getElementById("selectPeriod").addEventListener("click", () => {
-        document.getElementById("overlay").style.display = "block";
-        document.getElementById("modal").style.display = "block";
-    });
+    // document.getElementById("selectPeriod").addEventListener("click", () => {
+    //     document.getElementById("overlay").style.display = "block";
+    //     document.getElementById("modal").style.display = "block";
+    // });
 
     fetchProjectsAndPopulateDropdown();
 
@@ -963,7 +998,7 @@
         pdf.text("INVOICE", margin, 50);
         pdf.setFontSize(11);
         pdf.setFont("helvetica", "normal");
-        pdf.text("Period: " + (document.getElementById("selectedPeriod").textContent || "N/A"), margin, 65);
+        // pdf.text("Period: " + (document.getElementById("selectedPeriod").textContent || "N/A"), margin, 65);
 
         // Invoice bar
         let startY = 75;
@@ -1098,9 +1133,22 @@
         pdf.text("SIGNATURE OVER PRINTED NAME", margin + 100, currentY);
         pdf.text(formattedDate, pageWidth - margin - 20, currentY);
 
-        pdf.save("invoice.pdf");
+        const formattedFileDate = formattedDate.replace(/\//g, '-');
+        pdf.save(`Invoice_Admin-${formattedFileDate}.pdf`);
+    }
+
+    let sidebar = document.querySelector(".sidebar");
+    let closeBtn = document.querySelector("#btn");
+    let searchBtn = document.querySelector(".bx-search");
+
+    closeBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("open");
+    });
+    if (searchBtn) {
+        searchBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("open");
+        });
     }
 </script>
 </body>
-
 </html>

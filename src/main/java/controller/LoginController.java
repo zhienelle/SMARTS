@@ -26,13 +26,20 @@ public class LoginController {
         User user = userOptional.get();
 
         // Plaintext password check (no Spring Security)
-        if (!user.getPassword().equals(password)) return "invalidPassword";
+        if (user.getPassword() == null || !user.getPassword().equals(password)) {
+            return "invalidPassword";
+        }
+        System.out.println("Logging in: " + username);
+        System.out.println("Fetched user: " + user);
+        System.out.println("Role: " + user.getRole());
+        System.out.println("Status: " + user.getStatus());
 
         // Store in session
         session.setAttribute("authenticatedUser", user);
         session.setAttribute("captchaPassed", true); // ✅ Add this once CAPTCHA is verified
         session.setAttribute("username", user.getUsername());
 
-        return "ROLE:" + user.getRole() + "|STATUS:" + user.getStatus(); // used by frontend to redirect
+        return "ROLE:" + (user.getRole() != null ? user.getRole() : "UNKNOWN") +
+                "|STATUS:" + (user.getStatus() != null ? user.getStatus() : "UNKNOWN");
     }
 }

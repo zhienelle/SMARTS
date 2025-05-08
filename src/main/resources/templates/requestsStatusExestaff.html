@@ -6,8 +6,8 @@
     <title>ExeStaff Requests</title>
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
     <link
-        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
-        rel="stylesheet">
+            href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
+            rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -68,7 +68,7 @@
             background-color: #F9744B;
         }
 
-        .sidebar.open~header {
+        .sidebar.open ~ header {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -92,7 +92,7 @@
             padding-right: 20px;
         }
 
-        .sidebar.open~footer {
+        .sidebar.open ~ footer {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -301,7 +301,7 @@
             margin-top: 30px;
         }
 
-        .sidebar.open~.home-section {
+        .sidebar.open ~ .home-section {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -433,6 +433,7 @@
             background-color: #F9744B;
             color: white;
         }
+
         .project-filter-container {
             width: 90%;
             margin: 0 auto 20px auto;
@@ -448,7 +449,7 @@
             font-weight: bold;
         }
 
-        #projectFilter {
+        .filter-dropdown {
             padding: 8px 16px;
             font-size: 16px;
             border: 2px solid #ccc;
@@ -461,201 +462,346 @@
             transition: border-color 0.2s ease-in-out;
         }
 
-        #projectFilter:hover,
-        #projectFilter:focus {
+        .filter-dropdown:hover,
+        .filter-dropdown:focus {
             border-color: #F9744B;
         }
 
+
+        .logo-details img {
+            height: 40px;
+            margin-right: 10px;
+        }
     </style>
 </head>
 
 <body>
-    <!-- Header -->
-    <header>
-        <div class="smarts-logo">
-            <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
-        </div>
-        <div>
-            <p>ROLE: <span>EXECUTIVE STAFF</span></p>
-            <i class='bx bxs-user-circle'></i>
-        </div>
-    </header>
+<!-- Header -->
+<header>
+    <div class="smarts-logo">
+        <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
+    </div>
+    <div>
+        <p>ROLE: <span>EXECUTIVE STAFF</span></p>
+        <i class='bx bxs-user-circle'></i>
+    </div>
+</header>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="logo-details">
-            <div class="logo_name">ACCE Construction</div>
-            <i class='bx bx-menu' id="btn"></i>
-        </div>
-        <ul class="nav-list">
-            <li>
-                <a href="homepageExestaff">
-                    <i class='bx bx-home'></i>
-                    <span class="links_name">Homepage</span>
-                </a>
-                <span class="tooltip">Homepage</span>
-            </li>
-            <li>
-                <a href="myProjectExestaff">
-                    <i class='bx bx-task'></i>
-                    <span class="links_name">My Project</span>
-                </a>
-                <span class="tooltip">My Project</span>
-            </li>
-            <li>
-                <a href="inventoryExestaff">
-                    <i class='bx bx-store-alt'></i>
-                    <span class="links_name">Inventory</span>
-                </a>
-                <span class="tooltip">Inventory</span>
-            </li>
-            <li>
-                <a href="invoiceExestaff">
-                    <i class='bx bx-receipt'></i>
-                    <span class="links_name">Invoice</span>
-                </a>
-                <span class="tooltip">Invoice</span>
-            </li>
-            <li>
-                <a href="reportsExestaff">
-                    <i class='bx bx-bar-chart'></i>
-                    <span class="links_name">Reports & Analytics</span>
-                </a>
-                <span class="tooltip">Reports & Analytics</span>
-            </li>
-            <li>
-                <a href="requestsStatusExestaff">
-                    <i class='bx bx-comment-dots'></i>
-                    <span class="links_name">Requests Status</span>
-                </a>
-                <span class="tooltip">Requests Status</span>
-            </li>
-            <li>
-                <a href="settingsExestaff">
-                    <i class='bx bx-cog'></i>
-                    <span class="links_name">Settings</span>
-                </a>
-                <span class="tooltip">Settings</span>
-            </li>
-            <li>
-                <a href="confirmLogout">
-                    <i class='bx bx-log-out'></i>
-                    <span class="links_name">Logout</span>
-                </a>
-                <span class="tooltip">Logout</span>
-            </li>
-        </ul>
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="logo-details">
+        <img src="https://i.ibb.co/GV6QFjJ/acce-logo.png" alt="acce-logo" style="height: 40px; margin-right: 10px;">
+        <div class="logo_name">ACCE Construction</div>
+        <i class='bx bx-menu' id="btn"></i>
+    </div>
+    <ul class="nav-list">
+        <li>
+            <a href="homepageExestaff">
+                <i class='bx bx-home'></i>
+                <span class="links_name">Homepage</span>
+            </a>
+            <span class="tooltip">Homepage</span>
+        </li>
+        <li>
+            <a href="myProjectExestaff">
+                <i class='bx bx-task'></i>
+                <span class="links_name">My Project</span>
+            </a>
+            <span class="tooltip">My Project</span>
+        </li>
+        <li>
+            <a href="inventoryExestaff">
+                <i class='bx bx-store-alt'></i>
+                <span class="links_name">Inventory</span>
+            </a>
+            <span class="tooltip">Inventory</span>
+        </li>
+        <li>
+            <a href="invoiceExestaff">
+                <i class='bx bx-receipt'></i>
+                <span class="links_name">Invoice</span>
+            </a>
+            <span class="tooltip">Invoice</span>
+        </li>
+        <li>
+            <a href="reportsExestaff">
+                <i class='bx bx-bar-chart'></i>
+                <span class="links_name">Reports & Analytics</span>
+            </a>
+            <span class="tooltip">Reports & Analytics</span>
+        </li>
+        <li>
+            <a href="requestsStatusExestaff">
+                <i class='bx bx-comment-dots'></i>
+                <span class="links_name">Requests Status</span>
+            </a>
+            <span class="tooltip">Requests Status</span>
+        </li>
+        <li>
+            <a href="settingsExestaff">
+                <i class='bx bx-cog'></i>
+                <span class="links_name">Settings</span>
+            </a>
+            <span class="tooltip">Settings</span>
+        </li>
+        <li>
+            <a href="confirmLogout">
+                <i class='bx bx-log-out'></i>
+                <span class="links_name">Logout</span>
+            </a>
+            <span class="tooltip">Logout</span>
+        </li>
+    </ul>
+</div>
+
+<!-- Main Section -->
+<section class="home-section">
+    <h1>Requests Status</h1>
+
+    <div class="project-filter-container">
+        <label for="projectFilter">Filter by Project:</label>
+        <select id="projectFilter" class="filter-dropdown">
+            <option value="ALL">All Projects</option>
+        </select>
+
+        <label for="stageFilter">Filter by Stage:</label>
+        <select id="stageFilter" class="filter-dropdown">
+            <option value="ALL">All Stages</option>
+        </select>
+
+        <label for="statusFilter">Filter by Status:</label>
+        <select id="statusFilter" class="filter-dropdown">
+            <option value="ALL">All Status</option>
+        </select>
     </div>
 
-    <!-- Main Section -->
-    <section class="home-section">
-        <h1>Requests Status</h1>
 
-        <div class="project-filter-container">
-            <label for="projectFilter">Filter by Project:</label>
-            <select id="projectFilter">
-                <option value="ALL">All Projects</option>
-            </select>
+    <table>
+        <thead>
+        <tr>
+        <tr>
+            <th>Stage</th>
+            <th>Category</th>
+            <th>Material</th>
+            <th>Quantity</th>
+            <th>Date Requested</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="requestTableBody">
+        <!-- Dynamic content will be injected here -->
+        </tbody>
+
+    </table>
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteConfirmModal" class="modal"
+         style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div class="modal-content"
+             style="background-color: #FFE0DC; padding: 30px; border-radius: 20px; text-align: center; width: 400px;">
+            <p style="font-family: 'Fredoka'; font-size: 18px; color: #124D54;">Are you sure you want to delete this
+                request?</p>
+            <div style="margin-top: 20px;">
+                <button id="confirmDeleteBtn"
+                        style="background-color: #124D54; color: white; padding: 10px 20px; border: none; border-radius: 25px; font-weight: bold; margin-right: 10px;">
+                    YES
+                </button>
+                <button onclick="closeDeleteModal()"
+                        style="background-color: #124D54; color: white; padding: 10px 20px; border: none; border-radius: 25px; font-weight: bold;">
+                    NO
+                </button>
+            </div>
         </div>
+    </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Category</th>
-                    <th>Material</th>
-                    <th>Quantity </th>
-                    <th>Date Requested</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody id="requestTableBody">
-            <!-- Dynamic content will be injected here -->
-            </tbody>
+</section>
 
-        </table>
-    </section>
+<!-- Footer -->
+<footer>
+    <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
+</footer>
 
-    <!-- Footer -->
-    <footer>
-        <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
-    </footer>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const tbody = document.getElementById("requestTableBody");
+        const projectFilter = document.getElementById("projectFilter");
+        const stageFilter = document.getElementById("stageFilter");
+        const statusFilter = document.getElementById("statusFilter");
+        let allRequests = [];
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const tbody = document.getElementById("requestTableBody");
-            const projectFilter = document.getElementById("projectFilter");
+        const statuses = [
+            {value: "ALL", label: "All Status"},
+            {value: "PENDING", label: "Pending"},
+            {value: "APPROVED", label: "Approved"},
+            {value: "DENIED", label: "Denied"}
+        ];
+        statuses.forEach(status => {
+            const opt = document.createElement("option");
+            opt.value = status.value;
+            opt.textContent = status.label;
+            statusFilter.appendChild(opt);
+        });
 
-            let allRequests = [];
-
-            // Fetch assigned projects for the dropdown
-            fetch("/exestaff/requests/projects")
-                .then(res => res.json())
-                .then(projects => {
-                    projects.forEach(name => {
-                        const opt = document.createElement("option");
-                        opt.value = name;
-                        opt.textContent = name;
-                        projectFilter.appendChild(opt);
-                    });
+        // Fetch assigned projects
+        fetch("/exestaff/requests/projects")
+            .then(res => res.json())
+            .then(projects => {
+                projects.forEach(name => {
+                    const opt = document.createElement("option");
+                    opt.value = name;
+                    opt.textContent = name;
+                    projectFilter.appendChild(opt);
                 });
-
-            // Fetch all material requests
-            fetch("/exestaff/requests/getMaterialRequests")
-                .then(res => res.json())
-                .then(data => {
-                    allRequests = data;
-                    renderTable(data); // initial render
-                });
-
-            // Re-render table when project filter changes
-            projectFilter.addEventListener("change", () => {
-                const selected = projectFilter.value;
-                const filtered = selected === "ALL"
-                    ? allRequests
-                    : allRequests.filter(req => req.project?.projectname === selected);
-                renderTable(filtered);
             });
 
-            function renderTable(data) {
-                tbody.innerHTML = "";
+        // Fetch all material requests
+        fetch("/exestaff/requests/getMaterialRequests")
+            .then(res => res.json())
+            .then(data => {
+                allRequests = data;
+                renderTable(data);
+            });
 
-                if (data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5">No material requests found.</td></tr>`;
-                    return;
-                }
+        // Update stage dropdown when project changes
+        projectFilter.addEventListener("change", () => {
+            const selectedProject = projectFilter.value;
+            stageFilter.innerHTML = `<option value="ALL">All Stages</option>`;
 
-                // 🧠 Sort: Date (desc), then Category, then Material
-                data.sort((a, b) => {
-                    const dateA = new Date(a.requestDate);
-                    const dateB = new Date(b.requestDate);
-                    if (dateA < dateB) return 1;
-                    if (dateA > dateB) return -1;
+            if (selectedProject !== "ALL") {
+                fetch(`/exestaff/requests/getStagesByProject?projectName=${encodeURIComponent(selectedProject)}`)
+                    .then(res => res.json())
+                    .then(stages => {
+                        console.log("Fetched stages:", stages);
+                        stages
+                            .sort((a, b) => a.stageNumber - b.stageNumber)
+                            .forEach(stage => {
+                                const opt = document.createElement("option");
+                                opt.value = stage.stageId;
+                                opt.textContent = `Stage ${stage.stageNumber}`;
+                                stageFilter.appendChild(opt);
+                            });
 
-                    const catA = (a.inventory?.materialCategory || a.materialCategory || "").toUpperCase();
-                    const catB = (b.inventory?.materialCategory || b.materialCategory || "").toUpperCase();
-                    if (catA < catB) return -1;
-                    if (catA > catB) return 1;
-
-                    const nameA = (a.inventory?.materialName || a.materialName || "").toUpperCase();
-                    const nameB = (b.inventory?.materialName || b.materialName || "").toUpperCase();
-                    return nameA.localeCompare(nameB);
-                });
-
-                data.forEach(req => {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-            <td>${req.inventory?.materialCategory || req.materialCategory || '-'}</td>
-            <td>${req.inventory?.materialName || req.materialName || '-'}</td>
-            <td>${req.materialStock}</td>
-            <td>${new Date(req.requestDate).toLocaleDateString('en-US')}</td>
-            <td>${req.materialRequestStatus}</td>
-        `;
-                    tbody.appendChild(row);
-                });
+                    });
             }
 
+            applyFilters();
         });
-    </script>
+
+        stageFilter.addEventListener("change", applyFilters);
+        statusFilter.addEventListener("change", applyFilters);
+
+        function applyFilters() {
+            const selectedProject = projectFilter.value;
+            const selectedStage = stageFilter.value;
+            const selectedStatus = statusFilter.value;
+
+            let filtered = [...allRequests];
+
+            if (selectedProject !== "ALL") {
+                filtered = filtered.filter(req => req.project?.projectname === selectedProject);
+            }
+
+            if (selectedStage !== "ALL") {
+                const selectedStageId = parseInt(selectedStage);
+                filtered = filtered.filter(req => req.stage && req.stage.stageId == selectedStageId);
+            }
+
+            if (selectedStatus !== "ALL") {
+                filtered = filtered.filter(req => req.materialRequestStatus === selectedStatus);
+            }
+
+            renderTable(filtered);
+        }
+
+        function renderTable(data) {
+            tbody.innerHTML = "";
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7">No material requests found.</td></tr>`;
+                return;
+            }
+
+            data.sort((a, b) => {
+                const dateA = new Date(a.requestDate);
+                const dateB = new Date(b.requestDate);
+                if (dateA < dateB) return 1;
+                if (dateA > dateB) return -1;
+
+                const catA = (a.inventory?.materialCategory || a.materialCategory || "").toUpperCase();
+                const catB = (b.inventory?.materialCategory || b.materialCategory || "").toUpperCase();
+                if (catA < catB) return -1;
+                if (catA > catB) return 1;
+
+                const nameA = (a.inventory?.materialName || a.materialName || "").toUpperCase();
+                const nameB = (b.inventory?.materialName || b.materialName || "").toUpperCase();
+                return nameA.localeCompare(nameB);
+            });
+
+            data.forEach(req => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${req.stage ? "Stage " + req.stage.stageNumber : '-'}</td>
+                    <td>${req.inventory?.materialCategory || req.materialCategory || '-'}</td>
+                    <td>${req.inventory?.materialName || req.materialName || '-'}</td>
+                    <td>${req.materialStock}</td>
+                    <td>${new Date(req.requestDate).toLocaleDateString('en-US')}</td>
+                    <td>${req.materialRequestStatus}</td>
+                    <td>
+                        ${req.materialRequestStatus === 'PENDING'
+                    ? `<button onclick="showDeleteModal(${req.materialRequestId})" style="background-color: #124D54; color: white; padding: 8px 16px; border-radius: 25px; border: none; cursor: pointer; font-weight: bold;">Delete</button>`
+                    : ''}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+    });
+
+    let sidebar = document.querySelector(".sidebar");
+    let closeBtn = document.querySelector("#btn");
+    let searchBtn = document.querySelector(".bx-search");
+
+    closeBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("open");
+    });
+    if (searchBtn) {
+        searchBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("open");
+        });
+    }
+
+    // DELETE modal handling
+    let requestIdToDelete = null;
+
+    function showDeleteModal(requestId) {
+        requestIdToDelete = requestId;
+        document.getElementById("deleteConfirmModal").style.display = "flex";
+    }
+
+    function closeDeleteModal() {
+        requestIdToDelete = null;
+        document.getElementById("deleteConfirmModal").style.display = "none";
+    }
+
+    document.getElementById("confirmDeleteBtn").addEventListener("click", () => {
+        if (!requestIdToDelete) return;
+
+        fetch(`/exestaff/requests/delete/${requestIdToDelete}`, {
+            method: "DELETE"
+        })
+            .then(res => res.text())
+            .then(msg => {
+                alert(msg);
+                closeDeleteModal();
+                location.reload();
+            })
+            .catch(err => {
+                console.error("❌ Error deleting request:", err);
+                alert("❌ Failed to delete request.");
+                closeDeleteModal();
+            });
+    });
+</script>
 
 
 </body>

@@ -677,6 +677,10 @@
         .material-item span {
             display: block;
         }
+        .logo-details img {
+            height: 40px;
+            margin-right: 10px;
+        }
     </style>
 </head>
 
@@ -695,6 +699,7 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo-details">
+            <img src="https://i.ibb.co/GV6QFjJ/acce-logo.png" alt="acce-logo" style="height: 40px; margin-right: 10px;">
             <div class="logo_name">ACCE Construction</div>
             <i class='bx bx-menu' id="btn"></i>
         </div>
@@ -988,6 +993,19 @@
             document.getElementById("modal").style.display = "none";
             document.getElementById("overlay").style.display = "none";
         });
+
+        let sidebar = document.querySelector(".sidebar");
+        let closeBtn = document.querySelector("#btn");
+        let searchBtn = document.querySelector(".bx-search");
+
+        closeBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("open");
+        });
+        if (searchBtn) {
+            searchBtn.addEventListener("click", () => {
+                sidebar.classList.toggle("open");
+            });
+        }
     </script>
 </body>
 

@@ -109,6 +109,74 @@ public class InvoiceAdminController {
         }).collect(Collectors.toList());
     }
 
+//    @GetMapping("/admin/invoice/stages")
+//    @ResponseBody
+//    public List<ProjectStage> getProjectStages(@RequestParam("projectId") Integer projectId, HttpSession session) {
+//        User user = (User) session.getAttribute("authenticatedUser");
+//        if (user == null || !"ADMIN".equalsIgnoreCase(user.getRole())) {
+//            return List.of(); // Or return new ArrayList<>(); as default
+//        }
+//
+//        Optional<Project> optionalProject = projectRepository.findById(projectId);
+//        if (optionalProject.isEmpty()) return List.of();
+//
+//        return projectStageRepository.findByProject(optionalProject.get());
+//    }
+
+    @GetMapping("/admin/invoice/stages")
+    @ResponseBody
+    public List<Map<String, Object>> getStages(@RequestParam("projectId") Integer projectId, HttpSession session) {
+        User user = (User) session.getAttribute("authenticatedUser");
+        if (user == null || !"ADMIN".equalsIgnoreCase(user.getRole())) {
+            return List.of();
+        }
+
+        Optional<Project> projectOpt = projectRepository.findById(projectId);
+        if (projectOpt.isEmpty()) return List.of();
+
+        List<ProjectStage> stages = projectStageRepository.findByProject(projectOpt.get());
+
+        return stages.stream().map(stage -> {
+            Map<String, Object> s = new HashMap<>();
+            s.put("stageId", stage.getStageId());
+            s.put("stageName", "Stage " + stage.getStageNumber());
+            s.put("status", stage.getStatus());
+            return s;
+        }).collect(Collectors.toList());
+    }
+
+    @GetMapping("/admin/invoice/stageInventory")
+    @ResponseBody
+    public List<Map<String, Object>> getStageInventory(
+            @RequestParam("projectId") Integer projectId,
+            @RequestParam("stageId") Long stageId,
+            HttpSession session) {
+
+        User user = (User) session.getAttribute("authenticatedUser");
+        if (user == null || !"ADMIN".equalsIgnoreCase(user.getRole())) {
+            return List.of();
+        }
+
+        Optional<Project> optionalProject = projectRepository.findById(projectId);
+        if (optionalProject.isEmpty()) return List.of();
+
+        List<ProjectInventory> inventories = projectInventoryRepository
+                .findByProject_ProjectIdAndStage_StageId(projectId, stageId);
+
+        return inventories.stream().map(pi -> {
+            Map<String, Object> entry = new HashMap<>();
+            entry.put("materialName", pi.getInventory().getMaterialName());
+            entry.put("quantity", pi.getQuantityAssigned());
+            entry.put("unitPrice", pi.getInventory().getMaterialPrice());
+            entry.put("totalPrice", pi.getQuantityAssigned() * pi.getInventory().getMaterialPrice());
+            return entry;
+        }).collect(Collectors.toList());
+    }
+
+
+
+
+
 
 
 }

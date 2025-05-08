@@ -6,8 +6,8 @@
     <title>Admin Requests</title>
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
     <link
-        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
-        rel="stylesheet">
+            href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
+            rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -68,7 +68,7 @@
             background-color: #F9744B;
         }
 
-        .sidebar.open~header {
+        .sidebar.open ~ header {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -92,7 +92,7 @@
             padding-right: 20px;
         }
 
-        .sidebar.open~footer {
+        .sidebar.open ~ footer {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -301,7 +301,7 @@
             margin-top: 30px;
         }
 
-        .sidebar.open~.home-section {
+        .sidebar.open ~ .home-section {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -477,7 +477,7 @@
         }
 
         #approveConfirmModal .modal-content,
-        #denyConfirmModal .modal-content{
+        #denyConfirmModal .modal-content {
             background: radial-gradient(50% 50% at 50% 50%, #ee9b7b 0%, #FFFFFF 100%);
             box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.25);
             margin: 20vh auto;
@@ -543,427 +543,470 @@
         #confirmBulkNo:hover {
             background: linear-gradient(180deg, #a93131 0%, rgb(75, 13, 13) 100%);
         }
+
+        .logo-details img {
+            height: 40px;
+            margin-right: 10px;
+        }
     </style>
 </head>
 
 <body>
-    <!-- Header -->
-    <header>
-        <div class="smarts-logo">
-            <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
-        </div>
-        <div>
-            <p>ROLE: <span>ADMIN</span></p>
-            <i class='bx bxs-user-circle'></i>
-        </div>
-    </header>
-
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="logo-details">
-            <div class="logo_name">ACCE Construction</div>
-            <i class='bx bx-menu' id="btn"></i>
-        </div>
-        <ul class="nav-list">
-            <li>
-                <a href="homepageAdmin">
-                    <i class='bx bx-home'></i>
-                    <span class="links_name">Homepage</span>
-                </a>
-                <span class="tooltip">Homepage</span>
-            </li>
-            <li>
-                <a href="projectsAdmin">
-                    <i class='bx bx-task'></i>
-                    <span class="links_name">Projects</span>
-                </a>
-                <span class="tooltip">Projects</span>
-            </li>
-            <li>
-                <a href="inventoryAdmin">
-                    <i class='bx bx-store-alt'></i>
-                    <span class="links_name">Inventory</span>
-                </a>
-                <span class="tooltip">Inventory</span>
-            </li>
-            <li>
-                <a href="invoiceAdmin">
-                    <i class='bx bx-receipt'></i>
-                    <span class="links_name">Invoice</span>
-                </a>
-                <span class="tooltip">Invoice</span>
-            </li>
-            <li>
-                <a href="reportsAdmin">
-                    <i class='bx bx-bar-chart'></i>
-                    <span class="links_name">Reports & Analytics</span>
-                </a>
-                <span class="tooltip">Reports & Analytics</span>
-            </li>
-            <li>
-                <a href="userAdmin">
-                    <i class='bx bx-user'></i>
-                    <span class="links_name">User</span>
-                </a>
-                <span class="tooltip">User</span>
-            </li>
-            <li>
-                <a href="requestsAdmin">
-                    <i class='bx bx-comment-dots'></i>
-                    <span class="links_name">Requests</span>
-                </a>
-                <span class="tooltip">Requests</span>
-            </li>
-            <li>
-                <a href="settingsAdmin">
-                    <i class='bx bx-cog'></i>
-                    <span class="links_name">Settings</span>
-                </a>
-                <span class="tooltip">Settings</span>
-            </li>
-            <li>
-                <a href="confirmLogout">
-                    <i class='bx bx-log-out'></i>
-                    <span class="links_name">Logout</span>
-                </a>
-                <span class="tooltip">Logout</span>
-            </li>
-        </ul>
+<!-- Header -->
+<header>
+    <div class="smarts-logo">
+        <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
     </div>
+    <div>
+        <p>ROLE: <span>ADMIN</span></p>
+        <i class='bx bxs-user-circle'></i>
+    </div>
+</header>
 
-    <!-- Main Section -->
-    <section class="home-section">
-        <h1>Requests</h1>
-        <div style="text-align: right; margin-right: 5%; margin-bottom: 10px;">
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="logo-details">
+        <img src="https://i.ibb.co/GV6QFjJ/acce-logo.png" alt="acce-logo" style="height: 40px; margin-right: 10px;">
+        <div class="logo_name">ACCE Construction</div>
+        <i class='bx bx-menu' id="btn"></i>
+    </div>
+    <ul class="nav-list">
+        <li>
+            <a href="homepageAdmin">
+                <i class='bx bx-home'></i>
+                <span class="links_name">Homepage</span>
+            </a>
+            <span class="tooltip">Homepage</span>
+        </li>
+        <li>
+            <a href="projectsAdmin">
+                <i class='bx bx-task'></i>
+                <span class="links_name">Projects</span>
+            </a>
+            <span class="tooltip">Projects</span>
+        </li>
+        <li>
+            <a href="inventoryAdmin">
+                <i class='bx bx-store-alt'></i>
+                <span class="links_name">Inventory</span>
+            </a>
+            <span class="tooltip">Inventory</span>
+        </li>
+        <li>
+            <a href="invoiceAdmin">
+                <i class='bx bx-receipt'></i>
+                <span class="links_name">Invoice</span>
+            </a>
+            <span class="tooltip">Invoice</span>
+        </li>
+        <li>
+            <a href="reportsAdmin">
+                <i class='bx bx-bar-chart'></i>
+                <span class="links_name">Reports & Analytics</span>
+            </a>
+            <span class="tooltip">Reports & Analytics</span>
+        </li>
+        <li>
+            <a href="userAdmin">
+                <i class='bx bx-user'></i>
+                <span class="links_name">User</span>
+            </a>
+            <span class="tooltip">User</span>
+        </li>
+        <li>
+            <a href="requestsAdmin">
+                <i class='bx bx-comment-dots'></i>
+                <span class="links_name">Requests</span>
+            </a>
+            <span class="tooltip">Requests</span>
+        </li>
+        <li>
+            <a href="settingsAdmin">
+                <i class='bx bx-cog'></i>
+                <span class="links_name">Settings</span>
+            </a>
+            <span class="tooltip">Settings</span>
+        </li>
+        <li>
+            <a href="confirmLogout">
+                <i class='bx bx-log-out'></i>
+                <span class="links_name">Logout</span>
+            </a>
+            <span class="tooltip">Logout</span>
+        </li>
+    </ul>
+</div>
+
+<!-- Main Section -->
+<section class="home-section">
+    <h1>Requests</h1>
+    <div style="text-align: right; margin-right: 5%; margin-bottom: 10px; display: flex; gap: 20px; justify-content: flex-end;">
+        <div>
             <label for="projectFilter">Filter by Project:</label>
             <select id="projectFilter" style="padding: 8px; border-radius: 8px;">
                 <option value="">All Projects</option>
             </select>
         </div>
 
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Users</th>
-                    <th>Role</th>
-                    <th>Requested Material</th>
-                    <th>Requested Quantity</th>
-                    <th>Project</th>
-                    <th>Approval</th>
-                </tr>
-            </thead>
-            <tbody id="requestsTableBody">
-
-            </tbody>
-        </table>
-        <div class="approval-buttons" style="justify-content: center; margin-top: 20px;">
-            <button id="approveSelectedBtn">Approve Selected</button>
-            <button id="denySelectedBtn">Deny Selected</button>
-        </div>
-
-
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
-    </footer>
-    <!-- APPROVE Modal -->
-    <div id="approveConfirmModal" class="modal">
-        <div class="modal-content">
-            <h3>Approve selected requests?</h3>
-            <div class="buttons">
-                <button id="cancelApprove">No</button>
-                <button id="confirmApprove">Yes</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- DENY Modal -->
-    <div id="denyConfirmModal" class="modal">
-        <div class="modal-content">
-            <h3>Deny selected requests?</h3>
-            <div class="buttons">
-                <button id="cancelDeny">No</button>
-                <button id="confirmDeny">Yes</button>
-            </div>
+        <div>
+            <label for="stageFilter">Filter by Stage:</label>
+            <select id="stageFilter" style="padding: 8px; border-radius: 8px;">
+                <option value="">All Stages</option>
+            </select>
         </div>
     </div>
 
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const tbody = document.querySelector("#requestsTableBody");
-            const projectFilter = document.getElementById("projectFilter");
+    <table>
+        <thead>
+        <tr>
+            <th>Users</th>
+            <th>Role</th>
+            <th>Requested Material</th>
+            <th>Requested Quantity</th>
+            <th>Project</th>
+            <th>Approval</th>
+        </tr>
+        </thead>
+        <tbody id="requestsTableBody">
 
-            // Load all material requests
-            function loadRequests(project = "") {
-                fetch("/admin/requests/getAll")
-                    .then(res => res.json())
-                    .then(data => {
-                        tbody.innerHTML = "";
-                        const projectSet = new Set();
-
-                        data.forEach(req => {
-                            const projName = req.project?.projectname || "-";
-                            projectSet.add(projName);
-
-                            if (project && projName !== project) return;
-
-                            const row = document.createElement("tr");
-                            row.setAttribute("data-id", req.materialRequestId);
-
-                            row.innerHTML = `
-                            <td><input type="checkbox" class="row-checkbox" data-id="${req.materialRequestId}"> ${req.user?.username || 'N/A'}</td>
-                            <td>${req.user?.role || 'N/A'}</td>
-                            <td>${req.materialName || '-'}</td>
-                            <td>${req.materialStock || 0}</td>
-                            <td>${projName}</td>
-                            <td>
-                                <div class="approval-buttons">
-                                    <button class="approve-btn">YES</button>
-                                    <button class="deny-btn">NO</button>
-                                </div>
-                            </td>
-                        `;
+        </tbody>
+    </table>
+    <div class="approval-buttons" style="justify-content: center; margin-top: 20px;">
+        <button id="approveSelectedBtn">Approve Selected</button>
+        <button id="denySelectedBtn">Deny Selected</button>
+    </div>
 
 
-                            tbody.appendChild(row);
-                            row.querySelector(".approve-btn").addEventListener("click", () => {
-                                handleApproval(req.materialRequestId, true);
-                            });
+</section>
 
-                            row.querySelector(".deny-btn").addEventListener("click", () => {
-                                handleApproval(req.materialRequestId, false);
-                            });
+<!-- Footer -->
+<footer>
+    <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
+</footer>
+<!-- APPROVE Modal -->
+<div id="approveConfirmModal" class="modal">
+    <div class="modal-content">
+        <h3>Approve selected requests?</h3>
+        <div class="buttons">
+            <button id="cancelApprove">No</button>
+            <button id="confirmApprove">Yes</button>
+        </div>
+    </div>
+</div>
 
-                        });
-
-                        // Populate the filter dropdown
-                        const currentSelection = projectFilter.value; // 👈 preserve selection
-                        projectFilter.innerHTML = '<option value="">All Projects</option>';
-                        Array.from(projectSet).sort().forEach(p => {
-                            const opt = document.createElement("option");
-                            opt.value = p;
-                            opt.textContent = p;
-                            if (p === project) opt.selected = true; // 👈 reselect current
-                            projectFilter.appendChild(opt);
-                        });
-
-                        if (project === "") {
-                            projectFilter.value = ""; // 👈 reselect "All Projects" explicitly
-                        }
-                    })
-                    .catch(err => {
-                        console.error("❌ Failed to fetch material requests:", err);
-                    });
-
-                // if (req.materialRequestStatus !== "PENDING") return; // show only pending
-
-            }
+<!-- DENY Modal -->
+<div id="denyConfirmModal" class="modal">
+    <div class="modal-content">
+        <h3>Deny selected requests?</h3>
+        <div class="buttons">
+            <button id="cancelDeny">No</button>
+            <button id="confirmDeny">Yes</button>
+        </div>
+    </div>
+</div>
 
 
-            // Handle approve/deny click
-            window.handleApproval = (requestId, approved) => {
-                const url = approved ? "/admin/requests/approve/" : "/admin/requests/deny/";
-
-                // If approving, check inventory
-                if (approved) {
-                    const row = document.querySelector(`tr[data-id="${requestId}"]`);
-                    if (!row) return;
-
-                    const material = row.cells[2].innerText.trim();
-                    console.log(row.cells[2]);
-                    console.log(row.cells[2].innerText.trim());
-                    const qtyRequested = parseInt(row.cells[3].innerText.trim());
-                    console.log(inventoryCache);
-                    const inv = inventoryCache.find(i => i.material_name.toLowerCase() === material.toLowerCase());
-                    if (!inv) {
-                        alert(`❌ Material "${material}" not found in inventory.`);
-                        return;
-                    }
-
-                    if (qtyRequested > inv.material_stock) {
-                        alert(`❌ Cannot approve ${material}: only ${inv.material_stock} in stock, requested ${qtyRequested}.`);
-                        return;
-                    }
-                }
-
-                fetch(url + requestId, { method: "POST" })
-                    .then(async res => {
-                        const msg = await res.text();
-
-                        if (!res.ok) {
-                            alert("❌ " + msg);
-                            return;
-                        }
-
-                        const row = document.querySelector(`tr[data-id="${requestId}"]`);
-                        if (row) row.remove();
-                    });
-            };
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const tbody = document.querySelector("#requestsTableBody");
+        const projectFilter = document.getElementById("projectFilter");
+        const stageFilter = document.getElementById("stageFilter");
+        let allRequests = [];
 
 
-
-            // Filter by project dropdown
-            projectFilter.addEventListener("change", () => {
-                loadRequests(projectFilter.value);
-            });
-
-            fetch("/admin/inventory/getAll")
+        // Load all material requests
+        function loadRequests(project = "", stageId = "") {
+            fetch("/admin/requests/getAll")
                 .then(res => res.json())
                 .then(data => {
-                    inventoryCache = data;
-                    loadRequests(); // ✅ safe to load requests now
-                })
-                .catch(err => {
-                    console.error("❌ Failed to fetch inventory data:", err);
+                    allRequests = data;
+                    const projectSet = new Set();
+                    const stageSet = new Set();
+
+                    tbody.innerHTML = "";
+
+                    data.forEach(req => {
+                        const projName = req.project?.projectname || "-";
+                        const stage = req.stage?.stageNumber;
+                        const stageIdReq = req.stage?.stageId;
+
+                        projectSet.add(projName);
+
+                        // Filter by project and stage
+                        if (project && projName !== project) return;
+                        if (stageId && stageId != stageIdReq) return;
+
+                        if (projName === project && stageIdReq != null) {
+                            stageSet.add({id: stageIdReq, number: stage});
+                        }
+
+                        const row = document.createElement("tr");
+                        row.setAttribute("data-id", req.materialRequestId);
+
+                        row.innerHTML = `
+                    <td><input type="checkbox" class="row-checkbox" data-id="${req.materialRequestId}"> ${req.user?.username || 'N/A'}</td>
+                    <td>${req.user?.role || 'N/A'}</td>
+                    <td>${req.materialName || '-'}</td>
+                    <td>${req.materialStock || 0}</td>
+                    <td>${projName}</td>
+                    <td>
+                        <div class="approval-buttons">
+                            <button class="approve-btn">YES</button>
+                            <button class="deny-btn">NO</button>
+                        </div>
+                    </td>
+                `;
+
+                        tbody.appendChild(row);
+                        row.querySelector(".approve-btn").addEventListener("click", () => {
+                            handleApproval(req.materialRequestId, true);
+                        });
+
+                        row.querySelector(".deny-btn").addEventListener("click", () => {
+                            handleApproval(req.materialRequestId, false);
+                        });
+                    });
+
+                    // Re-populate project dropdown
+                    const currentProject = projectFilter.value;
+                    projectFilter.innerHTML = '<option value="">All Projects</option>';
+                    Array.from(projectSet).sort().forEach(p => {
+                        const opt = document.createElement("option");
+                        opt.value = p;
+                        opt.textContent = p;
+                        if (p === project) opt.selected = true;
+                        projectFilter.appendChild(opt);
+                    });
+
+                    // Re-populate stage dropdown
+                    stageFilter.innerHTML = '<option value="">All Stages</option>';
+                    allRequests
+                        .filter(req => req.project?.projectname === project)
+                        .forEach(req => {
+                            if (req.stage) {
+                                const opt = document.createElement("option");
+                                opt.value = req.stage.stageId;
+                                opt.textContent = `Stage ${req.stage.stageNumber}`;
+                                if (!Array.from(stageFilter.options).some(o => o.value === opt.value)) {
+                                    stageFilter.appendChild(opt);
+                                }
+                            }
+                        });
                 });
-
-
-
-        });
-
-        let selectedAction = null;
-        let inventoryCache = [];
-
-
-        function getSelectedRequestIds() {
-            return [...document.querySelectorAll(".row-checkbox:checked")].map(cb => parseInt(cb.dataset.id));
-        }
-
-        // function toggleModal(show) {
-        //     const modal = document.getElementById("bulkConfirmModal");
-        //     modal.style.display = show ? "block" : "none";
-        // }
-        function showModal(id) {
-            console.log("showmodal", id);
-            document.getElementById(id).style.display = "block";
-        }
-
-        function hideModal(id) {
-            document.getElementById(id).style.display = "none";
         }
 
 
-        document.getElementById("approveSelectedBtn").addEventListener("click", () => {
-            console.log("i click approve");
-            const selected = getSelectedRequestIds();
-            if (selected.length === 0) {
-                alert("⚠️ No requests selected.");
-                return;
-            }
-            selectedAction = "APPROVED";
-            showModal("approveConfirmModal");
-        });
+        // Handle approve/deny click
+        window.handleApproval = (requestId, approved) => {
+            const url = approved ? "/admin/requests/approve/" : "/admin/requests/deny/";
 
-        document.getElementById("denySelectedBtn").addEventListener("click", () => {
-            console.log("i click deny");
-            const selected = getSelectedRequestIds();
-            if (selected.length === 0) {
-                alert("⚠️ No requests selected.");
-                return;
-            }
-            selectedAction = "DENIED";
-            showModal("denyConfirmModal");
-        });
-
-        document.getElementById("cancelApprove").addEventListener("click", () => {
-            selectedAction = null;
-            hideModal("approveConfirmModal");
-        });
-
-        document.getElementById("cancelDeny").addEventListener("click", () => {
-            selectedAction = null;
-            hideModal("denyConfirmModal");
-        });
-
-        document.getElementById("confirmApprove").addEventListener("click", () => {
-            handleBulkApproval();
-            hideModal("approveConfirmModal");
-        });
-
-        document.getElementById("confirmDeny").addEventListener("click", () => {
-            handleBulkDenial();
-            hideModal("denyConfirmModal");
-        });
-
-
-
-
-        function handleBulkApproval() {
-            const requestIds = getSelectedRequestIds();
-            const materialTotals = {};
-            const errors = [];
-
-            requestIds.forEach(id => {
-                const row = document.querySelector(`tr[data-id="${id}"]`);
+            // If approving, check inventory
+            if (approved) {
+                const row = document.querySelector(`tr[data-id="${requestId}"]`);
                 if (!row) return;
+
                 const material = row.cells[2].innerText.trim();
-                const qty = parseInt(row.cells[3].innerText.trim());
-
-                materialTotals[material] = (materialTotals[material] || 0) + qty;
-            });
-
-            for (const [material, totalRequested] of Object.entries(materialTotals)) {
+                console.log(row.cells[2]);
+                console.log(row.cells[2].innerText.trim());
+                const qtyRequested = parseInt(row.cells[3].innerText.trim());
+                console.log(inventoryCache);
                 const inv = inventoryCache.find(i => i.material_name.toLowerCase() === material.toLowerCase());
                 if (!inv) {
-                    errors.push(`❌ Material "${material}" not found in inventory.`);
-                    continue;
+                    alert(`❌ Material "${material}" not found in inventory.`);
+                    return;
                 }
 
-                if (totalRequested > inv.material_stock) {
-                    errors.push(`❌ Cannot approve ${material}: requested ${totalRequested}, only ${inv.material_stock} in stock.`);
-                    continue;
+                if (qtyRequested > inv.material_stock) {
+                    alert(`❌ Cannot approve ${material}: only ${inv.material_stock} in stock, requested ${qtyRequested}.`);
+                    return;
                 }
-
-                inv.material_stock -= totalRequested; // simulate
             }
 
-            if (errors.length > 0) {
-                alert(errors.join("\n"));
-                return;
+            fetch(url + requestId, {method: "POST"})
+                .then(async res => {
+                    const msg = await res.text();
+
+                    if (!res.ok) {
+                        alert("❌ " + msg);
+                        return;
+                    }
+
+                    const row = document.querySelector(`tr[data-id="${requestId}"]`);
+                    if (row) row.remove();
+                });
+        };
+
+
+        // Filter by project dropdown
+        projectFilter.addEventListener("change", () => {
+            loadRequests(projectFilter.value);
+        });
+
+        stageFilter.addEventListener("change", () => {
+            loadRequests(projectFilter.value, stageFilter.value);
+        });
+    
+
+        fetch("/admin/inventory/getAll")
+            .then(res => res.json())
+            .then(data => {
+                inventoryCache = data;
+                loadRequests(); // ✅ safe to load requests now
+            })
+            .catch(err => {
+                console.error("❌ Failed to fetch inventory data:", err);
+            });
+
+
+    });
+
+    let selectedAction = null;
+    let inventoryCache = [];
+
+
+    function getSelectedRequestIds() {
+        return [...document.querySelectorAll(".row-checkbox:checked")].map(cb => parseInt(cb.dataset.id));
+    }
+
+    // function toggleModal(show) {
+    //     const modal = document.getElementById("bulkConfirmModal");
+    //     modal.style.display = show ? "block" : "none";
+    // }
+    function showModal(id) {
+        console.log("showmodal", id);
+        document.getElementById(id).style.display = "block";
+    }
+
+    function hideModal(id) {
+        document.getElementById(id).style.display = "none";
+    }
+
+
+    document.getElementById("approveSelectedBtn").addEventListener("click", () => {
+        console.log("i click approve");
+        const selected = getSelectedRequestIds();
+        if (selected.length === 0) {
+            alert("⚠️ No requests selected.");
+            return;
+        }
+        selectedAction = "APPROVED";
+        showModal("approveConfirmModal");
+    });
+
+    document.getElementById("denySelectedBtn").addEventListener("click", () => {
+        console.log("i click deny");
+        const selected = getSelectedRequestIds();
+        if (selected.length === 0) {
+            alert("⚠️ No requests selected.");
+            return;
+        }
+        selectedAction = "DENIED";
+        showModal("denyConfirmModal");
+    });
+
+    document.getElementById("cancelApprove").addEventListener("click", () => {
+        selectedAction = null;
+        hideModal("approveConfirmModal");
+    });
+
+    document.getElementById("cancelDeny").addEventListener("click", () => {
+        selectedAction = null;
+        hideModal("denyConfirmModal");
+    });
+
+    document.getElementById("confirmApprove").addEventListener("click", () => {
+        handleBulkApproval();
+        hideModal("approveConfirmModal");
+    });
+
+    document.getElementById("confirmDeny").addEventListener("click", () => {
+        handleBulkDenial();
+        hideModal("denyConfirmModal");
+    });
+
+
+    function handleBulkApproval() {
+        const requestIds = getSelectedRequestIds();
+        const materialTotals = {};
+        const errors = [];
+
+        requestIds.forEach(id => {
+            const row = document.querySelector(`tr[data-id="${id}"]`);
+            if (!row) return;
+            const material = row.cells[2].innerText.trim();
+            const qty = parseInt(row.cells[3].innerText.trim());
+
+            materialTotals[material] = (materialTotals[material] || 0) + qty;
+        });
+
+        for (const [material, totalRequested] of Object.entries(materialTotals)) {
+            const inv = inventoryCache.find(i => i.material_name.toLowerCase() === material.toLowerCase());
+            if (!inv) {
+                errors.push(`❌ Material "${material}" not found in inventory.`);
+                continue;
             }
 
-            // Proceed with backend update
-            fetch("/admin/requests/updateMultipleStatus", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ requestIds, action: "APPROVED" })
-            })
-                .then(res => res.text())
-                .then(msg => {
-                    requestIds.forEach(id => {
-                        const row = document.querySelector(`tr[data-id="${id}"]`);
-                        if (row) row.remove();
-                    });
-                    alert(msg);
-                });
+            if (totalRequested > inv.material_stock) {
+                errors.push(`❌ Cannot approve ${material}: requested ${totalRequested}, only ${inv.material_stock} in stock.`);
+                continue;
+            }
+
+            inv.material_stock -= totalRequested; // simulate
         }
 
-        function handleBulkDenial() {
-            const requestIds = getSelectedRequestIds();
-
-            fetch("/admin/requests/updateMultipleStatus", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ requestIds, action: "DENIED" })
-            })
-                .then(res => res.text())
-                .then(msg => {
-                    requestIds.forEach(id => {
-                        const row = document.querySelector(`tr[data-id="${id}"]`);
-                        if (row) row.remove();
-                    });
-                    alert(msg);
-                });
+        if (errors.length > 0) {
+            alert(errors.join("\n"));
+            return;
         }
 
+        // Proceed with backend update
+        fetch("/admin/requests/updateMultipleStatus", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({requestIds, action: "APPROVED"})
+        })
+            .then(res => res.text())
+            .then(msg => {
+                requestIds.forEach(id => {
+                    const row = document.querySelector(`tr[data-id="${id}"]`);
+                    if (row) row.remove();
+                });
+                alert(msg);
+            });
+    }
 
+    function handleBulkDenial() {
+        const requestIds = getSelectedRequestIds();
 
+        fetch("/admin/requests/updateMultipleStatus", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({requestIds, action: "DENIED"})
+        })
+            .then(res => res.text())
+            .then(msg => {
+                requestIds.forEach(id => {
+                    const row = document.querySelector(`tr[data-id="${id}"]`);
+                    if (row) row.remove();
+                });
+                alert(msg);
+            });
+    }
 
-    </script>
+    let sidebar = document.querySelector(".sidebar");
+    let closeBtn = document.querySelector("#btn");
+    let searchBtn = document.querySelector(".bx-search");
+
+    closeBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("open");
+    });
+    if (searchBtn) {
+        searchBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("open");
+        });
+    }
+</script>
 
 </body>
 

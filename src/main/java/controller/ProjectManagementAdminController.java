@@ -266,13 +266,19 @@ public class ProjectManagementAdminController {
 
         Project project = projectOpt.get();
 
-        List<ProjectStage> stages = projectStageRepository.findByProject(project);
+        // ✅ Sort by stageNumber before processing
+        List<ProjectStage> stages = projectStageRepository.findByProject(project)
+                .stream()
+                .sorted(Comparator.comparingInt(ProjectStage::getStageNumber))
+                .collect(Collectors.toList());
+
         List<Map<String, Object>> response = new ArrayList<>();
 
         for (ProjectStage stage : stages) {
             Map<String, Object> stageInfo = new HashMap<>();
             stageInfo.put("stageId", stage.getStageId());
             stageInfo.put("stageName", "Stage " + stage.getStageNumber());
+            stageInfo.put("stageNumber", stage.getStageNumber());  // ✅ include this if frontend needs it
             response.add(stageInfo);
         }
 
@@ -280,6 +286,7 @@ public class ProjectManagementAdminController {
 
         return ResponseEntity.ok(response);
     }
+
 
 
 }
