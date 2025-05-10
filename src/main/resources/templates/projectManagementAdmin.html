@@ -1143,18 +1143,7 @@
                         <tbody></tbody>
                     </table>
 
-                    <label>Material</label>
-                    <div id="materialCheckboxes" class="checkbox-container">
-                        <!--<label>
-                            <div class="checkbox-col">
-                                <input type="checkbox">
-                            </div>
-                            <div class="name-col">Sample Item</div>
-                            <div class="quantity-col">
-                                <input type="number" value="1" min="0">
-                            </div>
-                        </label>-->
-                    </div>
+
 
                     <div class="button-container">
                         <button type="button" onclick="closeModal('addMaterialModal')">Cancel</button>
@@ -1421,9 +1410,9 @@
                         row.innerHTML = `
             <td>${String(itemNo++).padStart(3, '0')}</td>
             <td>${item.materialName || 'N/A'}</td>
-            <td>${item.quantityAssigned} PCS</td>
-            <td>PHP ${item.materialPrice}</td>
-            <td>PHP ${(item.quantityAssigned * item.materialPrice).toLocaleString()}</td>
+            <td style="text-align: right;">${item.quantityAssigned.toLocaleString()} PCS</td>
+            <td style="text-align: right;">PHP ${Number(item.materialPrice).toLocaleString()}</td>
+            <td style="text-align: right;">PHP ${(item.quantityAssigned * item.materialPrice).toLocaleString()}</td>
             <td class="actions-col actions" style="display: ${inEditMode ? 'table-cell' : 'none'};">
                 ${inEditMode ? '<span class="delete-icon" title="Remove">❌</span>' : ''}
             </td>
@@ -1560,7 +1549,7 @@
                         const row = document.createElement('tr');
                         row.innerHTML = `
                 <td>${material.materialName}</td>
-                <td>${material.materialStock}</td>
+                <td style="text-align: right;">${Number(material.materialStock).toLocaleString()}</td>
                 <td>
                     <input type="number" class="material-quantity" min="1" max="${material.materialStock}" data-material-name="${material.materialName}" />
                 </td>

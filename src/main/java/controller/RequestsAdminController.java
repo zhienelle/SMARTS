@@ -74,7 +74,6 @@ public class RequestsAdminController {
 
         return pending;
     }
-
 //        pending.forEach(req -> {
 //            Inventory inv = req.getInventory();
 //            if (inv != null) {

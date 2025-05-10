@@ -1162,9 +1162,9 @@
                 row.innerHTML = `
                         <td>${String(index + 1).padStart(3, '0')}</td>
                         <td>${material.inventory.material_name}</td>
-                        <td>${material.quantityAssigned} pcs</td>
-                        <td>PHP ${material.materialPrice.toLocaleString()}</td>
-                        <td>PHP ${material.totalPrice.toLocaleString()}</td>
+                        <td style="text-align: right;">${material.quantityAssigned.toLocaleString()} pcs</td>
+                        <td style="text-align: right;">PHP ${material.materialPrice.toLocaleString()}</td>
+                        <td style="text-align: right;">PHP ${material.totalPrice.toLocaleString()}</td>
                         <td class="actions">
                             <!--<span class="edit-icon">✏️</span> -->
                             <span class="delete-icon">❌</span>

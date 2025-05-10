@@ -27,8 +27,8 @@ public class SmartsApplication {
 //
 //-The checkbox design. I don't think that's good. Make it a drop-down sa categories. FRANCISCO ✅
 //
-//-Account creation should have a dropdown ❌
-//It's better if your message includes the project name where the staff is already assigned. (on error page if creating a new account) MANGALI ❌
+//-Account creation should have a dropdown ✅
+//It's better if your message includes the project name where the staff is already assigned. (on error page if creating a new account) MANGALI ✅
 //
 //-Ipop up a warning message if it is still ongoing project bawal maarchive MAGTANONG ❌
 //

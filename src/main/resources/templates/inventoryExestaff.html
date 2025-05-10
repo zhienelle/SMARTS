@@ -885,8 +885,8 @@
                         row.innerHTML = `
                     <td>${item.material_category}</td>
                     <td>${item.material_name}</td>
-                    <td>${item.material_stock}</td>
-                    <td>${item.material_price}</td>
+                    <td style="text-align: right;">${Number(item.material_stock).toLocaleString()}</td>
+                            <td style="text-align: right;">${Number(item.material_price).toLocaleString()}</td>
                 `;
                         inventoryTableBody.appendChild(row);
                     });
@@ -1001,7 +1001,7 @@
                 const row = document.createElement("tr");
                 row.innerHTML = `
             <td>${item.material_name}</td>
-            <td>${item.material_stock}</td>
+            <td style="text-align: right;">${Number(item.material_stock).toLocaleString()}</td>
             <td><input type="number" min="0" max="${item.material_stock}" data-material="${item.material_name}" placeholder="0" /></td>
         `;
                 tableBody.appendChild(row);

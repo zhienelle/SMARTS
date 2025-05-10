@@ -1,9 +1,12 @@
 package controller;
 //FIXED BY JED
+
 import entity.Inventory;
 import entity.User;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
@@ -11,6 +14,7 @@ import repository.InventoryRepository;
 import repository.UserRepository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -63,46 +67,79 @@ public class GeneralInventoryController {
         return inventoryRepository.findAll();
     }
 
+
     @PostMapping("/generalInventory/addInventory")
     @ResponseBody
-    public Inventory addInventory(@RequestBody Inventory inventory) {
+    public ResponseEntity<?> addInventory(@RequestBody Inventory inventory) {
         try {
-            System.out.println("Received new inventory item:");
-            System.out.println("ID: " + inventory.getMaterialId());
-            System.out.println("Category: " + inventory.getMaterialCategory());
-            System.out.println("Name: " + inventory.getMaterialName());
-            System.out.println("Stock: " + inventory.getMaterialStock());
-            System.out.println("Price: " + inventory.getMaterialPrice());
-
-            // ✅ Validate inputs
-            String invalidPattern = ".*[^a-zA-Z0-9\\s].*";
-            if (inventory.getMaterialStock() < 0 || inventory.getMaterialPrice() < 0) {
-                throw new RuntimeException("❌ Stock and price must be non-negative.");
+            // Validate required fields
+            if (inventory.getMaterialCategory() == null || inventory.getMaterialCategory().isEmpty()) {
+                return ResponseEntity.badRequest().body("Material category is required");
             }
-            if (inventory.getMaterialCategory().matches(invalidPattern) || inventory.getMaterialName().matches(invalidPattern)) {
-                throw new RuntimeException("❌ Category and Material Name must not contain special characters.");
+            if (inventory.getMaterialName() == null || inventory.getMaterialName().isEmpty()) {
+                return ResponseEntity.badRequest().body("Material name is required");
+            }
+            if (inventory.getMaterialStock() <= 0) {
+                return ResponseEntity.badRequest().body("Material stock must be greater than zero");
+            }
+            if (inventory.getMaterialPrice() <= 0) {
+                return ResponseEntity.badRequest().body("Material price must be greater than zero");
             }
 
-            inventory.setMaterialId(null);
+            // Set stock status based on stock value
+            inventory.updateStockStatus();
 
-            int stock = inventory.getMaterialStock();
-            if (stock <= 30) {
-                inventory.setMaterialStockStatus("LOW");
-            } else if (stock <= 100) {
-                inventory.setMaterialStockStatus("MODERATE");
-            } else {
-                inventory.setMaterialStockStatus("HIGH");
-            }
-
+            // Save the inventory item
             Inventory savedInventory = inventoryRepository.save(inventory);
-            System.out.println("✅ Saved item ID: " + savedInventory.getMaterialId());
-            return savedInventory;
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedInventory); // return created inventory
 
         } catch (Exception e) {
-            System.err.println("❌ Error saving new inventory item: " + e.getMessage());
-            throw new RuntimeException("Add failed: " + e.getMessage());
+            System.err.println("Error saving inventory item: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving inventory");
         }
     }
+
+
+//    @PostMapping("/generalInventory/addInventory")
+//    @ResponseBody
+//    public Inventory addInventory(@RequestBody Inventory inventory) {
+//        try {
+//            System.out.println("Received new inventory item:");
+//            System.out.println("ID: " + inventory.getMaterialId());
+//            System.out.println("Category: " + inventory.getMaterialCategory());
+//            System.out.println("Name: " + inventory.getMaterialName());
+//            System.out.println("Stock: " + inventory.getMaterialStock());
+//            System.out.println("Price: " + inventory.getMaterialPrice());
+//
+//            // ✅ Validate inputs
+//            String invalidPattern = ".*[^a-zA-Z0-9\\s].*";
+//            if (inventory.getMaterialStock() < 0 || inventory.getMaterialPrice() < 0) {
+//                throw new RuntimeException("❌ Stock and price must be non-negative.");
+//            }
+//            if (inventory.getMaterialCategory().matches(invalidPattern) || inventory.getMaterialName().matches(invalidPattern)) {
+//                throw new RuntimeException("❌ Category and Material Name must not contain special characters.");
+//            }
+//
+//            inventory.setMaterialId(null);
+//
+//            int stock = inventory.getMaterialStock();
+//            if (stock <= 30) {
+//                inventory.setMaterialStockStatus("LOW");
+//            } else if (stock <= 100) {
+//                inventory.setMaterialStockStatus("MODERATE");
+//            } else {
+//                inventory.setMaterialStockStatus("HIGH");
+//            }
+//
+//            Inventory savedInventory = inventoryRepository.save(inventory);
+//            System.out.println("✅ Saved item ID: " + savedInventory.getMaterialId());
+//            return savedInventory;
+//
+//        } catch (Exception e) {
+//            System.err.println("❌ Error saving new inventory item: " + e.getMessage());
+//            throw new RuntimeException("Add failed: " + e.getMessage());
+//        }
+//    }
 
     @PutMapping("/generalInventory/updateInventory/{id}")
     @ResponseBody
@@ -168,4 +205,31 @@ public class GeneralInventoryController {
             throw new RuntimeException("Inventory item not found with ID: " + id);
         }
     }
+
+    @PutMapping("/generalInventory/adjustStockMultiple")
+    @ResponseBody
+    public ResponseEntity<String> adjustStockMultiple(@RequestBody List<Map<String, Integer>> adjustments) {
+        for (Map<String, Integer> adjustment : adjustments) {
+            int materialId = adjustment.get("materialId");
+            int adjustBy = adjustment.get("adjustBy");
+
+            Optional<Inventory> optionalInventory = inventoryRepository.findById(materialId);
+            if (optionalInventory.isPresent()) {
+                Inventory inventory = optionalInventory.get();
+                int newStock = inventory.getMaterialStock() + adjustBy;
+
+                if (newStock < 0) {
+                    return ResponseEntity.badRequest().body("Stock cannot be negative for material ID: " + materialId);
+                }
+
+                inventory.setMaterialStock(newStock);
+                inventoryRepository.save(inventory);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Material not found for ID: " + materialId);
+            }
+        }
+        return ResponseEntity.ok("Stocks updated successfully for all items.");
+    }
+
+
 }

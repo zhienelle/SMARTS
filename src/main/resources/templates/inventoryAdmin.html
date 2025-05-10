@@ -68,7 +68,7 @@
             background-color: #F9744B;
         }
 
-        .sidebar.open~header {
+        .sidebar.open ~ header {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -92,7 +92,7 @@
             padding-right: 20px;
         }
 
-        .sidebar.open~footer {
+        .sidebar.open ~ footer {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -302,7 +302,7 @@
             padding-bottom: 50px;
         }
 
-        .sidebar.open~.home-section {
+        .sidebar.open ~ .home-section {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -466,7 +466,7 @@
             height: 18px;
         }
 
-        .category-checkbox:checked+label {
+        .category-checkbox:checked + label {
             background-color: #FF6F61;
             color: #fff;
             transform: scale(1.05);
@@ -792,6 +792,7 @@
                 font-weight: bold;
             }
         }
+
         .logo-details img {
             height: 40px;
             margin-right: 10px;
@@ -837,8 +838,6 @@
         <button onclick="document.getElementById('lowStockModal').style.display='none'">OK</button>
     </div>
 </div>
-
-
 
 
 <!-- Sidebar -->
@@ -922,7 +921,8 @@
     </div>
 
     <div class="inventory-container">
-        <div class="inventory-controls" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div class="inventory-controls"
+             style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <div style="display: flex; align-items: center; gap: 10px;">
                 <label style="font-weight: bold; color: #F9744B; font-size: 30px;">CATEGORY:</label>
                 <div id="categoryDropdownContainer" style="max-width: 250px; width: 100%;"></div>
@@ -953,7 +953,9 @@
                 <button id="addRowBtn" style="display:none;">Add Row</button>
             </div>
             <div class="buttons">
+                <button id="addBtn">Add</button>
                 <button id="editBtn">Edit</button>
+                <button id="archiveBtn">Archive</button>
             </div>
         </div>
     </div> <!-- ✅ this closes after BOTH panels -->
@@ -974,6 +976,32 @@
     </div>
 </section>
 
+<!-- Add Inventory Modal -->
+<div id="addInventoryModal" class="modal">
+    <div class="modal-content">
+        <h3>Add Inventory Item</h3>
+        <form id="addInventoryForm">
+            <label for="materialCategory">Material Category</label>
+            <input type="text" id="materialCategory" name="materialCategory" required>
+
+
+            <label for="materialName">Material Name</label>
+            <input type="text" id="materialName" name="materialName" required>
+
+            <label for="materialStock">Stock Available</label>
+            <input type="number" id="materialStock" name="materialStock" required min="0">
+
+            <label for="materialPrice">Price Per Unit</label>
+            <input type="number" id="materialPrice" name="materialPrice" required min="0" step="0.01">
+
+            <div class="button-container">
+                <button type="button" class="closeModalBtn" onclick="closeModal('addInventoryModal')">Cancel</button>
+                <button type="submit">Add Inventory</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- Footer -->
 <footer>
     <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
@@ -984,11 +1012,14 @@
     document.addEventListener("DOMContentLoaded", () => {
         console.log("DOM content loaded");
         const inventoryData = document.getElementById("inventoryData");
-        const editBtn = document.getElementById("editBtn");
+        const archiveBtn = document.getElementById("archiveBtn");
         const addRowBtn = document.getElementById("addRowBtn");
         const inventoryTable = document.getElementById("inventoryTable");
         const showBtn = document.getElementById("showArchivedBtn");
         const hideBtn = document.getElementById("hideArchivedBtn");
+
+        // Log the data to the console for inspection
+        console.log('Sending inventory data:', inventoryData);
 
         let isEditMode = false;
         let showArchived = false;
@@ -1026,27 +1057,32 @@
 
         function generateCategoryFilters(categories) {
             const container = document.getElementById("categoryDropdownContainer");
-            const archiveBtnWrapper = container.querySelector('.archive-toggle-wrapper');
-            container.innerHTML = ''; // Clear everything first
 
-            // Create dropdown
+            // Check if the container exists
+            if (!container) {
+                console.error("Category Dropdown Container is not available!");
+                return; // Stop execution if the container doesn't exist
+            }
+
+            // Clear existing content
+            container.innerHTML = '';
+
+            // Create dropdown for categories
             const select = document.createElement("select");
             select.id = "categoryDropdown";
             select.style.cssText = `
-                    width: 100%;
-                    padding: 10px 15px;
-                    border-radius: 20px;
-                    font-weight: bold;
-                    background-color: #FF6F61;
-                    color: white;
-                    border: none;
-                    text-transform: uppercase;
-                `;
+        width: 100%;
+        padding: 10px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        background-color: #FF6F61;
+        color: white;
+        border: none;
+        text-transform: uppercase;
+    `;
 
-            // Default option
             select.innerHTML = `<option value="all" selected>All Categories</option>`;
 
-            // Add categories
             categories.sort().forEach(cat => {
                 const idValue = cat.toLowerCase().replace(/\s+/g, '-');
                 const label = cat.charAt(0).toUpperCase() + cat.slice(1);
@@ -1054,63 +1090,11 @@
             });
 
             container.appendChild(select);
-            if (archiveBtnWrapper) container.appendChild(archiveBtnWrapper);
 
-            // Attach event
+            // Add event listener for the category dropdown
             select.addEventListener("change", applyCategoryFilter);
-
-
-
-            if (archiveBtnWrapper) {
-                container.appendChild(archiveBtnWrapper); // Re-add the archive buttons at the bottom
-            }
-
-
-
-
-
-            // categories.sort().forEach(cat => {
-            //     const idValue = cat.toLowerCase().replace(/\s+/g, '-');
-            //     const label = document.createElement("label");
-            //     label.innerHTML = `<input type="checkbox" class="category-checkbox" value="${idValue}"> ${cat}`;
-            //     container.appendChild(label);
-            // });
-
-            // // Inject show/hide archive buttons
-            // const showBtn = document.createElement("button");
-            // showBtn.id = "showArchivedBtn";
-            // showBtn.textContent = "Show Archived Rows";
-            // container.appendChild(showBtn);
-            //
-            // const hideBtn = document.createElement("button");
-            // hideBtn.id = "hideArchivedBtn";
-            // hideBtn.textContent = "Hide Archived Rows";
-            // hideBtn.style.display = "none";
-            // container.appendChild(hideBtn);
-            //
-            // showBtn.addEventListener("click", () => {
-            //     showArchived = true;
-            //     applyCategoryFilter();
-            //     showBtn.style.display = "none";
-            //     hideBtn.style.display = "inline-block";
-            // });
-            //
-            // hideBtn.addEventListener("click", () => {
-            //     showArchived = false;
-            //     applyCategoryFilter();
-            //     hideBtn.style.display = "none";
-            //     showBtn.style.display = "inline-block";
-            // });
-
-            document.querySelectorAll('.category-checkbox').forEach(cb => cb.addEventListener("change", applyCategoryFilter));
-            document.getElementById("selectAllCategories").addEventListener("change", (e) => {
-                const isChecked = e.target.checked;
-                document.querySelectorAll('.category-checkbox').forEach(cb => {
-                    cb.checked = isChecked;
-                });
-                applyCategoryFilter();
-            });
         }
+
 
         function applyCategoryFilter() {
             const selected = document.getElementById("categoryDropdown")?.value || "all";
@@ -1175,8 +1159,8 @@
                         row.innerHTML = `
                 <td ${isEditMode ? 'contenteditable="true"' : ''}>${item.material_category}</td>
                 <td ${isEditMode ? 'contenteditable="true"' : ''}>${item.material_name}</td>
-                <td ${isEditMode ? 'contenteditable="true"' : ''}>${item.material_stock}</td>
-                <td ${isEditMode ? 'contenteditable="true"' : ''}>${item.material_price}</td>
+               <td ${isEditMode ? 'contenteditable="true"' : ''} style="text-align: right;">${Number(item.material_stock).toLocaleString()}</td>
+                <td ${isEditMode ? 'contenteditable="true"' : ''} style="text-align: right;">${Number(item.material_price).toLocaleString()}</td>
                 <td>
                     ${isEditMode
                             ? `<button class="archive-toggle" data-id="${item.material_id}" data-archived="${item.material_archived}">
@@ -1234,7 +1218,6 @@
         }
 
 
-
         inventoryData.addEventListener("click", e => {
             if (e.target.classList.contains("archive-toggle")) {
                 const button = e.target;
@@ -1286,12 +1269,12 @@
                 const request = id
                     ? fetch(`/generalInventory/updateInventory/${id}`, {
                         method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ ...payload, material_id: parseInt(id) })
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({...payload, material_id: parseInt(id)})
                     })
                     : fetch(`/generalInventory/addInventory`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify(payload)
                     });
 
@@ -1301,19 +1284,19 @@
             return Promise.all(updatePromises);
         }
 
-        editBtn.addEventListener("click", () => {
+        archiveBtn.addEventListener("click", () => {
             if (isEditMode) {
                 // Save
                 saveAllEditedRows().then(() => {
                     isEditMode = false;
-                    editBtn.textContent = "Edit";
+                    archiveBtn.textContent = "Edit";
                     addRowBtn.style.display = "none";
                     loadInventory();
                 });
             } else {
                 // Enter Edit Mode
                 isEditMode = true;
-                editBtn.textContent = "Save";
+                archiveBtn.textContent = "Save";
                 addRowBtn.style.display = "inline-block";
                 loadInventory();
             }
@@ -1324,8 +1307,8 @@
             row.innerHTML = `
             <td contenteditable="true"></td>
             <td contenteditable="true"></td>
-            <td contenteditable="true">0</td>
-            <td contenteditable="true">0.00</td>
+            <td contenteditable="true" style="text-align: right;">0</td>
+            <td contenteditable="true" style="text-align: right;">0.00</td>
             <td><button class="archive-toggle" data-id="" data-archived="false">Archive</button></td>
         `;
             row.setAttribute("data-id", "");
@@ -1335,6 +1318,56 @@
 
         loadInventory();
     });
+
+    // Inside your event listener for the "Add Inventory" button
+    document.getElementById("addInventoryForm").addEventListener("submit", function (event) {
+        event.preventDefault();  // Prevent the form from submitting normally
+
+        // Collect the data from the form
+        const inventoryData = {
+            materialCategory: document.getElementById("materialCategory").value,
+            materialName: document.getElementById("materialName").value,
+            materialStock: parseInt(document.getElementById("materialStock").value),
+            materialPrice: parseFloat(document.getElementById("materialPrice").value),
+        };
+
+        // Log the data to the console for inspection
+        console.log('Sending inventory data:', inventoryData);
+
+        // Send the inventory data to the backend
+        fetch('/generalInventory/addInventory', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(inventoryData)
+        })
+            .then(response => {
+                if (!response.ok) {  // Check for HTTP errors
+                    return response.text().then(text => {  // Read response as text for debugging
+                        throw new Error(`Server error: ${text}`);
+                    });
+                }
+                return response.json();  // Parse the response as JSON
+            })
+            .then(data => {
+                console.log('Success:', data);
+                loadInventory();  // Reload the inventory after adding
+                closeModal('addInventoryModal');  // Close the modal
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    });
+
+
+    document.getElementById("addBtn").addEventListener("click", () => {
+        document.getElementById("addInventoryModal").style.display = "block";  // Show modal
+    });
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none"; // Close modal
+    }
 
     let sidebar = document.querySelector(".sidebar");
     let closeBtn = document.querySelector("#btn");
@@ -1349,8 +1382,5 @@
         });
     }
 </script>
-
-
 </body>
-
 </html>

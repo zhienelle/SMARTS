@@ -726,19 +726,20 @@
                     // ✅ DEBUG LOGGING START
                     console.log("Selected Project:", project);
                     console.log("Selected Stage ID:", stageId);
-                    console.log("Available Request Stage IDs:", allRequests.map(r => r.stage?.stageId));
+                    console.log("Available Request Stage IDs:", allRequests.map(r => r.stage?.stage_id));
                     // ✅ DEBUG LOGGING END
 
                     const projectSet = new Set();
                     const stageSet = new Set();
-
+                    const stageMap = new Map();
 
                     tbody.innerHTML = "";
 
                     data.forEach(req => {
                         const projName = req.project?.projectname || "-";
                         const stage = req.stage?.stageNumber;
-                        const stageIdReq = req.stage?.stageId;
+                        const stageIdReq = req.stage?.stage_id;
+
 
                         projectSet.add(projName);
 
@@ -793,24 +794,29 @@
                     // Re-populate stage dropdown
                     stageFilter.innerHTML = '<option value="">All Stages</option>';
 
-                    const stageMap = new Map();
 
                     allRequests
                         .filter(req => req.project?.projectname === project && req.stage)
                         .forEach(req => {
-                            const stageId = req.stage.stageId;
+                            // console.log(req.stage);
+                            // console.log(req.stage.stage_id);
+                            // console.log(req.stage.stageNumber);
+                            const stageId = req.stage.stage_id;
                             const stageNumber = req.stage.stageNumber;
                             if (!stageMap.has(stageId)) {
                                 stageMap.set(stageId, stageNumber);
                             }
                         });
-
+                    // console.log(stageMap.entries());
+                    // console.log(Array.from(stageMap.entries()));
                     Array.from(stageMap.entries())
                         .sort((a, b) => a[1] - b[1]) // sort by stage number
-                        .forEach(([stageId, stageNumber]) => {
+                        .forEach(([sID, stageNumber]) => {
                             const opt = document.createElement("option");
-                            opt.value = stageId;
+                            opt.value = sID;
                             opt.textContent = `Stage ${stageNumber}`;
+                            console.log(sID, stageId);
+                            if (Number(sID) === Number(stageId)) opt.selected = true;
                             stageFilter.appendChild(opt);
                         });
 
@@ -867,10 +873,14 @@
 
         // Filter by project dropdown
         projectFilter.addEventListener("change", () => {
+            console.log(projectFilter);
+            console.log(projectFilter.value);
             loadRequests(projectFilter.value);
         });
 
         stageFilter.addEventListener("change", () => {
+            console.log(stageFilter);
+            console.log(stageFilter.value);
             loadRequests(projectFilter.value, stageFilter.value);
         });
 

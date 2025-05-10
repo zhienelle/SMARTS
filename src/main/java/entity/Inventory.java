@@ -36,7 +36,7 @@ public class Inventory {
 
     @Column(name = "material_archived")
     @JsonProperty("material_archived")
-    private Boolean materialArchived;  // <--New field for archive status
+    private Boolean materialArchived = false;  // <--New field for archive status // I added =false in this code, remove if it bugs the archive button
 
     @Column(name = "material_stock_status")
     private String materialStockStatus;
