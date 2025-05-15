@@ -1078,7 +1078,9 @@
                 <input type="text" id="projectName" name="projectName" placeholder="Enter project name" required>
 
                 <label for="companyName">Company Name</label>
-                <input type="text" id="companyName" name="companyName" placeholder="Enter company name" required>
+                <input list="companyNames" id="companyName" name="companyName" placeholder="Enter or select company" required>
+                <datalist id="companyNames"></datalist>
+
 
                 <label for="companyLocation">Company Location</label>
                 <input type="text" id="companyLocation" name="companyLocation" placeholder="Enter location" required>
@@ -1091,17 +1093,17 @@
                     <option value="">Select Status</option>
                     <option value="NOT STARTED">Not Started</option>
                     <option value="IN PROGRESS">In Progress</option>
-                    <option value="COMPLETED">Completed</option>
+                    <!--<option value="COMPLETED">Completed</option>-->
                 </select>
 
                 <div class="form-row">
                     <div>
                         <label for="startDate">Start Date</label>
-                        <input type="date" id="startDate" name="startDate" required>
+                        <input type="date" id="startDate" name="startDate" required placeholder="MM/DD/YYYY">
                     </div>
                     <div>
                         <label for="endDate">End Date</label>
-                        <input type="date" id="endDate" name="endDate" required>
+                        <input type="date" id="endDate" name="endDate" required placeholder="MM/DD/YYYY">
                     </div>
                 </div>
 
@@ -1115,7 +1117,7 @@
                 <input type="number" id="downpayment" name="downpayment" placeholder="Enter downpayment" required min="0" step="0.01">
 
                 <div class="button-container">
-                    <button class="closeModalBtn" onclick="closeModal('addProjectModal')">Cancel</button>
+                    <button type="button" class="closeModalBtn" onclick="resetAddProjectModal()">Cancel</button>
                     <button type="submit">Save Project</button>
                 </div>
             </form>
@@ -1128,15 +1130,15 @@
             <h3>Edit Project Details</h3>
             <form id="editProjectDetailsForm">
                 <label for="editProjectNameSelect">Select Project to Edit</label>
-                <select id="editProjectNameSelect" name="projectSelect" required>
-                    <!-- Options will be populated dynamically -->
+                <select id="editProjectNameSelect" name="projectSelect">
+                <!-- Options will be populated dynamically -->
                 </select>
 
                 <label for="editProjectName">Project Name</label>
-                <input type="text" id="editProjectName" name="projectName" placeholder="Enter project name" required>
+                <input type="text" id="editProjectName" name="projectName" placeholder="Enter project name">
 
                 <label for="editStatus">Status</label>
-                <select id="editStatus" name="status" required>
+                <select id="editStatus" name="status">
                     <option value="">Select Status</option>
                     <option value="NOT STARTED">Not Started</option>
                     <option value="IN PROGRESS">In Progress</option>
@@ -1146,19 +1148,19 @@
                 <div class="form-row">
                     <div>
                         <label for="editStartDate">Start Date</label>
-                        <input type="date" id="editStartDate" name="startDate" required>
+                        <input type="date" id="editStartDate" name="startDate">
                     </div>
                     <div>
                         <label for="editEndDate">End Date</label>
-                        <input type="date" id="editEndDate" name="endDate" required>
+                        <input type="date" id="editEndDate" name="endDate">
                     </div>
                 </div>
 
                 <label for="editClientName">Client Name</label>
-                <input type="text" id="editClientName" name="clientName" placeholder="Enter client name" required>
+                <input type="text" id="editClientName" name="clientName" placeholder="Enter client name">
 
                 <div class="button-container">
-                    <button class="closeModalBtn" onclick="closeModal('editDetailsModal')">Cancel</button>
+                    <button class="closeModalBtn" onclick="resetEditProjectModal()">Cancel</button>
                     <button type="button" id="archiveProjectBtn" onclick="archiveProject()">Archive</button>
                     <button type="submit">Save</button>
                 </div>
@@ -1268,6 +1270,15 @@
 
     let showArchived = false; // Flag to track whether archived projects are being shown
     // Function to load projects from the backend and update UI dynamically
+    function formatToMMDDYYYY(dateStr) {
+        const date = new Date(dateStr);
+        const mm = ('0' + (date.getMonth() + 1)).slice(-2);
+        const dd = ('0' + date.getDate()).slice(-2);
+        const yyyy = date.getFullYear();
+        return `${mm}/${dd}/${yyyy}`;
+    }
+
+
     function loadProjects() {
         console.log("loadProjects called");
         fetch('/projectsAdmin/getProjects')
@@ -1282,6 +1293,8 @@
                     return;
                 }
                 projectsData = data; // store globally for use in edit modal
+                populateCompanyOptions(data);
+
 
                 // Filter the projects based on the "archived" flag
                 const filteredProjects = showArchived
@@ -1311,10 +1324,10 @@
                         statusCell.textContent = project.projectstatus;
 
                         const startCell = document.createElement('td');
-                        startCell.textContent = new Date(project.projectstart).toLocaleDateString();
+                        startCell.textContent = formatToMMDDYYYY(project.projectstart);
 
                         const endCell = document.createElement('td');
-                        endCell.textContent = new Date(project.projectend).toLocaleDateString();
+                        endCell.textContent = formatToMMDDYYYY(project.projectend);
 
                         const clientCell = document.createElement('td');
                         clientCell.textContent = project.clientname;
@@ -1353,12 +1366,13 @@
                         row.appendChild(actionsCell);
 
                         row.addEventListener('click', function (event) {
-                            // Check if the click happened on one of the buttons in the "Actions" column
-                            if (!event.target.closest('td').contains(event.target)) {
+                            const isActionButton = event.target.tagName === 'BUTTON' || event.target.closest('button');
+                            if (!isActionButton) {
                                 const projectId = project.projectId;
                                 window.location.href = `projectManagementAdmin?projectId=${projectId}`;
                             }
                         });
+
 
 
                         tableBody.appendChild(row);
@@ -1469,6 +1483,17 @@
         }
     }
 
+    function resetAddProjectModal() {
+        const form = document.getElementById('addProjectForm');
+        form.reset();  // Clears all input values
+
+        // Explicitly reset selects that might not reset properly
+        document.getElementById('status').selectedIndex = 0;
+
+        // Close the modal
+        closeModal('addProjectModal');
+    }
+
 
     // Event listener for change on the edit project dropdown
     document.getElementById('editProjectNameSelect').addEventListener('change', function() {
@@ -1501,7 +1526,7 @@
         event.preventDefault();
         const projectId = document.getElementById('editProjectNameSelect').value;
         if (!projectId) {
-            alert("Please select a project to edit.");
+          //  alert("Please select a project to edit.");
             return;
         }
         // Get updated details from the form fields
@@ -1520,6 +1545,18 @@
             alert("Start date cannot be later than end date.");
             return;
         }
+        const today = new Date().toISOString().split("T")[0];
+
+        if (updatedStatus === "NOT STARTED" && updatedStartDate < today) {
+            alert("❌ 'NOT STARTED' status is not allowed.");
+            return;
+        }
+
+        if (updatedStatus === "IN PROGRESS" && new Date(updatedStartDate) < new Date(today)) {
+            alert("❌ 'IN PROGRESS' status must be today or a future date.");
+            return;
+        }
+
 
         // Retrieve original contract amount and downpayment so as not to lose these values
         const originalProject = projectsData.find(p => p.projectId == projectId);
@@ -1587,6 +1624,18 @@
             alert("Please fill out all fields correctly.");
             return;
         }
+        const today = new Date().toISOString().split("T")[0]; // format YYYY-MM-DD
+        if (status === "NOT STARTED" && startDate < today) {
+            alert("❌ 'NOT STARTED' status is not allowed.");
+            return;
+        }
+
+        if (status === "IN PROGRESS" && new Date(startDate) < new Date(today)) {
+            alert("❌ 'IN PROGRESS' status must be today or a future date.");
+            return;
+        }
+
+
         if (new Date(startDate) > new Date(endDate)) {
             alert("Start date cannot be later than end date.");
             return;
@@ -1652,9 +1701,9 @@
         const statusCell = document.createElement('td');
         statusCell.textContent = project.projectstatus;
         const startCell = document.createElement('td');
-        startCell.textContent = new Date(project.projectstart).toLocaleDateString();
+        startCell.textContent = formatToMMDDYYYY(project.projectstart);
         const endCell = document.createElement('td');
-        endCell.textContent = new Date(project.projectend).toLocaleDateString();
+        endCell.textContent = formatToMMDDYYYY(project.projectend);
         const clientCell = document.createElement('td');
         clientCell.textContent = project.clientname;
 
@@ -1751,7 +1800,12 @@
             if (event.target === modal || event.target === overlay) {
                 modal.style.display = "none";
                 overlay.style.display = "none";
+
+                if (modal.id === 'addProjectModal') {
+                    resetAddProjectModal(); // 🔁 Clears input when clicking outside
+                }
             }
+
         });
     });
     document.getElementById('addProjectBtn').addEventListener('click', function () {
@@ -2014,6 +2068,10 @@
         document.getElementById('editClientName').value = project.clientname;
     }
 
+    function resetEditProjectModal() {
+        document.getElementById('editProjectDetailsForm').reset();
+        closeModal('editDetailsModal');
+    }
 
 
     // // Function to close modal
@@ -2034,6 +2092,43 @@
             sidebar.classList.toggle("open");
         });
     }
+
+    let companiesData = [];
+
+    function populateCompanyOptions(projects) {
+        const datalist = document.getElementById('companyNames');
+        datalist.innerHTML = '';
+        const seen = new Set();
+
+        companiesData = projects
+            .filter(p => p.companyname && !seen.has(p.companyname.toLowerCase()) && seen.add(p.companyname.toLowerCase()))
+            .map(p => ({
+                name: p.companyname,
+                location: p.companyLocation || '',
+                contact: p.companycontact || ''
+            }));
+
+        companiesData.forEach(company => {
+            const option = document.createElement('option');
+            option.value = company.name;
+            datalist.appendChild(option);
+        });
+    }
+
+    document.getElementById('companyName').addEventListener('input', function () {
+        const selectedName = this.value.trim().toLowerCase();
+        const company = companiesData.find(c => c.name.toLowerCase() === selectedName);
+
+        if (company) {
+            document.getElementById('companyLocation').value = company.location;
+            document.getElementById('companyContact').value = company.contact;
+        } else {
+            document.getElementById('companyLocation').value = '';
+            document.getElementById('companyContact').value = '';
+        }
+    });
+
+
 
 
 </script>

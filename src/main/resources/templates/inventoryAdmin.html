@@ -816,7 +816,6 @@
 
     </style>
 </head>
-
 <body>
 <!-- Header -->
 <header>
@@ -1006,6 +1005,20 @@
                     <div id="materialEditList" style="margin-top: 30px;"></div>
 
                     <!-- Save Button -->
+                    <button id="cancelEditBtn" style="
+    margin-top: 30px;
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 30px;
+    background-color: #124D54;
+    color: white;
+    border: none;
+    cursor: pointer;
+">
+                        Cancel
+                    </button>
+
                     <button id="saveEditChangesBtn" style="
         margin-top: 30px;
         padding: 12px 25px;
@@ -1080,6 +1093,18 @@
     </div>
 </div>
 
+<!-- Add Inventory Confirmation Modal -->
+<div id="addConfirmModal" class="modal">
+    <div class="modal-content">
+        <h3>Confirm Add Inventory</h3>
+        <p>Are you sure you want to add this material?</p>
+        <div class="button-container">
+            <button onclick="closeModal('addConfirmModal')">No</button>
+            <button id="confirmAddBtn">Yes</button>
+        </div>
+    </div>
+</div>
+
 <!-- Footer -->
 <footer>
     <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
@@ -1118,84 +1143,155 @@
         const container = document.getElementById("materialEditList");
         container.innerHTML = "";
 
-        const filtered = allData.filter(item => item.material_category === selectedCategory);
+        const filtered = allData.filter(item =>
+            item.material_category.trim().toUpperCase() === selectedCategory.trim().toUpperCase()
+        );
 
+        if (filtered.length === 0) {
+            container.innerHTML = "<p>No materials found in this category.</p>";
+            return;
+        }
+
+        // Create a dropdown for materials
+        const materialSelect = document.createElement("select");
+        materialSelect.id = "materialSelectDropdown";
+        materialSelect.style.cssText = `
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        font-weight: bold;
+        border-radius: 10px;
+        background-color: #124D54;
+        color: white;
+        border: none;
+        text-transform: uppercase;
+    `;
+
+        materialSelect.innerHTML = `<option disabled selected>Select a material</option>`;
         filtered.forEach(item => {
-            const div = document.createElement("div");
-            div.classList.add("material-edit-item");
+            const option = document.createElement("option");
+            option.value = item.material_id;
+            option.textContent = item.material_name;
+            materialSelect.appendChild(option);
+        });
 
-            div.innerHTML = `
-            <strong>${item.material_name}</strong>
-            <button class="decrease-btn" data-id="${item.material_id}">-</button>
-            <span id="stock-${item.material_id}" data-original-stock="${item.material_stock}">${item.material_stock}</span>
-            <button class="increase-btn" data-id="${item.material_id}">+</button>
+        container.appendChild(materialSelect);
+
+        // Create a div to load material form later
+        const formDiv = document.createElement("div");
+        formDiv.id = "singleMaterialForm";
+        container.appendChild(formDiv);
+
+        // When a material is selected, render its editable form
+        materialSelect.addEventListener("change", () => {
+            const selectedId = parseInt(materialSelect.value);
+            const item = filtered.find(mat => mat.material_id === selectedId);
+            if (!item) return;
+
+            formDiv.innerHTML = `
+            <label style="display:block; font-weight:bold; margin-bottom:5px;">Material Category:</label>
+            <input type="text" class="edit-category" value="${item.material_category}" style="width:100%; margin-bottom:15px; padding:10px; border-radius:8px; border:1px solid #ccc;">
+
+            <label style="display:block; font-weight:bold; margin-bottom:5px;">Material Name:</label>
+            <input type="text" class="edit-name" value="${item.material_name}" style="width:100%; margin-bottom:15px; padding:10px; border-radius:8px; border:1px solid #ccc;">
+
+            <label style="display:block; font-weight:bold; margin-bottom:5px;">Cost Per Unit:</label>
+            <input type="number" class="edit-price" value="${item.material_price}" min="0" step="0.01" style="width:100%; margin-bottom:15px; padding:10px; border-radius:8px; border:1px solid #ccc;">
+
+            <label style="display:block; font-weight:bold; margin-bottom:5px;">Add Stock:</label>
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                <input type="number" class="add-stock" data-original-stock="${item.material_stock}" data-id="${item.material_id}" value="0" min="0" style="width:80px; padding:10px; border-radius:8px; border:1px solid #ccc;">
+                <button class="bulk-add-btn" data-id="${item.material_id}" data-add="10" style="padding:10px 15px; background-color:#124D54; color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer;">+10</button>
+                <button class="bulk-add-btn" data-id="${item.material_id}" data-add="50" style="padding:10px 15px; background-color:#124D54; color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer;">+50</button>
+                <button class="bulk-add-btn" data-id="${item.material_id}" data-add="100" style="padding:10px 15px; background-color:#124D54; color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer;">+100</button>
+            </div>
         `;
 
-            container.appendChild(div);
-        });
-
-        container.querySelectorAll(".decrease-btn").forEach(btn => {
-            btn.addEventListener("click", () => {
-                const id = btn.getAttribute("data-id");
-                const stockSpan = document.getElementById(`stock-${id}`);
-                let currentStock = parseInt(stockSpan.textContent);
-                if (currentStock > 0) stockSpan.textContent = currentStock - 1;
-            });
-        });
-
-        container.querySelectorAll(".increase-btn").forEach(btn => {
-            btn.addEventListener("click", () => {
-                const id = btn.getAttribute("data-id");
-                const stockSpan = document.getElementById(`stock-${id}`);
-                let currentStock = parseInt(stockSpan.textContent);
-                stockSpan.textContent = currentStock + 1;
+            // Add stock logic
+            formDiv.querySelectorAll(".bulk-add-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const id = btn.getAttribute("data-id");
+                    const addAmount = parseInt(btn.getAttribute("data-add"));
+                    const input = formDiv.querySelector(`.add-stock[data-id="${id}"]`);
+                    input.value = parseInt(input.value) + addAmount;
+                });
             });
         });
     }
 
     document.getElementById("saveEditChangesBtn").addEventListener("click", () => {
-        const adjustments = [];
+        const formBlocks = document.querySelectorAll("#materialEditList .material-edit-form");
+        const updates = [];
 
-        document.querySelectorAll("#materialEditList span[id^='stock-']").forEach(span => {
-            const id = parseInt(span.id.split("-")[1]);
-            const currentStock = parseInt(span.textContent);
-            const originalStock = parseInt(span.dataset.originalStock); // Make sure this is set in HTML
+        for (const form of formBlocks) {
+            const id = parseInt(form.querySelector(".add-stock").getAttribute("data-id"));
+            const originalStock = parseInt(form.querySelector(".add-stock").dataset.originalStock);
+            const addedStock = parseInt(form.querySelector(".add-stock").value);
 
-            const adjustBy = currentStock - originalStock;
+            const category = form.querySelector(".edit-category").value.trim();
+            const name = form.querySelector(".edit-name").value.trim();
+            const price = parseFloat(form.querySelector(".edit-price").value);
 
-            if (adjustBy !== 0) {
-                adjustments.push({
-                    materialId: id,
-                    adjustBy: adjustBy
-                });
+            // ✅ Validation
+            if (!category || !name) {
+                alert("❌ Material name or category cannot be empty.");
+                return;
             }
-        });
 
-        if (adjustments.length === 0) {
-            alert("No changes to save.");
+            if (isNaN(price) || price < 0) {
+                alert("❌ Cost per unit must be a non-negative number.");
+                return;
+            }
+
+            if (isNaN(addedStock) || addedStock < 0) {
+                alert("❌ Add stock must be a non-negative number.");
+                return;
+            }
+
+            console.log("📝 Update entry:", {
+                id,
+                category,
+                name,
+                price,
+                addedStock,
+                originalStock
+            });
+
+            updates.push({
+                materialId: id,
+                materialCategory: category,
+                materialName: name,
+                materialStock: originalStock + addedStock,
+                materialPrice: price,
+                materialArchived: false
+            });
+        }
+
+        // ✅ Proceed with update
+        if (updates.length === 0) {
+            alert("No valid changes detected.");
             return;
         }
 
-        fetch("/generalInventory/adjustStockMultiple", {
+        fetch("/generalInventory/updateMultipleMaterials", {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(adjustments)
+            body: JSON.stringify(updates)
         })
             .then(response => {
-                if (!response.ok) throw new Error("Failed to update stock.");
+                if (!response.ok) throw new Error("Server failed to save.");
                 return response.text();
             })
             .then(() => {
                 closeModal('editModal');
-                loadInventory(); // Refresh the inventory display
+                loadInventory();
                 alert("✅ Inventory updated successfully.");
             })
-            .catch(error => {
-                console.error("✅ Inventory updated successfully.", error);
-                alert("✅ Inventory updated successfully.");
+            .catch(err => {
+                console.error("❌ Save error:", err);
+                alert("❌ Something went wrong while saving.");
             });
     });
-
 
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -1346,17 +1442,17 @@
 
 
                         row.innerHTML = `
-                <td ${isEditMode ? 'contenteditable="true"' : ''}>${item.material_category}</td>
-                <td ${isEditMode ? 'contenteditable="true"' : ''}>${item.material_name}</td>
-               <td ${isEditMode ? 'contenteditable="true"' : ''} style="text-align: right;">${Number(item.material_stock).toLocaleString()}</td>
-                <td ${isEditMode ? 'contenteditable="true"' : ''} style="text-align: right;">${Number(item.material_price).toLocaleString()}</td>
-                <td>
-                    ${isEditMode
-                            ? `<button class="archive-toggle" data-id="${item.material_id}" data-archived="${item.material_archived}">
-                        ${item.material_archived ? 'Unarchive' : 'Archive'}
-                       </button>`
-                            : ''}
-                </td>`;
+    <td>${item.material_category}</td>
+    <td>${item.material_name}</td>
+    <td style="text-align: right;">${Number(item.material_stock).toLocaleString()}</td>
+    <td style="text-align: right;">PHP ${Number(item.material_price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+
+    <td>
+        <button class="archive-toggle" data-id="${item.material_id}" data-archived="${item.material_archived}">
+            ${item.material_archived ? 'Unarchive' : 'Archive'}
+        </button>
+    </td>`;
+
 
                         categoriesSet.add(item.material_category.trim().toLowerCase());
                         inventoryData.appendChild(row);
@@ -1437,7 +1533,8 @@
                 const category = cells[0].textContent.trim();
                 const name = cells[1].textContent.trim();
                 const stock = parseInt(cells[2].textContent.trim());
-                const price = parseFloat(cells[3].textContent.trim());
+                const rawPrice = cells[3].textContent.trim().replace("PHP", "").replace(/,/g, '').trim();
+                const price = parseFloat(rawPrice);
 
                 if (!category || !name || isNaN(stock) || isNaN(price)) {
                     alert("Invalid input.");
@@ -1506,6 +1603,36 @@
         });
 
         loadInventory();
+        document.getElementById("confirmAddBtn").addEventListener("click", () => {
+            if (!pendingInventoryData) return;
+
+            fetch('/generalInventory/addInventory', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(pendingInventoryData)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(`Server error: ${text}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Success:', data);
+                    loadInventory();  // Refresh table
+                    closeModal('addInventoryModal');
+                    closeModal('addConfirmModal');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+
+            pendingInventoryData = null;
+        });
     });
 
     let pendingArchiveRow = null;
@@ -1549,51 +1676,57 @@
         pendingArchiveRow = null; // clear reference
     });
 
+    let pendingInventoryData = null; // temp storage for confirmation
 
     // Inside your event listener for the "Add Inventory" button
     document.getElementById("addInventoryForm").addEventListener("submit", function (event) {
-        event.preventDefault();  // Prevent the form from submitting normally
+        event.preventDefault();  // Prevent default form submit
 
-        // Collect the data from the form
-        const inventoryData = {
-            materialCategory: document.getElementById("materialCategory").value,
-            materialName: document.getElementById("materialName").value,
-            materialStock: parseInt(document.getElementById("materialStock").value),
-            materialPrice: parseFloat(document.getElementById("materialPrice").value),
+        // Collect data
+        const materialCategory = document.getElementById("materialCategory").value.trim();
+        const materialName = document.getElementById("materialName").value.trim().toLowerCase();
+
+        const materialStock = parseInt(document.getElementById("materialStock").value);
+        const materialPrice = parseFloat(document.getElementById("materialPrice").value);
+
+        pendingInventoryData = {
+            material_category: materialCategory,
+            material_name: materialName,
+            material_stock: materialStock,
+            material_price: materialPrice
         };
 
-        // Log the data to the console for inspection
-        console.log('Sending inventory data:', inventoryData);
 
-        // Send the inventory data to the backend
-        fetch('/generalInventory/addInventory', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(inventoryData)
-        })
-            .then(response => {
-                if (!response.ok) {  // Check for HTTP errors
-                    return response.text().then(text => {  // Read response as text for debugging
-                        throw new Error(`Server error: ${text}`);
-                    });
-                }
-                return response.json();  // Parse the response as JSON
-            })
+        // Fetch existing inventory to check for duplicates
+        fetch('/generalInventory/getInventory')
+            .then(res => res.json())
             .then(data => {
-                console.log('Success:', data);
-                loadInventory();  // Reload the inventory after adding
-                closeModal('addInventoryModal');  // Close the modal
-            })
-            .catch((error) => {
-                console.error('Error:', error);
+                const duplicate = data.some(item =>
+                    item.material_category.trim().toLowerCase() === materialCategory.toLowerCase() &&
+                    item.material_name.trim().toLowerCase() === materialName
+                );
+
+                if (duplicate) {
+                    alert("❌ This material already exists in the same category.");
+                    pendingInventoryData = null;
+                } else {
+                    openModal('addConfirmModal'); // Show confirmation
+                }
             });
     });
 
 
+
+
     document.getElementById("addBtn").addEventListener("click", () => {
-        document.getElementById("addInventoryModal").style.display = "block";  // Show modal
+        document.getElementById("addInventoryForm").reset();  // ✅ Clear inputs
+        document.getElementById("addInventoryModal").style.display = "block";
+    });
+
+    document.getElementById("cancelEditBtn").addEventListener("click", () => {
+        document.getElementById("editCategorySelect").selectedIndex = 0;
+        document.getElementById("materialEditList").innerHTML = '';
+        closeModal("editModal");
     });
 
     function closeModal(modalId) {

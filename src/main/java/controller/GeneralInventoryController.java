@@ -231,5 +231,58 @@ public class GeneralInventoryController {
         return ResponseEntity.ok("Stocks updated successfully for all items.");
     }
 
+    @PutMapping("/generalInventory/updateMultipleMaterials")
+    @ResponseBody
+    public ResponseEntity<String> updateMultipleMaterials(@RequestBody List<Inventory> updates) {
+        try {
+            for (Inventory updatedInventory : updates) {
+                Integer id = updatedInventory.getMaterialId();
+
+                if (id == null) {
+                    return ResponseEntity.badRequest().body("❌ Material ID is missing.");
+                }
+
+                if (updatedInventory.getMaterialCategory() == null || updatedInventory.getMaterialCategory().trim().isEmpty()) {
+                    return ResponseEntity.badRequest().body("❌ Material category must not be empty.");
+                }
+                if (updatedInventory.getMaterialName() == null || updatedInventory.getMaterialName().trim().isEmpty()) {
+                    return ResponseEntity.badRequest().body("❌ Material name must not be empty.");
+                }
+                if (updatedInventory.getMaterialStock() < 0 || updatedInventory.getMaterialPrice() < 0) {
+                    return ResponseEntity.badRequest().body("❌ Stock and price must not be negative.");
+                }
+
+                Optional<Inventory> optionalInventory = inventoryRepository.findById(id);
+                if (optionalInventory.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ Material not found with ID: " + id);
+                }
+
+                Inventory inventory = optionalInventory.get();
+                inventory.setMaterialCategory(updatedInventory.getMaterialCategory());
+                inventory.setMaterialName(updatedInventory.getMaterialName());
+                inventory.setMaterialStock(updatedInventory.getMaterialStock());
+                inventory.setMaterialPrice(updatedInventory.getMaterialPrice());
+                inventory.setMaterialArchived(updatedInventory.getMaterialArchived());
+
+                int stock = updatedInventory.getMaterialStock();
+                if (stock <= 30) {
+                    inventory.setMaterialStockStatus("LOW");
+                } else if (stock <= 100) {
+                    inventory.setMaterialStockStatus("MODERATE");
+                } else {
+                    inventory.setMaterialStockStatus("HIGH");
+                }
+
+                inventoryRepository.save(inventory);
+            }
+
+            return ResponseEntity.ok("✅ All materials updated successfully.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("❌ Internal server error: " + e.getMessage());
+        }
+    }
+
 
 }

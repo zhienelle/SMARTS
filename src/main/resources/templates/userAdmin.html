@@ -1224,7 +1224,18 @@
                     document.getElementById('project').value = selectedRow.cells[4].innerText;
                 }, 200);
 
-                document.getElementById('archiveBtn').style.display = 'inline-block';
+                const archiveBtn = document.getElementById('archiveBtn');
+                const isArchivedView = showingArchived === true;
+                const isInactiveUser = selectedRow.cells[5].innerText === "INACTIVE";
+
+                if (archiveBtn) {
+                    if (isArchivedView || isInactiveUser) {
+                        archiveBtn.style.display = 'none';  // Hide in archived view or if user is already inactive
+                    } else {
+                        archiveBtn.style.display = 'inline-block';  // Show normally
+                    }
+                }
+
                 showModal();
             }
         }
@@ -1298,6 +1309,7 @@
                             .filter(user => user.status !== "INACTIVE")
                             .forEach(user => addRowToTable(user));
                         document.getElementById('toggleArchiveBtn').innerText = "ARCHIVED USERS";
+
                     } else {
                         // Show INACTIVE users
                         users
