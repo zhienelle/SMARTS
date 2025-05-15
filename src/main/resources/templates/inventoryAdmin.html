@@ -797,6 +797,23 @@
             height: 40px;
             margin-right: 10px;
         }
+
+        /* Close (X) button styling */
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 30px;
+            font-weight: bold;
+            color: #102937;
+            cursor: pointer;
+        }
+
+        .close-modal:hover {
+            color: #F9744B;
+            transform: scale(1.1);
+        }
+
     </style>
 </head>
 
@@ -957,7 +974,57 @@
                 <button id="editBtn">Edit</button>
                 <button id="archiveBtn">Archive</button>
             </div>
+            <!-- Edit Modal -->
+            <!-- Edit Inventory Modal -->
+            <div id="editModal" class="modal" style="display: none;">
+                <div class="modal-content" style="position: relative;">
+
+                    <!-- ❌ Close Button Top-Right -->
+                    <span class="close-modal" onclick="closeModal('editModal')">&times;</span>
+
+                    <h3 style="margin-top: 20px;">Edit Inventory</h3>
+
+                    <label for="editCategorySelect" style="display: block; margin-top: 20px; font-weight: bold; color: white;">
+                        Select Category:
+                    </label>
+                    <select id="editCategorySelect" style="
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 20px;
+        font-weight: bold;
+        background-color: #FF6F61;
+        color: white;
+        border: none;
+        text-transform: uppercase;
+        margin-top: 10px;
+        font-size: 16px;
+    ">
+                        <option disabled selected>Select a category</option>
+                    </select>
+
+                    <!-- Container for materials -->
+                    <div id="materialEditList" style="margin-top: 30px;"></div>
+
+                    <!-- Save Button -->
+                    <button id="saveEditChangesBtn" style="
+        margin-top: 30px;
+        padding: 12px 25px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 30px;
+        background-color: #124D54;
+        color: white;
+        border: none;
+        cursor: pointer;
+    ">
+                        Save Changes
+                    </button>
+
+                </div>
+            </div>
+
         </div>
+    </div>
     </div> <!-- ✅ this closes after BOTH panels -->
 
     <div class="overlay" id="overlay"></div>
@@ -1002,6 +1069,17 @@
     </div>
 </div>
 
+<div id="archiveConfirmModal" class="modal">
+    <div class="modal-content">
+        <h3 id="archiveConfirmTitle">Archive Material</h3>
+        <p id="archiveConfirmText">Are you sure you want to archive this material?</p>
+        <div class="button-container">
+            <button onclick="closeModal('archiveConfirmModal')">Cancel</button>
+            <button id="confirmArchiveBtn">Yes</button>
+        </div>
+    </div>
+</div>
+
 <!-- Footer -->
 <footer>
     <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
@@ -1009,6 +1087,117 @@
 
 <!-- Updated Script to Load, Add, Edit Inventory -->
 <script>
+
+    let showArchived = false;
+
+    document.getElementById("editBtn").addEventListener("click", () => {
+        document.getElementById("editModal").style.display = "block";
+        loadCategoriesForEdit();
+    });
+
+    function loadCategoriesForEdit() {
+        fetch('/generalInventory/getInventory')
+            .then(res => res.json())
+            .then(data => {
+                const categories = [...new Set(data.map(item => item.material_category))];
+                const dropdown = document.getElementById("editCategorySelect");
+                dropdown.innerHTML = '<option disabled selected>Select a category</option>';
+
+                categories.sort().forEach(cat => {
+                    const option = document.createElement("option");
+                    option.value = cat;
+                    option.textContent = cat;
+                    dropdown.appendChild(option);
+                });
+
+                dropdown.onchange = () => showMaterialsForCategory(data, dropdown.value);
+            });
+    }
+
+    function showMaterialsForCategory(allData, selectedCategory) {
+        const container = document.getElementById("materialEditList");
+        container.innerHTML = "";
+
+        const filtered = allData.filter(item => item.material_category === selectedCategory);
+
+        filtered.forEach(item => {
+            const div = document.createElement("div");
+            div.classList.add("material-edit-item");
+
+            div.innerHTML = `
+            <strong>${item.material_name}</strong>
+            <button class="decrease-btn" data-id="${item.material_id}">-</button>
+            <span id="stock-${item.material_id}" data-original-stock="${item.material_stock}">${item.material_stock}</span>
+            <button class="increase-btn" data-id="${item.material_id}">+</button>
+        `;
+
+            container.appendChild(div);
+        });
+
+        container.querySelectorAll(".decrease-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const id = btn.getAttribute("data-id");
+                const stockSpan = document.getElementById(`stock-${id}`);
+                let currentStock = parseInt(stockSpan.textContent);
+                if (currentStock > 0) stockSpan.textContent = currentStock - 1;
+            });
+        });
+
+        container.querySelectorAll(".increase-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const id = btn.getAttribute("data-id");
+                const stockSpan = document.getElementById(`stock-${id}`);
+                let currentStock = parseInt(stockSpan.textContent);
+                stockSpan.textContent = currentStock + 1;
+            });
+        });
+    }
+
+    document.getElementById("saveEditChangesBtn").addEventListener("click", () => {
+        const adjustments = [];
+
+        document.querySelectorAll("#materialEditList span[id^='stock-']").forEach(span => {
+            const id = parseInt(span.id.split("-")[1]);
+            const currentStock = parseInt(span.textContent);
+            const originalStock = parseInt(span.dataset.originalStock); // Make sure this is set in HTML
+
+            const adjustBy = currentStock - originalStock;
+
+            if (adjustBy !== 0) {
+                adjustments.push({
+                    materialId: id,
+                    adjustBy: adjustBy
+                });
+            }
+        });
+
+        if (adjustments.length === 0) {
+            alert("No changes to save.");
+            return;
+        }
+
+        fetch("/generalInventory/adjustStockMultiple", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(adjustments)
+        })
+            .then(response => {
+                if (!response.ok) throw new Error("Failed to update stock.");
+                return response.text();
+            })
+            .then(() => {
+                closeModal('editModal');
+                loadInventory(); // Refresh the inventory display
+                alert("✅ Inventory updated successfully.");
+            })
+            .catch(error => {
+                console.error("✅ Inventory updated successfully.", error);
+                alert("✅ Inventory updated successfully.");
+            });
+    });
+
+
+
     document.addEventListener("DOMContentLoaded", () => {
         console.log("DOM content loaded");
         const inventoryData = document.getElementById("inventoryData");
@@ -1022,7 +1211,7 @@
         console.log('Sending inventory data:', inventoryData);
 
         let isEditMode = false;
-        let showArchived = false;
+
 
         const showArchivedBtn = document.getElementById("showArchivedBtn");
         const hideArchivedBtn = document.getElementById("hideArchivedBtn");
@@ -1218,23 +1407,23 @@
         }
 
 
-        inventoryData.addEventListener("click", e => {
-            if (e.target.classList.contains("archive-toggle")) {
-                const button = e.target;
-                const row = button.closest("tr");
-                const isArchived = row.getAttribute("data-archived") === "true";
-                const newArchived = !isArchived;
-
-                // 🔥 ADD THIS LINE HERE
-                row.setAttribute("data-archived", newArchived.toString());  // <- this is the key fix!
-
-                row.classList.toggle("archived", newArchived);
-                button.textContent = newArchived ? "Unarchive" : "Archive";
-                button.setAttribute("data-archived", newArchived);
-
-                if (!showArchived && newArchived) row.style.display = "none";
-            }
-        });
+        // inventoryData.addEventListener("click", e => {
+        //     if (e.target.classList.contains("archive-toggle")) {
+        //         const button = e.target;
+        //         const row = button.closest("tr");
+        //         const isArchived = row.getAttribute("data-archived") === "true";
+        //         const newArchived = !isArchived;
+        //
+        //         // 🔥 ADD THIS LINE HERE
+        //         row.setAttribute("data-archived", newArchived.toString());  // <- this is the key fix!
+        //
+        //         row.classList.toggle("archived", newArchived);
+        //         button.textContent = newArchived ? "Unarchive" : "Archive";
+        //         button.setAttribute("data-archived", newArchived);
+        //
+        //         if (!showArchived && newArchived) row.style.display = "none";
+        //     }
+        // });
 
         function saveAllEditedRows() {
             const rows = inventoryData.querySelectorAll("tr");
@@ -1289,7 +1478,7 @@
                 // Save
                 saveAllEditedRows().then(() => {
                     isEditMode = false;
-                    archiveBtn.textContent = "Edit";
+                    archiveBtn.textContent = "Archive";
                     addRowBtn.style.display = "none";
                     loadInventory();
                 });
@@ -1318,6 +1507,48 @@
 
         loadInventory();
     });
+
+    let pendingArchiveRow = null;
+
+    inventoryData.addEventListener("click", e => {
+        if (e.target.classList.contains("archive-toggle")) {
+            const button = e.target;
+            const row = button.closest("tr");
+            const materialName = row.children[1].textContent.trim(); // material name
+            const isArchived = row.getAttribute("data-archived") === "true";
+
+            // Store reference for the confirmation
+            pendingArchiveRow = row;
+
+            // Update the modal text based on the current state
+            const actionText = isArchived ? "unarchive" : "archive";
+            document.getElementById("archiveConfirmText").textContent = `Are you sure you want to ${actionText} "${materialName}"?`;
+            document.getElementById("archiveConfirmTitle").textContent = `${isArchived ? "Unarchive" : "Archive"} Material`;
+
+            openModal('archiveConfirmModal');
+        }
+    });
+
+
+    document.getElementById("confirmArchiveBtn").addEventListener("click", () => {
+        if (!pendingArchiveRow) return;
+
+        const button = pendingArchiveRow.querySelector(".archive-toggle");
+        const isArchived = pendingArchiveRow.getAttribute("data-archived") === "true";
+        const newArchived = !isArchived;
+
+        // Set data attributes and UI
+        pendingArchiveRow.setAttribute("data-archived", newArchived.toString());
+        pendingArchiveRow.classList.toggle("archived", newArchived);
+        button.textContent = newArchived ? "Unarchive" : "Archive";
+        button.setAttribute("data-archived", newArchived);
+
+        if (!showArchived && newArchived) pendingArchiveRow.style.display = "none";
+
+        closeModal('archiveConfirmModal');
+        pendingArchiveRow = null; // clear reference
+    });
+
 
     // Inside your event listener for the "Add Inventory" button
     document.getElementById("addInventoryForm").addEventListener("submit", function (event) {
@@ -1366,7 +1597,13 @@
     });
 
     function closeModal(modalId) {
-        document.getElementById(modalId).style.display = "none"; // Close modal
+        document.getElementById(modalId).style.display = "none";
+        document.getElementById("overlay").style.display = "none";
+    }
+
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = "block";
+        document.getElementById("overlay").style.display = "block";
     }
 
     let sidebar = document.querySelector(".sidebar");
