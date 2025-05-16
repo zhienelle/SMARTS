@@ -1178,9 +1178,12 @@
         container.appendChild(materialSelect);
 
         // Create a div to load material form later
+        // Create a div to load material form later
         const formDiv = document.createElement("div");
         formDiv.id = "singleMaterialForm";
+        formDiv.classList.add("material-edit-form"); // ✅ critical fix
         container.appendChild(formDiv);
+
 
         // When a material is selected, render its editable form
         materialSelect.addEventListener("change", () => {
@@ -1219,18 +1222,193 @@
         });
     }
 
+    function generateCategoryFilters(categories) {
+        const container = document.getElementById("categoryDropdownContainer");
+
+        // Check if the container exists
+        if (!container) {
+            console.error("Category Dropdown Container is not available!");
+            return; // Stop execution if the container doesn't exist
+        }
+
+        // Clear existing content
+        container.innerHTML = '';
+
+        // Create dropdown for categories
+        const select = document.createElement("select");
+        select.id = "categoryDropdown";
+        select.style.cssText = `
+        width: 100%;
+        padding: 10px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        background-color: #FF6F61;
+        color: white;
+        border: none;
+        text-transform: uppercase;
+    `;
+
+        select.innerHTML = `<option value="all" selected>All Categories</option>`;
+
+        categories.sort().forEach(cat => {
+            const idValue = cat.toLowerCase().replace(/\s+/g, '-');
+            const label = cat.charAt(0).toUpperCase() + cat.slice(1);
+            select.innerHTML += `<option value="${idValue}">${label}</option>`;
+        });
+
+        container.appendChild(select);
+
+        // Add event listener for the category dropdown
+        select.addEventListener("change", applyCategoryFilter);
+    }
+
+
+    function applyCategoryFilter() {
+        const selected = document.getElementById("categoryDropdown")?.value || "all";
+        const rows = inventoryTable.querySelectorAll("tbody tr");
+
+        rows.forEach(row => {
+            const cat = row.getAttribute("data-category");
+            const isArchived = row.getAttribute("data-archived") === "true";
+            const categoryMatch = selected === "all" || selected === cat;
+            const archiveMatch = showArchived || !isArchived;
+            row.style.display = categoryMatch && archiveMatch ? "" : "none";
+        });
+    }
+
+    function loadInventory() {
+        console.log("load inventory function is called");
+        return fetch('/generalInventory/getInventory')
+            .then(res => res.json())
+            // .then(data => {
+            //     inventoryData.innerHTML = "";
+            //     const categoriesSet = new Set();
+            //     const lowStockMaterials = [];
+
+            .then(data => {
+                inventoryData.innerHTML = "";
+                const categoriesSet = new Set();
+                const lowStockMaterials = [];
+
+                // ✅ Sort inventory by category, then material name
+                data.sort((a, b) => {
+                    const categoryA = a.material_category.toUpperCase();
+                    const categoryB = b.material_category.toUpperCase();
+                    if (categoryA < categoryB) return -1;
+                    if (categoryA > categoryB) return 1;
+
+                    const nameA = a.material_name.toUpperCase();
+                    const nameB = b.material_name.toUpperCase();
+                    return nameA.localeCompare(nameB);
+                });
+
+                data.forEach(item => {
+                    const row = document.createElement("tr");
+                    const normalizedCategory = item.material_category.toLowerCase().replace(/\s+/g, '-');
+                    row.setAttribute("data-category", normalizedCategory);
+                    row.setAttribute("data-id", item.material_id);
+                    row.setAttribute("data-archived", item.material_archived);
+
+                    if (item.material_archived) {
+                        row.classList.add("archived");
+                    }
+
+                    // ✅ Collect low stock entries (only material names)
+                    console.log(item);
+                    if (item.materialStockStatus === "LOW") {
+                        lowStockMaterials.push(item.material_name);
+                        row.classList.add("low-stock-row");
+
+
+                    }
+
+
+                    row.innerHTML = `
+                <td>${item.material_category}</td>
+                <td>${item.material_name}</td>
+                <td style="text-align: right;">${Number(item.material_stock).toLocaleString()}</td>
+                <td style="text-align: right;">PHP ${Number(item.material_price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+
+                <td>
+                    <button class="archive-toggle" data-id="${item.material_id}" data-archived="${item.material_archived}">
+                        ${item.material_archived ? 'Unarchive' : 'Archive'}
+                    </button>
+                </td>`;
+
+
+                    categoriesSet.add(item.material_category.trim().toLowerCase());
+                    inventoryData.appendChild(row);
+                });
+
+                generateCategoryFilters([...categoriesSet]);
+                applyCategoryFilter();
+
+                // ✅ Notification dropdown behavior
+                const dot = document.getElementById("notificationDot");
+                const bell = document.getElementById("notificationBell");
+                const dropdown = document.getElementById("notificationDropdown");
+                const list = document.getElementById("notificationList");
+                const modal = document.getElementById("lowStockModal");
+                const message = document.getElementById("lowStockMessage");
+
+                list.innerHTML = ""; // Clear previous
+                console.log(lowStockMaterials.length);
+                if (lowStockMaterials.length > 0) {
+                    dot.style.display = "block";
+                    lowStockMaterials.forEach(material => {
+                        const li = document.createElement("li");
+                        li.textContent = `Low quantity of ${material}`;
+                        li.style.cursor = "pointer";
+                        li.style.padding = "5px 0";
+                        li.onclick = () => {
+                            message.textContent = `Low quantity of ${material}`;
+                            modal.style.display = "block";
+                            dropdown.style.display = "none";
+                        };
+                        list.appendChild(li);
+                    });
+                } else {
+                    dot.style.display = "none";
+                    const li = document.createElement("li");
+                    li.textContent = "No low stock materials";
+                    li.style.color = "#888";
+                    li.style.padding = "5px 0";
+                    list.appendChild(li);
+                }
+
+                // Bell toggles dropdown
+                bell.onclick = () => {
+                    const isVisible = dropdown.style.display === "block";
+                    dropdown.style.display = isVisible ? "none" : "block";
+                };
+            });
+    }
     document.getElementById("saveEditChangesBtn").addEventListener("click", () => {
         const formBlocks = document.querySelectorAll("#materialEditList .material-edit-form");
+        console.log("🔍 Found editable form blocks:", formBlocks.length); // ✅ LOG 1
         const updates = [];
 
         for (const form of formBlocks) {
             const id = parseInt(form.querySelector(".add-stock").getAttribute("data-id"));
+            console.log("🔍 Material ID extracted:", id);
+
             const originalStock = parseInt(form.querySelector(".add-stock").dataset.originalStock);
             const addedStock = parseInt(form.querySelector(".add-stock").value);
 
             const category = form.querySelector(".edit-category").value.trim();
             const name = form.querySelector(".edit-name").value.trim();
             const price = parseFloat(form.querySelector(".edit-price").value);
+
+            console.log("📦 Preparing update for material:", {
+                id,
+                category,
+                name,
+                price,
+                originalStock,
+                addedStock,
+                newStock: originalStock + addedStock
+            });
+
 
             // ✅ Validation
             if (!category || !name) {
@@ -1258,13 +1436,14 @@
             });
 
             updates.push({
-                materialId: id,
-                materialCategory: category,
-                materialName: name,
-                materialStock: originalStock + addedStock,
-                materialPrice: price,
-                materialArchived: false
+                material_id: id,
+                material_category: category,
+                material_name: name,
+                material_stock: originalStock + addedStock,
+                material_price: price,
+                material_archived: false
             });
+
         }
 
         // ✅ Proceed with update
@@ -1273,16 +1452,28 @@
             return;
         }
 
+        console.log("📤 Final payload to backend:", JSON.stringify(updates, null, 2));
+
         fetch("/generalInventory/updateMultipleMaterials", {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(updates)
         })
             .then(response => {
+                console.log(JSON.parse(JSON.stringify(response)));
                 if (!response.ok) throw new Error("Server failed to save.");
-                return response.text();
+
+                // // Handle 204 No Content
+                // if (response.status === 204) {
+                //     return null;
+                // }
+
+                // Try to read text if body exists
+                // return response.text().catch(() => null);
+                return response.json();
             })
-            .then(() => {
+
+                .then(() => {
                 closeModal('editModal');
                 loadInventory();
                 alert("✅ Inventory updated successfully.");
@@ -1340,167 +1531,9 @@
             showBtn.style.display = "inline-block";
         });
 
-        function generateCategoryFilters(categories) {
-            const container = document.getElementById("categoryDropdownContainer");
-
-            // Check if the container exists
-            if (!container) {
-                console.error("Category Dropdown Container is not available!");
-                return; // Stop execution if the container doesn't exist
-            }
-
-            // Clear existing content
-            container.innerHTML = '';
-
-            // Create dropdown for categories
-            const select = document.createElement("select");
-            select.id = "categoryDropdown";
-            select.style.cssText = `
-        width: 100%;
-        padding: 10px 15px;
-        border-radius: 20px;
-        font-weight: bold;
-        background-color: #FF6F61;
-        color: white;
-        border: none;
-        text-transform: uppercase;
-    `;
-
-            select.innerHTML = `<option value="all" selected>All Categories</option>`;
-
-            categories.sort().forEach(cat => {
-                const idValue = cat.toLowerCase().replace(/\s+/g, '-');
-                const label = cat.charAt(0).toUpperCase() + cat.slice(1);
-                select.innerHTML += `<option value="${idValue}">${label}</option>`;
-            });
-
-            container.appendChild(select);
-
-            // Add event listener for the category dropdown
-            select.addEventListener("change", applyCategoryFilter);
-        }
 
 
-        function applyCategoryFilter() {
-            const selected = document.getElementById("categoryDropdown")?.value || "all";
-            const rows = inventoryTable.querySelectorAll("tbody tr");
 
-            rows.forEach(row => {
-                const cat = row.getAttribute("data-category");
-                const isArchived = row.getAttribute("data-archived") === "true";
-                const categoryMatch = selected === "all" || selected === cat;
-                const archiveMatch = showArchived || !isArchived;
-                row.style.display = categoryMatch && archiveMatch ? "" : "none";
-            });
-        }
-
-        function loadInventory() {
-            console.log("load inventory function is called");
-            return fetch('/generalInventory/getInventory')
-                .then(res => res.json())
-                // .then(data => {
-                //     inventoryData.innerHTML = "";
-                //     const categoriesSet = new Set();
-                //     const lowStockMaterials = [];
-
-                .then(data => {
-                    inventoryData.innerHTML = "";
-                    const categoriesSet = new Set();
-                    const lowStockMaterials = [];
-
-                    // ✅ Sort inventory by category, then material name
-                    data.sort((a, b) => {
-                        const categoryA = a.material_category.toUpperCase();
-                        const categoryB = b.material_category.toUpperCase();
-                        if (categoryA < categoryB) return -1;
-                        if (categoryA > categoryB) return 1;
-
-                        const nameA = a.material_name.toUpperCase();
-                        const nameB = b.material_name.toUpperCase();
-                        return nameA.localeCompare(nameB);
-                    });
-
-                    data.forEach(item => {
-                        const row = document.createElement("tr");
-                        const normalizedCategory = item.material_category.toLowerCase().replace(/\s+/g, '-');
-                        row.setAttribute("data-category", normalizedCategory);
-                        row.setAttribute("data-id", item.material_id);
-                        row.setAttribute("data-archived", item.material_archived);
-
-                        if (item.material_archived) {
-                            row.classList.add("archived");
-                        }
-
-                        // ✅ Collect low stock entries (only material names)
-                        console.log(item);
-                        if (item.materialStockStatus === "LOW") {
-                            lowStockMaterials.push(item.material_name);
-                            row.classList.add("low-stock-row");
-
-
-                        }
-
-
-                        row.innerHTML = `
-    <td>${item.material_category}</td>
-    <td>${item.material_name}</td>
-    <td style="text-align: right;">${Number(item.material_stock).toLocaleString()}</td>
-    <td style="text-align: right;">PHP ${Number(item.material_price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-
-    <td>
-        <button class="archive-toggle" data-id="${item.material_id}" data-archived="${item.material_archived}">
-            ${item.material_archived ? 'Unarchive' : 'Archive'}
-        </button>
-    </td>`;
-
-
-                        categoriesSet.add(item.material_category.trim().toLowerCase());
-                        inventoryData.appendChild(row);
-                    });
-
-                    generateCategoryFilters([...categoriesSet]);
-                    applyCategoryFilter();
-
-                    // ✅ Notification dropdown behavior
-                    const dot = document.getElementById("notificationDot");
-                    const bell = document.getElementById("notificationBell");
-                    const dropdown = document.getElementById("notificationDropdown");
-                    const list = document.getElementById("notificationList");
-                    const modal = document.getElementById("lowStockModal");
-                    const message = document.getElementById("lowStockMessage");
-
-                    list.innerHTML = ""; // Clear previous
-                    console.log(lowStockMaterials.length);
-                    if (lowStockMaterials.length > 0) {
-                        dot.style.display = "block";
-                        lowStockMaterials.forEach(material => {
-                            const li = document.createElement("li");
-                            li.textContent = `Low quantity of ${material}`;
-                            li.style.cursor = "pointer";
-                            li.style.padding = "5px 0";
-                            li.onclick = () => {
-                                message.textContent = `Low quantity of ${material}`;
-                                modal.style.display = "block";
-                                dropdown.style.display = "none";
-                            };
-                            list.appendChild(li);
-                        });
-                    } else {
-                        dot.style.display = "none";
-                        const li = document.createElement("li");
-                        li.textContent = "No low stock materials";
-                        li.style.color = "#888";
-                        li.style.padding = "5px 0";
-                        list.appendChild(li);
-                    }
-
-                    // Bell toggles dropdown
-                    bell.onclick = () => {
-                        const isVisible = dropdown.style.display === "block";
-                        dropdown.style.display = isVisible ? "none" : "block";
-                    };
-                });
-        }
 
 
         // inventoryData.addEventListener("click", e => {

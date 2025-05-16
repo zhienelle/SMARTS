@@ -147,36 +147,37 @@ public class MyProjectExestaffController {
                 stage.setProject(project);
                 stage.setStageNumber(stageNumber);
 
-                boolean allCompleted = true;
-                List<Map<String, Object>> tasks = (List<Map<String, Object>>) stageData.get("tasks");
-                Set<Integer> frontendTaskIds = new HashSet<>();
+                List<Map<String, Object>> tasksRaw = (List<Map<String, Object>>) stageData.get("tasks");
+                List<Map<String, Object>> tasks = tasksRaw != null ? tasksRaw : new ArrayList<>();
 
-                stage = stageRepo.save(stage); // Save or update stage
+                Set<Integer> frontendTaskIds = new HashSet<>();
+                boolean allCompleted = !tasks.isEmpty() && tasks.stream().allMatch(t -> Boolean.TRUE.equals(t.get("completed")));
+
+                stage = stageRepo.save(stage); // Save or update stage first
 
                 for (Map<String, Object> taskData : tasks) {
-                    Integer taskId = taskData.get("taskId") != null ? ((Number) taskData.get("taskId")).intValue() : null;
                     String taskName = (String) taskData.get("taskName");
                     Boolean completed = (Boolean) taskData.get("completed");
 
-                    if (completed == null || !completed) {
-                        allCompleted = false;
-                    }
+                    if (taskName == null || taskName.trim().isEmpty()) continue;
+
+                    Integer taskId = taskData.get("taskId") != null ? ((Number) taskData.get("taskId")).intValue() : null;
 
                     ProjectTask task;
                     if (taskId != null && taskRepo.existsById(taskId)) {
-                        task = taskRepo.findById(taskId).get();
+                        task = taskRepo.findById(taskId).orElse(new ProjectTask());
                     } else {
                         task = new ProjectTask();
                         task.setStage(stage);
                     }
 
-                    task.setTaskName(taskName);
+                    task.setTaskName(taskName.trim());
                     task.setCompleted(completed != null && completed);
                     task = taskRepo.save(task);
                     frontendTaskIds.add(task.getTaskId());
                 }
 
-                // Remove any tasks that no longer exist
+                // Clean up old tasks
                 List<ProjectTask> existingTasks = taskRepo.findByStage(stage);
                 for (ProjectTask existing : existingTasks) {
                     if (!frontendTaskIds.contains(existing.getTaskId())) {
@@ -185,12 +186,12 @@ public class MyProjectExestaffController {
                 }
 
                 stage.setStatus(allCompleted ? "Complete" : "Incomplete");
-                stageRepo.save(stage); // Save status
+                stageRepo.save(stage);
             }
 
             return ResponseEntity.ok("Stages saved successfully.");
         } catch (Exception e) {
-            e.printStackTrace(); // Print full stack trace in console
+            e.printStackTrace();
             return ResponseEntity.status(500).body("Error: " + e.getMessage());
         }
     }
@@ -203,6 +204,7 @@ public class MyProjectExestaffController {
         if (project == null) return ResponseEntity.badRequest().body(Collections.emptyList());
 
         List<ProjectStage> stages = stageRepo.findByProject(project);
+        stages.sort(Comparator.comparingInt(ProjectStage::getStageNumber)); // ✅ sort here
         return ResponseEntity.ok(stages);
     }
 
@@ -230,6 +232,4 @@ public class MyProjectExestaffController {
 
         return materials;
     }
-
-
 }

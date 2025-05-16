@@ -892,8 +892,6 @@
             </div>
         </div>
     </div>
-
-
     <script>
         let selectedRow = null;
         let allProjects = [];
@@ -1104,22 +1102,34 @@
             const email = document.getElementById('email').value.trim();
             const role = document.getElementById('role').value;
             const permissions = document.getElementById('permissions').value;
-            const selectedProjects = getSelectedProjects();
-            const isAdmin = role === 'ADMIN';
             const status = userId ? document.getElementById('status').value : 'ACTIVE';  // ← NEW USERS default to ACTIVE
-
+            const isEditing = !!userId;  // true if editing, false if adding new
+            const isAdmin = role === 'ADMIN';
+            const selectedProjects = getSelectedProjects();
             // 🚨 Validate all fields
-            if (!username || !password || !firstName || !lastName || !phone || !email || !role || !permissions || (!isAdmin && (!selectedProjects || selectedProjects.length === 0))) {
-                alert("Please fill out all required fields.");
-                return;
+// ✅ Required fields only for adding a new user
+            if (!isEditing) {
+                if (!username || !password || !firstName || !lastName || !phone || !email || !role || !permissions) {
+                    alert("Please fill out all required fields.");
+                    return;
+                }
+
+                if (!isAdmin && selectedProjects.length === 0) {
+                    alert("Please select at least one project.");
+                    return;
+                }
             }
 
             const userData = {
                 username: document.getElementById('username').value,
-                password: document.getElementById('password').value,
+                password: password, // ✅ This uses the fixed logic above
+
                 role: document.getElementById('role').value,
                 permissions: document.getElementById('permissions').value,
-                project: getSelectedProjects().join(', '),
+                project: isAdmin
+                    ? 'All Projects'
+                    : (selectedProjects.length > 0 ? selectedProjects.join(', ') : (isEditing ? selectedRow.cells[4].innerText : '')),
+
                 status: document.getElementById('status').value,
                 firstName: document.getElementById('firstName').value,
                 lastName: document.getElementById('lastName').value,
@@ -1158,16 +1168,23 @@
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(userData)
             })
-                .then(response => response.json())
+                .then(async response => {
+                    if (!response.ok) {
+                        const errorText = await response.text(); // get raw HTML or error message
+                        throw new Error(`Server error: ${response.status} - ${errorText}`);
+                    }
+                    return response.json(); // only parse JSON if it's OK
+                })
                 .then(savedUser => {
                     if (!userId) addRowToTable(savedUser);
                     else updateRowInTable(savedUser);
                     closeModal();
                 })
                 .catch(error => {
-                    console.error('Error saving user:', error);
+                    console.error('❌ Error saving user:', error);
                     alert("❌ Could not save user: " + error.message);
                 });
+
 
         }
 
@@ -1217,12 +1234,17 @@
                     permissionsSelect.value = selectedRow.cells[3].innerText;
                     permissionsSelect.dispatchEvent(new Event('change'));
 
+                    const currentRole = selectedRow.cells[2].innerText;
                     const selectedProjects = selectedRow.cells[4].innerText.split(', ').map(p => p.trim());
-                    document.querySelectorAll('input[name="projectCheckbox"]').forEach(cb => {
-                        cb.checked = selectedProjects.includes(cb.value);
-                    });
-                    document.getElementById('project').value = selectedRow.cells[4].innerText;
+
+                    if (currentRole !== 'ADMIN') {
+                        document.querySelectorAll('input[name="projectCheckbox"]').forEach(cb => {
+                            cb.checked = selectedProjects.includes(cb.value);
+                        });
+                        document.getElementById('project').value = selectedRow.cells[4].innerText;
+                    }
                 }, 200);
+
 
                 const archiveBtn = document.getElementById('archiveBtn');
                 const isArchivedView = showingArchived === true;

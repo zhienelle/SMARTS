@@ -133,7 +133,8 @@ public class InvoiceExestaffController {
             Map<String, Object> map = new HashMap<>();
             map.put("stageId", stage.getStageId());
             map.put("stageName", stage.getStageName());
-            map.put("stageNumber", stage.getStageNumber()); // ✅ add this line if not present
+            map.put("stageNumber", stage.getStageNumber());
+            map.put("status", stage.getStatus()); //
             return map;
         }).collect(Collectors.toList());
     }

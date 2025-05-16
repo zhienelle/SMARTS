@@ -70,7 +70,7 @@
             background-color: #F9744B;
         }
 
-        .sidebar.open~header {
+        .sidebar.open ~ header {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -94,7 +94,7 @@
             padding-right: 20px;
         }
 
-        .sidebar.open~footer {
+        .sidebar.open ~ footer {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -303,7 +303,7 @@
             margin-top: 30px;
         }
 
-        .sidebar.open~.home-section {
+        .sidebar.open ~ .home-section {
             left: 250px;
             width: calc(100% - 250px);
         }
@@ -613,12 +613,14 @@
             margin: 0 10px;
             text-transform: uppercase;
         }
+
         #invoiceTable, #invoiceTable * {
             user-select: none;
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
         }
+
         .logo-details img {
             height: 40px;
             margin-right: 10px;
@@ -726,8 +728,8 @@
         </div>
     </div>
 
-<!--    <div class="overlay" id="overlay"></div>-->
-<!--    <div class="selected-period" id="selectedPeriod"></div>-->
+    <!--    <div class="overlay" id="overlay"></div>-->
+    <!--    <div class="selected-period" id="selectedPeriod"></div>-->
 
     <!-- BEGIN blur-target wrapper -->
     <div id="invoiceMainContent">
@@ -769,17 +771,17 @@
     </div>
     <!-- END blur-target wrapper -->
 
-<!--    <div id="modal" class="modal">-->
-<!--        <div class="modal-content">-->
-<!--            <h3>Select Period</h3>-->
-<!--            <input type="date" id="startDate">-->
-<!--            <input type="date" id="endDate">-->
-<!--            <div>-->
-<!--                <button id="cancelModal">Cancel</button>-->
-<!--                <button id="submitPeriod">Submit</button>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
+    <!--    <div id="modal" class="modal">-->
+    <!--        <div class="modal-content">-->
+    <!--            <h3>Select Period</h3>-->
+    <!--            <input type="date" id="startDate">-->
+    <!--            <input type="date" id="endDate">-->
+    <!--            <div>-->
+    <!--                <button id="cancelModal">Cancel</button>-->
+    <!--                <button id="submitPeriod">Submit</button>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--    </div>-->
 
     <!-- Warning Overlay and Popup -->
     <div id="stageBlockOverlay" style="display:none;
@@ -948,7 +950,6 @@
     });
 
 
-
     // document.getElementById("submitPeriod").addEventListener("click", () => {
     //     const start = document.getElementById("startDate").value;
     //     const end = document.getElementById("endDate").value;
@@ -983,7 +984,7 @@
     let invoiceCounter = 20247180;
 
     async function generatePDF() {
-        const { jsPDF } = window.jspdf;
+        const {jsPDF} = window.jspdf;
         const pdf = new jsPDF('p', 'pt', 'a4');
         const pageWidth = pdf.internal.pageSize.getWidth();
         const margin = 40;
@@ -1028,11 +1029,13 @@
         startY += 15;
         pdf.text("QUEZON CITY, 1116", margin + 130, startY);
         startY += 20;
+
         pdf.text("PHONE NUMBER:", margin, startY);
         pdf.text("09561953997", margin + 130, startY);
         startY += 20;
         pdf.text("EMAIL:", margin, startY);
         pdf.text("DUMMY@GMAIL.COM", margin + 130, startY);
+
 
         // BILL TO
         startY += 40;
@@ -1042,6 +1045,7 @@
         pdf.rect(margin, startY - 10, pageWidth - margin * 2, 20, 'F');
         pdf.setTextColor(255, 255, 255);
         pdf.text("BILL TO:", margin + 5, startY + 3);
+
 
         // Company & Project Info
         pdf.setTextColor(0, 0, 0);
@@ -1086,7 +1090,7 @@
             pdf.setFillColor(0, 0, 0);
             pdf.setTextColor(255, 255, 255);
             pdf.rect(currentX, currentY, w, cellHeight, "F");
-            pdf.text(tableHeaders[i], currentX + w / 2, currentY + 17, { align: "center" });
+            pdf.text(tableHeaders[i], currentX + w / 2, currentY + 17, {align: "center"});
             currentX += w;
         }
 
@@ -1121,7 +1125,7 @@
         pdf.setFont("helvetica", "normal");
         pdf.setTextColor(0, 0, 0);
         pdf.rect(pageWidth - margin - amountWidth, currentY, amountWidth, cellHeight);
-        pdf.text(`PHP ${total.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, pageWidth - margin - 10, currentY + 17, { align: "right" });
+        pdf.text(`PHP ${total.toLocaleString(undefined, {minimumFractionDigits: 2})}`, pageWidth - margin - 10, currentY + 17, {align: "right"});
 
         // Footer signature
         currentY += 40;

@@ -727,7 +727,6 @@
                 <option value="" disabled selected>Select Stage</option>
             </select>
 
-            <button id="selectPeriod">Select Period</button>
         </div>
     </div>
 
@@ -806,7 +805,7 @@
          z-index:9999; box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
          font-family:sans-serif;">
         <strong>⚠️ Tasks not finished</strong><br>
-        You cannot generate this invoice until all stages are completed.
+        You cannot generate this invoice until the chosen stage are completed.
     </div>
 </section>
 <!-- Footer -->
@@ -819,7 +818,7 @@
     /*]]>*/
 </script>
 <script>
-
+    let stages = [];
     document.addEventListener("DOMContentLoaded", async () => {
         try {
             const res = await fetch("/exestaff/invoice/projects");
@@ -841,26 +840,9 @@
             dropdown.addEventListener("change", async () => {
                 const selected = projects.find(p => p.projectId == dropdown.value);
                 const selectedProjectId = parseInt(dropdown.value);
-                const isIncomplete = incompleteStagesMap[selectedProjectId];
 
                 console.log("Executive Staff - Selected Project ID:", selectedProjectId);
                 console.log("Stage Completion Map:", incompleteStagesMap);
-                console.log("Is Incomplete?", isIncomplete);
-
-                if (isIncomplete === true || isIncomplete === "true") {
-                    document.getElementById("stageWarningPopup").style.display = "block";
-                    document.getElementById("stageBlockOverlay").style.display = "block";
-                    document.getElementById("blurWrapper").style.filter = "blur(6px)";
-                    const printBtn = document.getElementById("printBtn");
-                    if (printBtn) printBtn.disabled = true;
-                } else {
-                    document.getElementById("stageWarningPopup").style.display = "none";
-                    document.getElementById("stageBlockOverlay").style.display = "none";
-                    document.getElementById("blurWrapper").style.filter = "none";
-                    const printBtn = document.getElementById("printBtn");
-                    if (printBtn) printBtn.disabled = false;
-                }
-
 
                 if (!selected) return;
 // Load stages for selected project
@@ -872,13 +854,72 @@
                     const resStages = await fetch(`/exestaff/invoice/stages?projectId=${selected.projectId}`);
                     if (!resStages.ok) throw new Error("Failed to fetch stages");
 
-                    const stages = await resStages.json();
+                    stages = await resStages.json(); // reuse global variable
+                    console.log("✅ STAGES LOADED:", stages);
+                    // Handle stage selection and reload invoice material table
+                    document.getElementById("stage-select").addEventListener("change", async (e) => {
+                        const stageId = e.target.value;
+                        if (!stageId) return;
+
+                        // 🔍 Find the selected stage from the already fetched `stages` array
+                        const selectedStage = stages.find(stage => stage.stageId === parseInt(stageId));
+                        const stageStatus = selectedStage?.status?.toLowerCase();
+
+                        if (stageStatus !== "complete") {
+                            // ❌ Stage is not completed
+                            document.getElementById("stageWarningPopup").style.display = "block";
+                            document.getElementById("stageBlockOverlay").style.display = "block";
+                            document.getElementById("blurWrapper").style.filter = "blur(6px)";
+                            document.getElementById("printBtn").disabled = true;
+                            return;
+                        } else {
+                            // ✅ Stage is completed
+                            document.getElementById("stageWarningPopup").style.display = "none";
+                            document.getElementById("stageBlockOverlay").style.display = "none";
+                            document.getElementById("blurWrapper").style.filter = "none";
+                            document.getElementById("printBtn").disabled = false;
+                        }
+
+                        // ✅ Proceed with loading stage materials
+                        try {
+                            const res = await fetch(`/exestaff/invoice/materials-by-stage?stageId=${stageId}`);
+                            if (!res.ok) throw new Error("Failed to fetch stage materials");
+
+                            const materials = await res.json();
+                            const tbody = document.getElementById("invoiceBody");
+                            tbody.innerHTML = "";
+                            let total = 0;
+
+                            materials.forEach((item, i) => {
+                                const totalRow = item.unitPrice * item.quantityAssigned;
+                                total += totalRow;
+
+                                const row = document.createElement("tr");
+                                row.innerHTML = `
+                <td>${String(i + 1).padStart(3, '0')}</td>
+                <td>${item.materialName || '---'}</td>
+                <td>${item.quantityAssigned}</td>
+                <td>PHP ${item.unitPrice.toLocaleString()}</td>
+                <td>PHP ${totalRow.toLocaleString()}</td>
+            `;
+                                tbody.appendChild(row);
+                            });
+
+                            document.getElementById("totalCost").textContent = `PHP ${total.toLocaleString()}`;
+                        } catch (err) {
+                            console.error("Error loading materials for selected stage:", err);
+                        }
+                    });
+
+
                     if (stages.length > 0) {
                         stages.sort((a, b) => a.stageNumber - b.stageNumber);
                         stages.forEach(stage => {
                             console.log("Appending stage:", stage.stageName); // ✅ Debug log
                             const option = document.createElement("option");
                             option.value = stage.stageId;
+                            console.log("Appending stage:", stage);  // See actual structure
+
                             option.textContent = `Stage ${stage.stageNumber}`;
                             stageDropdown.appendChild(option);
                         });
@@ -887,41 +928,6 @@
                 } catch (err) {
                     console.error("Error loading stages:", err);
                 }
-
-                // Handle stage selection and reload invoice material table
-                document.getElementById("stage-select").addEventListener("change", async (e) => {
-                    const stageId = e.target.value;
-                    if (!stageId) return;
-
-                    try {
-                        const res = await fetch(`/exestaff/invoice/materials-by-stage?stageId=${stageId}`);
-                        if (!res.ok) throw new Error("Failed to fetch stage materials");
-
-                        const materials = await res.json();
-                        const tbody = document.getElementById("invoiceBody");
-                        tbody.innerHTML = "";
-                        let total = 0;
-
-                        materials.forEach((item, i) => {
-                            const totalRow = item.unitPrice * item.quantityAssigned;
-                            total += totalRow;
-
-                            const row = document.createElement("tr");
-                            row.innerHTML = `
-                <td>${String(i + 1).padStart(3, '0')}</td>
-                <td>${item.materialName || '---'}</td>
-                <td>${item.quantityAssigned}</td>
-                <td>PHP ${item.unitPrice.toLocaleString()}</td>
-                <td>PHP ${totalRow.toLocaleString()}</td>
-            `;
-                            tbody.appendChild(row);
-                        });
-
-                        document.getElementById("totalCost").textContent = `PHP ${total.toLocaleString()}`;
-                    } catch (err) {
-                        console.error("Error loading materials for selected stage:", err);
-                    }
-                });
 
 
                 document.getElementById("projectName").textContent = selected.projectname;
@@ -963,46 +969,6 @@
         }
     });
 
-    const overlay = document.getElementById("overlay");
-    const modal = document.getElementById("modal");
-    const selectPeriodButton = document.getElementById("selectPeriod");
-    const cancelModalButton = document.getElementById("cancelModal");
-    const datePeriodDiv = document.getElementById("selectedPeriod");
-
-    selectPeriodButton.addEventListener("click", () => {
-        modal.style.display = "block";
-        overlay.style.display = "block";
-    });
-
-    cancelModalButton.addEventListener("click", () => {
-        modal.style.display = "none";
-        overlay.style.display = "none";
-    });
-
-    document.getElementById("submitPeriod").addEventListener("click", () => {
-        const startDate = document.getElementById("startDate").value;
-        const endDate = document.getElementById("endDate").value;
-
-        if (startDate && endDate) {
-            if (new Date(startDate) > new Date(endDate)) {
-                alert("Start date cannot be later than end date.");
-            } else {
-                datePeriodDiv.innerHTML = `Selected Period: ${startDate} to ${endDate}`;
-                datePeriodDiv.style.display = "block";
-                modal.style.display = "none";
-                overlay.style.display = "none";
-            }
-        } else {
-            alert("Please select valid dates.");
-        }
-    });
-
-    window.onclick = (event) => {
-        if (event.target === overlay) {
-            modal.style.display = "none";
-            overlay.style.display = "none";
-        }
-    };
 
     let sidebar = document.querySelector(".sidebar");
     let closeBtn = document.querySelector("#btn");
@@ -1175,5 +1141,4 @@
     }
 </script>
 </body>
-
 </html>

@@ -1228,8 +1228,25 @@
             const firstProject = projectData[0];
             projectSelect.value = firstProject.projectname;
             displayProjectInfo(firstProject);
-            fetchAndDisplayMaterials(firstProject.projectname); // pass name here ✅
+            fetchAndDisplayMaterials(firstProject.projectname);
+
+            // ✅ Load stages immediately on page load
+            const stageSelect = document.getElementById("stageSelect");
+            stageSelect.innerHTML = `<option value="all" selected>Show All Stages</option>`;
+
+            fetch(`/myProjectExestaff/getStagesByName?projectName=${encodeURIComponent(firstProject.projectname)}`)
+                .then(res => res.json())
+                .then(stages => {
+                    stages.sort((a, b) => a.stageNumber - b.stageNumber)
+                        .forEach(stage => {
+                            const option = document.createElement("option");
+                            option.value = stage.stageNumber;
+                            option.textContent = `Stage ${stage.stageNumber}`;
+                            stageSelect.appendChild(option);
+                        });
+                });
         }
+
 
 // When dropdown changes
         projectSelect.addEventListener("change", () => {
@@ -1245,17 +1262,17 @@
                 fetch(`/myProjectExestaff/getStagesByName?projectName=${encodeURIComponent(selected.projectname)}`)
                     .then(res => res.json())
                     .then(stages => {
-                        stages
-                            .sort((a, b) => a.stageNumber - b.stageNumber)
+                        // Clear then re-add "Show All Stages"
+                        stageSelect.innerHTML = `<option value="all" selected>Show All Stages</option>`;
+
+                        // Sort by stage number before appending
+                        stages.sort((a, b) => a.stageNumber - b.stageNumber)
                             .forEach(stage => {
                                 const option = document.createElement("option");
                                 option.value = stage.stageNumber;
                                 option.textContent = `Stage ${stage.stageNumber}`;
                                 stageSelect.appendChild(option);
                             });
-
-                        // Reset selection after repopulating
-                        // stageSelect.value = "all";
                     });
             }
         });
@@ -1401,16 +1418,19 @@
                     },
                     body: JSON.stringify(stages)
                 })
-                    .then(res => {
-                        if (res.ok) {
+                    .then(res => res.text())  // 👈 read response body as text
+                    .then(text => {
+                        if (text.includes("successfully")) {
                             alert("Project progress saved.");
                             closeModal("editProgressModal");
                         } else {
-                            alert("Error saving progress.");
+                            alert("Error saving progress: " + text);
                         }
                     })
-                    .catch(err => console.error("Error saving stages:", err));
-
+                    .catch(err => {
+                        alert("Unexpected error saving progress.");
+                        console.error("Save error:", err);
+                    });
             });
         });
     });

@@ -235,6 +235,7 @@ public class GeneralInventoryController {
     @ResponseBody
     public ResponseEntity<String> updateMultipleMaterials(@RequestBody List<Inventory> updates) {
         try {
+            System.out.println("Received updates: " + updates);
             for (Inventory updatedInventory : updates) {
                 Integer id = updatedInventory.getMaterialId();
 
@@ -276,13 +277,12 @@ public class GeneralInventoryController {
                 inventoryRepository.save(inventory);
             }
 
-            return ResponseEntity.ok("✅ All materials updated successfully.");
+            return ResponseEntity.ok().body("{\"message\": \"✅ All materials updated successfully.\"}");
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("❌ Internal server error: " + e.getMessage());
         }
     }
-
-
 }
